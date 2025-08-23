@@ -1,0 +1,280 @@
+import React from 'react';
+import { Head, Link } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { BusinessShowProps } from '@/types';
+import { 
+    Building, 
+    ArrowLeft, 
+    MapPin, 
+    Clock, 
+    User, 
+    Calendar,
+    CheckCircle,
+    XCircle,
+    Edit,
+    Trash2
+} from 'lucide-react';
+
+export default function BusinessShow({ auth, business }: BusinessShowProps) {
+    const getStatusBadge = () => {
+        if (business.is_vierify) {
+            return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-4 h-4 mr-1" />Verified</Badge>;
+        } else {
+            return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-4 h-4 mr-1" />Pending Review</Badge>;
+        }
+    };
+
+    return (
+        <AppLayout>
+            <Head title={`${business.name} - Business Details`} />
+            
+            <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Link href="/admin/businesses">
+                            <Button variant="outline" size="sm">
+                                <ArrowLeft className="w-4 h-4 mr-1" />
+                                Back to Businesses
+                            </Button>
+                        </Link>
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">{business.name}</h1>
+                            <div className="flex items-center gap-3 mt-1">
+                                {getStatusBadge()}
+                                <span className="text-gray-500">ID: {business.id}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <Link href={`/admin/businesses/${business.id}/edit`}>
+                            <Button variant="outline">
+                                <Edit className="w-4 h-4 mr-1" />
+                                Edit
+                            </Button>
+                        </Link>
+                        
+                        {!business.is_vierify ? (
+                            <Link href={`/admin/businesses/${business.id}/verify`} method="patch" as="button">
+                                <Button className="bg-green-600 hover:bg-green-700">
+                                    <CheckCircle className="w-4 h-4 mr-1" />
+                                    Verify Business
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Link href={`/admin/businesses/${business.id}/reject`} method="patch" as="button">
+                                <Button variant="destructive">
+                                    <XCircle className="w-4 h-4 mr-1" />
+                                    Revoke Verification
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Main Content */}
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Business Information */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Building className="w-5 h-5" />
+                                    Business Information
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Business Name</label>
+                                    <p className="text-gray-900 font-medium">{business.name}</p>
+                                </div>
+                                
+                                {business.descriptions && (
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">Description</label>
+                                        <p className="text-gray-900 mt-1 whitespace-pre-wrap">{business.descriptions}</p>
+                                    </div>
+                                )}
+                                
+                                {(business.opening_time && business.closing_time) && (
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">Opening Hours</label>
+                                        <p className="text-gray-900 flex items-center gap-1">
+                                            <Clock className="w-4 h-4" />
+                                            {business.formatted_hours}
+                                        </p>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Location Information */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <MapPin className="w-5 h-5" />
+                                    Location Details
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">Province</label>
+                                        <p className="text-gray-900">{business.province?.name || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">District</label>
+                                        <p className="text-gray-900">{business.district?.name || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">Commune</label>
+                                        <p className="text-gray-900">{business.commune?.name || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">Village</label>
+                                        <p className="text-gray-900">{business.village?.name || 'N/A'}</p>
+                                    </div>
+                                </div>
+                                
+                                {(business.latitude && business.longitude) && (
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700">Coordinates</label>
+                                        <p className="text-gray-900">
+                                            Lat: {business.latitude}, Lng: {business.longitude}
+                                        </p>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Business Image */}
+                        {business.image && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Business Image</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <img 
+                                        src={business.image} 
+                                        alt={business.name}
+                                        className="w-full max-w-md rounded-lg shadow-sm"
+                                    />
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+
+                    {/* Sidebar */}
+                    <div className="space-y-6">
+                        {/* Owner Information */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <User className="w-5 h-5" />
+                                    Business Owner
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Name</label>
+                                    <p className="text-gray-900">{business.owner?.name}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Email</label>
+                                    <p className="text-gray-900">{business.owner?.email}</p>
+                                </div>
+                                <div className="pt-2">
+                                    <Link href={`/admin/users/${business.created_by}`}>
+                                        <Button variant="outline" size="sm" className="w-full">
+                                            <User className="w-4 h-4 mr-1" />
+                                            View User Profile
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Status & Dates */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Calendar className="w-5 h-5" />
+                                    Status & Dates
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Verification Status</label>
+                                    <div className="mt-1">{getStatusBadge()}</div>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Business Status</label>
+                                    <div className="mt-1">
+                                        <Badge variant={business.status ? "default" : "secondary"}>
+                                            {business.status ? "Active" : "Inactive"}
+                                        </Badge>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Created Date</label>
+                                    <p className="text-gray-900 text-sm">
+                                        {new Date(business.created_at).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Last Updated</label>
+                                    <p className="text-gray-900 text-sm">
+                                        {new Date(business.updated_at).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Actions */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Actions</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                <Link href={`/admin/businesses/${business.id}/edit`}>
+                                    <Button variant="outline" className="w-full">
+                                        <Edit className="w-4 h-4 mr-1" />
+                                        Edit Business
+                                    </Button>
+                                </Link>
+                                <Link 
+                                    href={`/admin/businesses/${business.id}`} 
+                                    method="delete" 
+                                    as="button"
+                                    data={{}}
+                                    onBefore={() => confirm('Are you sure you want to delete this business?')}
+                                >
+                                    <Button variant="destructive" className="w-full">
+                                        <Trash2 className="w-4 h-4 mr-1" />
+                                        Delete Business
+                                    </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        </AppLayout>
+    );
+}
