@@ -34,11 +34,16 @@ npm run format       # Format code with Prettier
 npm run types        # TypeScript type checking
 ```
 
+**Note**: Always run `npm run lint` and `npm run types` before commits to ensure code quality.
+
 ### Backend Development
 ```bash
 php artisan serve    # PHP development server only
 php artisan migrate  # Run database migrations
 php artisan test     # Run all PHPUnit tests
+php artisan test --filter=TestName  # Run specific test
+php artisan test tests/Feature       # Run only Feature tests
+php artisan test tests/Unit          # Run only Unit tests
 ```
 
 ## Application Architecture
@@ -112,8 +117,10 @@ resources/js/
 
 ### Form Patterns
 - **Location Dropdowns**: Cascading Province → District → Commune → Village
+- **SearchableSelect**: Custom dropdown with search functionality (`SearchableSelect.tsx`)
 - **useForm Hook**: Inertia.js form handling with validation
 - **API Endpoints**: Dynamic location data loading
+- **Responsive Filters**: Mobile-collapsible sidebar with location controls
 
 ### Authentication & Authorization
 - **Middleware**: `admin` middleware for role-based access
@@ -142,6 +149,12 @@ route('businesses.verify', business.id)  // Laravel routes via Ziggy
 ### Data Loading
 - Server-side data passed as Inertia props
 - Client-side API calls for dynamic content (location dropdowns)
+- **Public Location APIs**:
+  - `/api/public/districts/{province}` - Get districts for province
+  - `/api/public/communes/{district}` - Get communes for district
+  - `/api/public/villages/{commune}` - Get villages for commune
+  - `/api/public/reverse-geocode` - Convert GPS to location IDs
+  - `/api/public/expand-maps-url` - Expand shortened Google Maps URLs
 
 ## Code Style & Quality
 
@@ -149,6 +162,7 @@ route('businesses.verify', business.id)  // Laravel routes via Ziggy
 - Strict type checking enabled in `tsconfig.json`
 - Path aliases: `@/*` maps to `resources/js/*`
 - All props and API responses properly typed
+- Business interface includes `distance?: string` for proximity results
 
 ### React Components
 - Functional components with hooks
@@ -163,14 +177,39 @@ route('businesses.verify', business.id)  // Laravel routes via Ziggy
 
 ## Business Logic
 
-### Location System
-Hierarchical location system for Cambodia:
+### Location System & Proximity Search
+Hierarchical location system for Cambodia with smart proximity-based search:
 ```
 Province (Phnom Penh, Siem Reap, etc.)
 └── District (Khan, Srok)
     └── Commune (Sangkat, Khum)  
         └── Village (Phum)
 ```
+
+**Key Location Features:**
+- **GPS-based Search**: Auto-detects user location and shows nearest businesses
+- **Distance Calculation**: Uses Haversine formula to calculate real distances
+- **Cascading Dropdowns**: Province → District → Commune → Village selection
+- **Reverse Geocoding**: Converts GPS coordinates to administrative divisions
+- **Fallback System**: Works with or without user location permissions
+
+### Business Search Architecture
+
+**Traditional Admin Search**: Users select province/district/commune/village manually
+
+**Smart Proximity Search**: 
+1. User clicks "Use My Location" button
+2. Browser requests geolocation permission
+3. GPS coordinates sent to `/api/public/reverse-geocode`
+4. Backend finds closest businesses using distance calculation
+5. Results sorted by proximity with distance badges ("1.2km away")
+6. Auto-populates location dropdowns for reference
+
+**Backend Distance Logic** (`PublicController::businesses()`):
+- Accepts `user_lat` and `user_lng` parameters
+- Calculates distances using SQL Haversine formula
+- Filters businesses with coordinates (`latitude` and `longitude` not null)
+- Orders results by distance (closest first)
 
 ### Business Verification
 - New businesses default to `is_vierify = false`
@@ -196,7 +235,31 @@ Province (Phnom Penh, Siem Reap, etc.)
 ## Important Files
 
 - **CLAUDE.md**: This guidance file
-- **routes/web.php**: Application routing with role-based access
+- **routes/web.php**: Application routing with role-based access and public APIs
+- **app/Http/Controllers/PublicController.php**: Main public business search with proximity logic
 - **app/Http/Middleware/AdminMiddleware.php**: Role-based access control
-- **resources/js/types/index.d.ts**: TypeScript definitions
+- **resources/js/types/index.d.ts**: TypeScript definitions including Business interface
+- **resources/js/components/ui/searchable-select.tsx**: Reusable dropdown with search
+- **resources/js/pages/public/businesses/index.tsx**: Main business directory with location features
 - **resources/js/components/DefaultDataTableFilter.tsx**: Reusable admin filtering
+- **resources/js/lib/maps-utils.ts**: Maps URL parsing and geolocation utilities
+- **phpunit.xml**: PHPUnit testing configuration with SQLite in-memory database
+
+## Location Search Implementation
+
+### Frontend Architecture (`pages/public/businesses/index.tsx`)
+- **Responsive Sidebar**: Mobile-collapsible filters with toggle button
+- **GPS Integration**: `getCurrentLocation()` function with error handling
+- **Auto-Search**: Triggers proximity search when GPS obtained
+- **Distance Display**: Shows "1.2km away" badges on business cards
+- **Smart State Management**: Manages coordinates, loading states, and dropdown selections
+
+### Backend Architecture (`PublicController.php`)
+- **Proximity Query**: SQL distance calculation with `user_lat`/`user_lng` parameters
+- **Haversine Formula**: Accurate earth-surface distance calculation in kilometers
+- **Reverse Geocoding**: Basic proximity-based location matching (can be upgraded to Google Maps API)
+- **Filter Compatibility**: Works with traditional province/district filters
+
+### Search UX Patterns
+**Without Location**: Traditional admin division search
+**With Location**: "Nearest Tire Shops" sorted by distance with green location indicator

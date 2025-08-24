@@ -126,7 +126,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Business Name *</Label>
+                                    <Label htmlFor="name">Business Name <span className="text-red-500">*</span></Label>
                                     <Input
                                         id="name"
                                         type="text"
@@ -163,7 +163,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label>Province *</Label>
+                                            <Label>Province <span className="text-red-500">*</span></Label>
                                             <SearchableSelect
                                                 options={provinces.map(province => ({
                                                     value: province.id.toString(),
@@ -182,7 +182,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label>District *</Label>
+                                            <Label>District <span className="text-red-500">*</span></Label>
                                             <SearchableSelect
                                                 key={`district-${data.province_id}`}
                                                 options={districts.map(district => ({
@@ -257,7 +257,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label>Business Hours</Label>
+                                            <Label>Business Hours <span className="text-red-500">*</span></Label>
                                             <TimeRangePicker
                                                 startTime={data.opening_time}
                                                 endTime={data.closing_time}
@@ -270,7 +270,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="latitude">Latitude (Optional)</Label>
+                                                <Label htmlFor="latitude">Latitude <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id="latitude"
                                                     type="text"
@@ -285,7 +285,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label htmlFor="longitude">Longitude (Optional)</Label>
+                                                <Label htmlFor="longitude">Longitude <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id="longitude"
                                                     type="text"

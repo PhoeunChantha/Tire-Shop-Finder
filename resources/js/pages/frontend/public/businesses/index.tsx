@@ -4,21 +4,22 @@ import axios from 'axios';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Business, Province, District, Commune, Village, PaginatedData } from '@/types';
+import { parseGoogleMapsUrl, validateCambodiaCoordinates, formatCoordinates } from '@/lib/maps-utils';
 import { 
     Search, 
     MapPin, 
     Clock, 
-    Phone, 
     Star, 
     Wrench, 
     Filter,
     ChevronRight,
     Navigation,
-    MapPin as LocationIcon
+    MapPin as LocationIcon,
+    Link as LinkIcon
 } from 'lucide-react';
 
 interface BusinessIndexProps {
@@ -33,13 +34,18 @@ interface BusinessIndexProps {
         village_id?: string;
         service?: string;
     };
+    userLocation?: {
+        lat?: number;
+        lng?: number;
+    };
 }
 
 export default function PublicBusinessIndex({ 
     businesses, 
     provinces, 
     districts: initialDistricts, 
-    filters 
+    filters,
+    userLocation 
 }: BusinessIndexProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedProvince, setSelectedProvince] = useState(filters.province_id || '');
@@ -55,6 +61,13 @@ export default function PublicBusinessIndex({
     const [loadingVillages, setLoadingVillages] = useState(false);
     const [gettingLocation, setGettingLocation] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+    const [userCoords, setUserCoords] = useState<{lat: number, lng: number, accuracy?: number} | null>(
+        userLocation?.lat && userLocation?.lng ? 
+        { lat: userLocation.lat, lng: userLocation.lng } : null
+    );
+    const [mapsUrl, setMapsUrl] = useState('');
+    const [parsingUrl, setParsingUrl] = useState(false);
+    const [urlError, setUrlError] = useState('');
 
     // Load districts when province changes
     useEffect(() => {
@@ -122,76 +135,234 @@ export default function PublicBusinessIndex({
         }
     }, [selectedCommune]);
 
-    // Get current location and auto-select dropdowns
+    // Get high-accuracy current location like mobile Maps apps
     const getCurrentLocation = () => {
         if (!navigator.geolocation) {
-            alert('Geolocation is not supported by this browser');
+            alert('GPS location services are not available on this device');
             return;
         }
 
         setGettingLocation(true);
-        navigator.geolocation.getCurrentPosition(
+        
+        let bestPosition: GeolocationPosition | null = null;
+        let bestAccuracy = Infinity;
+        const startTime = Date.now();
+        
+        // Use watchPosition for multiple GPS readings to get the best accuracy
+        const watchId = navigator.geolocation.watchPosition(
             async (position) => {
                 try {
-                    const { latitude, longitude } = position.coords;
+                    const { accuracy } = position.coords;
                     
-                    // Call reverse geocoding API
-                    const response = await axios.post('/api/public/reverse-geocode', {
-                        latitude,
-                        longitude
-                    });
+                    console.log(`GPS reading: ${accuracy.toFixed(1)}m accuracy`);
+                    
+                    // Keep track of the best (most accurate) position
+                    if (accuracy < bestAccuracy) {
+                        bestAccuracy = accuracy;
+                        bestPosition = position;
+                    }
+                    
+                    // If we get good accuracy (< 100m) or have been trying for 20 seconds, use best position
+                    const shouldStop = accuracy < 100 || 
+                                      bestAccuracy < 200 || 
+                                      (Date.now() - startTime) > 20000;
+                    
+                    if (shouldStop && bestPosition) {
+                        navigator.geolocation.clearWatch(watchId);
+                        
+                        const finalAccuracy = bestPosition.coords.accuracy;
+                        console.log(`Using position with ${finalAccuracy.toFixed(1)}m accuracy`);
+                        
+                        // Warn user if accuracy is still poor
+                        if (finalAccuracy > 1000) {
+                            if (!confirm(`Location accuracy is low (${(finalAccuracy/1000).toFixed(1)}km). This might show distant results. Continue anyway?`)) {
+                                setGettingLocation(false);
+                                return;
+                            }
+                        }
+                        
+                        // Call reverse geocoding API with best coordinates
+                        const response = await axios.post('/api/public/reverse-geocode', {
+                            latitude: bestPosition.coords.latitude,
+                            longitude: bestPosition.coords.longitude,
+                            accuracy: finalAccuracy
+                        });
 
-                    const { province_id, district_id, commune_id, village_id } = response.data;
-                    
-                    // Auto-select the location dropdowns
-                    if (province_id) {
-                        setSelectedProvince(province_id.toString());
-                    }
-                    if (district_id) {
-                        setSelectedDistrict(district_id.toString());
-                    }
-                    if (commune_id) {
-                        setSelectedCommune(commune_id.toString());
-                    }
-                    if (village_id) {
-                        setSelectedVillage(village_id.toString());
+                        const { province_id, district_id, commune_id, village_id } = response.data;
+                        
+                        // Store best coordinates with accuracy
+                        setUserCoords({ 
+                            lat: bestPosition.coords.latitude, 
+                            lng: bestPosition.coords.longitude, 
+                            accuracy: finalAccuracy 
+                        });
+
+                        // Auto-select the location dropdowns (optional - user can still override)
+                        if (province_id) {
+                            setSelectedProvince(province_id.toString());
+                        }
+                        if (district_id) {
+                            setSelectedDistrict(district_id.toString());
+                        }
+                        if (commune_id) {
+                            setSelectedCommune(commune_id.toString());
+                        }
+                        if (village_id) {
+                            setSelectedVillage(village_id.toString());
+                        }
+
+                        // Automatically show nearby businesses
+                        setTimeout(() => {
+                            if (bestPosition) {
+                                searchWithLocation(bestPosition.coords.latitude, bestPosition.coords.longitude);
+                            }
+                        }, 300);
+                        
+                        setGettingLocation(false);
                     }
                 } catch (error) {
-                    console.error('Error getting location data:', error);
-                    alert('Unable to determine your location address');
-                } finally {
+                    navigator.geolocation.clearWatch(watchId);
+                    console.error('Error processing location:', error);
+                    alert('Unable to find tire shops near your location. Please try manual search.');
                     setGettingLocation(false);
                 }
             },
             (error) => {
-                console.error('Geolocation error:', error);
+                navigator.geolocation.clearWatch(watchId);
+                console.error('GPS error:', error);
                 setGettingLocation(false);
+                
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
-                        alert('Location access denied by user');
+                        alert('Location permission denied. Please enable location services and allow GPS access.');
                         break;
                     case error.POSITION_UNAVAILABLE:
-                        alert('Location information is unavailable');
+                        alert('GPS signal not available. Please ensure location services are enabled and try outdoors.');
                         break;
                     case error.TIMEOUT:
-                        alert('Location request timed out');
+                        alert('GPS timeout. Please check your location settings or try again outdoors.');
                         break;
                     default:
-                        alert('An unknown error occurred while getting location');
+                        alert('Unable to get your GPS location. Please try manual search.');
                         break;
                 }
             },
             {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
+                enableHighAccuracy: true,    // Force GPS usage
+                timeout: 30000,              // Wait up to 30 seconds for GPS fix
+                maximumAge: 0                // Always get fresh location
             }
         );
+        
+        // Fallback: stop after 25 seconds and use best position found
+        setTimeout(() => {
+            if (watchId && gettingLocation) {
+                navigator.geolocation.clearWatch(watchId);
+                
+                if (bestPosition && bestAccuracy < 5000) { // Accept if less than 5km accuracy
+                    // Use the best position we found
+                    console.log(`Timeout reached, using best position: ${bestAccuracy.toFixed(1)}m`);
+                    // Process the best position we have
+                } else {
+                    setGettingLocation(false);
+                    alert('Could not get accurate GPS location. Please try again outdoors or use manual search.');
+                }
+            }
+        }, 25000);
     };
 
-    const handleSearch = () => {
-        // Close mobile filters after search
-        setShowFilters(false);
+    const handleMapsUrlSubmit = async () => {
+        if (!mapsUrl.trim()) {
+            setUrlError('Please enter a Google Maps link');
+            return;
+        }
+
+        setParsingUrl(true);
+        setUrlError('');
+        
+        try {
+            const coords = await parseGoogleMapsUrl(mapsUrl.trim());
+            
+            if (!coords) {
+                setUrlError('Could not extract coordinates from this link. Please try a different Google Maps link.');
+                setParsingUrl(false);
+                return;
+            }
+            
+            console.log('Parsed coordinates:', formatCoordinates(coords));
+            
+            // Call reverse geocoding API with parsed coordinates
+            const response = await axios.post('/api/public/reverse-geocode', {
+                latitude: coords.lat,
+                longitude: coords.lng,
+                accuracy: 50
+            });
+
+            const { province_id, district_id, commune_id, village_id } = response.data;
+            
+            // Store coordinates
+            setUserCoords({ 
+                lat: coords.lat, 
+                lng: coords.lng, 
+                accuracy: 50
+            });
+
+            // Auto-select the location dropdowns
+            if (province_id) {
+                setSelectedProvince(province_id.toString());
+            }
+            if (district_id) {
+                setSelectedDistrict(district_id.toString());
+            }
+            if (commune_id) {
+                setSelectedCommune(commune_id.toString());
+            }
+            if (village_id) {
+                setSelectedVillage(village_id.toString());
+            }
+
+            // Clear the URL input and show success
+            setMapsUrl('');
+            
+            // Automatically show nearby businesses
+            setTimeout(() => {
+                searchWithLocation(coords.lat, coords.lng);
+            }, 300);
+            
+        } catch (error) {
+            console.error('Error processing Google Maps URL:', error);
+            
+            // Try to extract error message from the response
+            let errorMessage = 'Error processing the link. Please try again or use GPS location instead.';
+            
+            if (error instanceof Error) {
+                errorMessage = error.message;
+                
+                // Try to parse JSON error response for more details
+                try {
+                    const errorData = JSON.parse(error.message);
+                    if (errorData.debug_info) {
+                        console.log('Debug info:', errorData.debug_info);
+                        if (errorData.debug_info.expanded_url) {
+                            console.log('Expanded URL was:', errorData.debug_info.expanded_url);
+                        }
+                        if (errorData.debug_info.patterns_tested) {
+                            console.log('Pattern test results:', errorData.debug_info.patterns_tested);
+                        }
+                    }
+                } catch {
+                    // Not JSON, use the error message as-is
+                }
+            }
+            
+            setUrlError(errorMessage);
+        }
+        
+        setParsingUrl(false);
+    };
+
+    const searchWithLocation = (lat?: number, lng?: number) => {
+        const coords = { lat: lat || userCoords?.lat, lng: lng || userCoords?.lng };
         
         router.get('/tire-shops', {
             search: searchTerm,
@@ -200,10 +371,34 @@ export default function PublicBusinessIndex({
             commune_id: selectedCommune,
             village_id: selectedVillage,
             service: serviceFilter,
+            user_lat: coords.lat,
+            user_lng: coords.lng,
         }, {
             preserveState: true,
             replace: true
         });
+    };
+
+    const handleSearch = () => {
+        // Close mobile filters after search
+        setShowFilters(false);
+        
+        // Use location-based search if coordinates are available
+        if (userCoords) {
+            searchWithLocation();
+        } else {
+            router.get('/tire-shops', {
+                search: searchTerm,
+                province_id: selectedProvince,
+                district_id: selectedDistrict,
+                commune_id: selectedCommune,
+                village_id: selectedVillage,
+                service: serviceFilter,
+            }, {
+                preserveState: true,
+                replace: true
+            });
+        }
     };
 
     const clearFilters = () => {
@@ -216,10 +411,24 @@ export default function PublicBusinessIndex({
         setDistricts([]);
         setCommunes([]);
         setVillages([]);
+        setMapsUrl('');
+        setUrlError('');
+        setUserCoords(null);
         router.get('/tire-shops');
     };
 
     const getDistanceText = (business: Business) => {
+        // Show distance if available and user has location
+        if (business.distance !== undefined && userCoords) {
+            const distance = parseFloat(business.distance);
+            if (distance < 1) {
+                return `${(distance * 1000).toFixed(0)}m away`;
+            } else {
+                return `${distance.toFixed(1)}km away`;
+            }
+        }
+        
+        // Fallback to location names
         if (business.province?.name && business.district?.name) {
             return `${business.district.name}, ${business.province.name}`;
         }
@@ -288,13 +497,95 @@ export default function PublicBusinessIndex({
                             <div className="mb-6">
                                 <Button 
                                     onClick={getCurrentLocation} 
-                                    variant="outline"
+                                    variant={userCoords ? "default" : "outline"}
                                     disabled={gettingLocation}
-                                    className="w-full text-gray-900"
+                                    className={`w-full transition-all duration-200 ${
+                                        userCoords ? 'bg-green-600 hover:bg-green-700 text-white' : 
+                                        gettingLocation ? 'text-blue-600 border-blue-400' : 'text-gray-900'
+                                    }`}
                                 >
-                                    <LocationIcon className="w-4 h-4 mr-2" />
-                                    {gettingLocation ? 'Getting Location...' : 'Use My Location'}
+                                    {gettingLocation ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
+                                            Getting precise location...
+                                        </>
+                                    ) : userCoords ? (
+                                        <>
+                                            <LocationIcon className="w-4 h-4 mr-2" />
+                                            Location Found ✓
+                                        </>
+                                    ) : (
+                                        <>
+                                            <LocationIcon className="w-4 h-4 mr-2" />
+                                            Use My Location
+                                        </>
+                                    )}
                                 </Button>
+                                {userCoords && (
+                                    <div className="mt-2 text-center">
+                                        <p className="text-sm text-green-600">
+                                            📍 Showing results near your location
+                                        </p>
+                                        {userCoords.accuracy && (
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                GPS accuracy: {userCoords.accuracy < 10 ? 'Very precise' : 
+                                                             userCoords.accuracy < 100 ? 'Good' : 
+                                                             userCoords.accuracy < 1000 ? 'Fair' : 'Poor'} 
+                                                ({userCoords.accuracy > 1000 ? 
+                                                  `${(userCoords.accuracy/1000).toFixed(1)}km` : 
+                                                  `${userCoords.accuracy.toFixed(0)}m`})
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Google Maps URL Input */}
+                            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <LinkIcon className="w-4 h-4 text-blue-600" />
+                                    <label className="text-sm font-medium text-blue-900">
+                                        Share Google Maps Location
+                                    </label>
+                                </div>
+                                <p className="text-xs text-blue-700 mb-3">
+                                    Paste a Google Maps link to find tire shops near that location
+                                </p>
+                                <div className="space-y-2">
+                                    <Input
+                                        placeholder="https://maps.app.goo.gl/..."
+                                        value={mapsUrl}
+                                        onChange={(e) => {
+                                            setMapsUrl(e.target.value);
+                                            if (urlError) setUrlError('');
+                                        }}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleMapsUrlSubmit()}
+                                        className="text-gray-900 text-sm"
+                                        disabled={parsingUrl}
+                                    />
+                                    {urlError && (
+                                        <p className="text-xs text-red-600">{urlError}</p>
+                                    )}
+                                    <Button 
+                                        onClick={handleMapsUrlSubmit}
+                                        disabled={parsingUrl || !mapsUrl.trim()}
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full text-blue-700 border-blue-300 hover:bg-blue-100"
+                                    >
+                                        {parsingUrl ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-3 w-3 border-2 border-current border-t-transparent mr-2"></div>
+                                                Processing link...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <LinkIcon className="w-3 h-3 mr-2" />
+                                                Use This Location
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
                             </div>
 
                             {/* Location Dropdowns */}
@@ -426,11 +717,22 @@ export default function PublicBusinessIndex({
                         <div className="flex items-center justify-between mb-6">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-900">
-                                    Available Tire Shops
+                                    {userCoords ? 'Nearest Tire Shops' : 'Available Tire Shops'}
                                 </h2>
                                 <p className="text-gray-600">
-                                    Found {businesses.total} tire shops ready to help
+                                    {userCoords ? 
+                                        `Found ${businesses.total} tire shops sorted by distance` :
+                                        `Found ${businesses.total} tire shops ready to help`
+                                    }
                                 </p>
+                                {userCoords && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <MapPin className="w-4 h-4 text-green-600" />
+                                        <span className="text-sm text-green-600 font-medium">
+                                            Showing results near your location
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

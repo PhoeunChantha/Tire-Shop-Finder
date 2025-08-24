@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontends;
 
+use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\Business;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class ServiceController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        return Inertia::render('service/create', [
+        return Inertia::render('frontend/service/create', [
             'business' => $business
         ]);
     }
@@ -63,7 +64,7 @@ class ServiceController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        return Inertia::render('service/edit', [
+        return Inertia::render('frontend/service/edit', [
             'business' => $business,
             'service' => $service
         ]);

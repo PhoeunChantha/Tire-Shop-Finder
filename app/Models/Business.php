@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Business extends Model
 {
@@ -25,7 +26,8 @@ class Business extends Model
         'status',
         'is_vierify',
         'opening_time',
-        'closing_time'
+        'closing_time',
+        'slug',
     ];
 
     protected $casts = [
@@ -79,4 +81,16 @@ class Business extends Model
     {
         return $this->hasMany(Service::class, 'bussiness_id');
     }
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (Business $business) {
+            if (empty($business->slug)) {
+                $business->slug = Str::slug($business->name) . '-' . Str::random(4);
+            }
+        });
+    }
+
 }

@@ -236,6 +236,7 @@ export interface Business {
     district?: District;
     commune?: Commune;
     village?: Village;
+    distance?: string; // Distance in km when calculated from user location
 }
 
 export interface BusinessCreateProps {

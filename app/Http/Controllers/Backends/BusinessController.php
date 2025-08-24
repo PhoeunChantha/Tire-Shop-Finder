@@ -8,6 +8,7 @@ use App\Models\Province;
 use App\Models\District;
 use App\Models\Commune;
 use App\Models\Village;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -56,6 +57,58 @@ class BusinessController extends Controller
             'filters' => $filters,
             'provinces' => Province::all(),
         ]);
+    }
+
+    public function create(): Response
+    {
+        return Inertia::render('admin/business/create', [
+            'provinces' => Province::all(),
+            'users' => User::select('id', 'name', 'email')->get(),
+        ]);
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'descriptions' => 'nullable|string',
+            'created_by' => 'required|exists:users,id',
+            'province_id' => 'required|exists:provinces,id',
+            'district_id' => 'required|exists:districts,id',
+            'commune_id' => 'nullable|exists:communes,id',
+            'village_id' => 'nullable|exists:villages,id',
+            'latitude' => 'nullable|string',
+            'longitude' => 'nullable|string',
+            'opening_time' => 'nullable|string',
+            'closing_time' => 'nullable|string',
+            'status' => 'nullable|boolean',
+            'is_vierify' => 'nullable|boolean',
+        ]);
+
+        // Default values for admin-created businesses
+        $validated['status'] = $validated['status'] ?? true;
+        $validated['is_vierify'] = $validated['is_vierify'] ?? true;
+
+        $business = Business::create($validated);
+
+        return redirect()->route('admin.services.create', $business->id)
+            ->with('success', 'Business created successfully! Now add services for this business.');
+    }
+
+    // API endpoints for location dropdowns
+    public function getDistricts(Province $province)
+    {
+        return response()->json($province->districts);
+    }
+
+    public function getCommunes(District $district)
+    {
+        return response()->json($district->communes);
+    }
+
+    public function getVillages(Commune $commune)
+    {
+        return response()->json($commune->villages);
     }
 
     public function show(Business $business): Response

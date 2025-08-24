@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import DataTableFilter from '@/components/DefaultDataTableFilter';
 import PaginationWrapper from '@/components/PaginationWrapper';
 import { BusinessIndexProps } from '@/types';
-import { Building, Eye, Edit, CheckCircle, XCircle, Clock, MapPin } from 'lucide-react';
+import { Building, Eye, Edit, CheckCircle, XCircle, Clock, MapPin, Plus } from 'lucide-react';
 
 export default function BusinessIndex({ auth, businesses, filters, provinces }: BusinessIndexProps) {
     const filterConfig = {
@@ -63,6 +63,12 @@ export default function BusinessIndex({ auth, businesses, filters, provinces }: 
                         <h1 className="text-3xl font-bold text-gray-900">Business Management</h1>
                         <p className="text-gray-600">Review and manage tire shop businesses</p>
                     </div>
+                    <Link href={route('businesses.create')}>
+                        <Button>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create Business
+                        </Button>
+                    </Link>
                 </div>
 
                 <Card>
@@ -126,19 +132,23 @@ export default function BusinessIndex({ auth, businesses, filters, provinces }: 
                                                     </Link>
 
                                                     {!business.is_vierify ? (
-                                                        <Link href={`/admin/businesses/${business.id}/verify`} method="patch" as="button">
-                                                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                                                                <CheckCircle className="w-4 h-4 mr-1" />
-                                                                Verify
-                                                            </Button>
-                                                        </Link>
+                                                        <Button 
+                                                            size="sm" 
+                                                            className="bg-green-600 hover:bg-green-700"
+                                                            onClick={() => router.patch(route('businesses.verify', business.id))}
+                                                        >
+                                                            <CheckCircle className="w-4 h-4 mr-1" />
+                                                            Verify
+                                                        </Button>
                                                     ) : (
-                                                        <Link href={`/admin/businesses/${business.id}/reject`} method="patch" as="button">
-                                                            <Button size="sm" variant="destructive">
-                                                                <XCircle className="w-4 h-4 mr-1" />
-                                                                Revoke
-                                                            </Button>
-                                                        </Link>
+                                                        <Button 
+                                                            size="sm" 
+                                                            variant="destructive"
+                                                            onClick={() => router.patch(route('businesses.reject', business.id))}
+                                                        >
+                                                            <XCircle className="w-4 h-4 mr-1" />
+                                                            Revoke
+                                                        </Button>
                                                     )}
                                                 </div>
                                             </div>

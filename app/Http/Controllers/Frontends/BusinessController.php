@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontends;
 
 use App\Models\Business;
 use App\Models\Province;
 use App\Models\District;
 use App\Models\Commune;
 use App\Models\Village;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -19,7 +20,7 @@ class BusinessController extends Controller
     {
         $provinces = Province::all();
         
-        return Inertia::render('business/create', [
+        return Inertia::render('frontend/business/create', [
             'provinces' => $provinces
         ]);
     }

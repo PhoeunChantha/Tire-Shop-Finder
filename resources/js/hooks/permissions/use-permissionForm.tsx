@@ -15,7 +15,7 @@ export default function usePermissionForm(initialData: Partial<PermissionFormDat
   });
 
   const handleNameChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+    const value = e.target.value;
 
     // Auto-format: convert spaces to hyphens and make lowercase
     const formattedValue = value.toLowerCase().replace(/\s+/g, '-');

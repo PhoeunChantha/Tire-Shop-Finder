@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,10 @@ interface ServiceFormData {
 }
 
 export default function ServiceCreate({ business }: ServiceCreateProps) {
+    const { props } = usePage();
+    const { flash } = props as any;
+    const isAdminRedirect = flash?.admin_redirect;
+    
     const [services, setServices] = useState<ServiceFormData[]>([
         { name: '', price: '', descriptions: '', status: true }
     ]);
