@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontends\BusinessController;
 use App\Http\Controllers\Frontends\HomeController;
 use App\Http\Controllers\Frontends\ServiceController;
 use App\Http\Controllers\Frontends\PublicController;
+use App\Http\Controllers\Frontends\ReviewController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -21,7 +22,7 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 // Public tire shop directory routes
 Route::get('/tire-shops', [PublicController::class, 'businesses'])->name('public.businesses');
-Route::get('/tire-shops/{business}', [PublicController::class, 'businessDetail'])->name('public.business.show');
+Route::get('/tire-shops/{business:slug}', [PublicController::class, 'businessDetail'])->name('public.business.show');
 
 // API endpoints for public location lookups
 Route::get('/api/public/districts/{province}', [PublicController::class, 'getDistricts']);
@@ -29,6 +30,11 @@ Route::get('/api/public/communes/{district}', [PublicController::class, 'getComm
 Route::get('/api/public/villages/{commune}', [PublicController::class, 'getVillages']);
 Route::post('/api/public/reverse-geocode', [PublicController::class, 'reverseGeocode']);
 Route::post('/api/public/expand-maps-url', [PublicController::class, 'expandMapsUrl']);
+
+// Review routes
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::get('/api/businesses/{business}/reviews', [ReviewController::class, 'getBusinessReviews'])->name('reviews.business');
+Route::get('/api/businesses/{business}/review-stats', [ReviewController::class, 'getBusinessReviewStats'])->name('reviews.stats');
 
 // Business creation routes (for new users after registration)
 // Route::middleware(['auth'])->group(function () {

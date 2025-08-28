@@ -138,7 +138,7 @@ export default function PublicBusinessIndex({
     // Get high-accuracy current location like mobile Maps apps
     const getCurrentLocation = () => {
         if (!navigator.geolocation) {
-            alert('GPS location services are not available on this device');
+            Notiflix.Notify.failure('GPS location services are not available on this device');
             return;
         }
 
@@ -173,57 +173,70 @@ export default function PublicBusinessIndex({
                         const finalAccuracy = bestPosition.coords.accuracy;
                         console.log(`Using position with ${finalAccuracy.toFixed(1)}m accuracy`);
                         
+                        const processLocation = async () => {
+                            // Call reverse geocoding API with best coordinates
+                            const response = await axios.post('/api/public/reverse-geocode', {
+                                latitude: bestPosition.coords.latitude,
+                                longitude: bestPosition.coords.longitude,
+                                accuracy: finalAccuracy
+                            });
+
+                            const { province_id, district_id, commune_id, village_id } = response.data;
+                            
+                            // Store best coordinates with accuracy
+                            setUserCoords({ 
+                                lat: bestPosition.coords.latitude, 
+                                lng: bestPosition.coords.longitude, 
+                                accuracy: finalAccuracy 
+                            });
+
+                            // Auto-select the location dropdowns (optional - user can still override)
+                            if (province_id) {
+                                setSelectedProvince(province_id.toString());
+                            }
+                            if (district_id) {
+                                setSelectedDistrict(district_id.toString());
+                            }
+                            if (commune_id) {
+                                setSelectedCommune(commune_id.toString());
+                            }
+                            if (village_id) {
+                                setSelectedVillage(village_id.toString());
+                            }
+
+                            // Automatically show nearby businesses
+                            setTimeout(() => {
+                                if (bestPosition) {
+                                    searchWithLocation(bestPosition.coords.latitude, bestPosition.coords.longitude);
+                                }
+                            }, 300);
+                            
+                            setGettingLocation(false);
+                        };
+                        
                         // Warn user if accuracy is still poor
                         if (finalAccuracy > 1000) {
-                            if (!confirm(`Location accuracy is low (${(finalAccuracy/1000).toFixed(1)}km). This might show distant results. Continue anyway?`)) {
-                                setGettingLocation(false);
-                                return;
-                            }
+                            Notiflix.Confirm.show(
+                                'Low GPS Accuracy',
+                                `Location accuracy is low (${(finalAccuracy/1000).toFixed(1)}km). This might show distant results. Continue anyway?`,
+                                'Yes, Continue',
+                                'Cancel',
+                                function okCb() {
+                                    processLocation();
+                                },
+                                function cancelCb() {
+                                    setGettingLocation(false);
+                                    return;
+                                }
+                            );
+                        } else {
+                            processLocation();
                         }
-                        
-                        // Call reverse geocoding API with best coordinates
-                        const response = await axios.post('/api/public/reverse-geocode', {
-                            latitude: bestPosition.coords.latitude,
-                            longitude: bestPosition.coords.longitude,
-                            accuracy: finalAccuracy
-                        });
-
-                        const { province_id, district_id, commune_id, village_id } = response.data;
-                        
-                        // Store best coordinates with accuracy
-                        setUserCoords({ 
-                            lat: bestPosition.coords.latitude, 
-                            lng: bestPosition.coords.longitude, 
-                            accuracy: finalAccuracy 
-                        });
-
-                        // Auto-select the location dropdowns (optional - user can still override)
-                        if (province_id) {
-                            setSelectedProvince(province_id.toString());
-                        }
-                        if (district_id) {
-                            setSelectedDistrict(district_id.toString());
-                        }
-                        if (commune_id) {
-                            setSelectedCommune(commune_id.toString());
-                        }
-                        if (village_id) {
-                            setSelectedVillage(village_id.toString());
-                        }
-
-                        // Automatically show nearby businesses
-                        setTimeout(() => {
-                            if (bestPosition) {
-                                searchWithLocation(bestPosition.coords.latitude, bestPosition.coords.longitude);
-                            }
-                        }, 300);
-                        
-                        setGettingLocation(false);
                     }
                 } catch (error) {
                     navigator.geolocation.clearWatch(watchId);
                     console.error('Error processing location:', error);
-                    alert('Unable to find tire shops near your location. Please try manual search.');
+                    Notiflix.Notify.failure('Unable to find tire shops near your location. Please try manual search.');
                     setGettingLocation(false);
                 }
             },
@@ -234,16 +247,16 @@ export default function PublicBusinessIndex({
                 
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
-                        alert('Location permission denied. Please enable location services and allow GPS access.');
+                        Notiflix.Notify.failure('Location permission denied. Please enable location services and allow GPS access.');
                         break;
                     case error.POSITION_UNAVAILABLE:
-                        alert('GPS signal not available. Please ensure location services are enabled and try outdoors.');
+                        Notiflix.Notify.failure('GPS signal not available. Please ensure location services are enabled and try outdoors.');
                         break;
                     case error.TIMEOUT:
-                        alert('GPS timeout. Please check your location settings or try again outdoors.');
+                        Notiflix.Notify.failure('GPS timeout. Please check your location settings or try again outdoors.');
                         break;
                     default:
-                        alert('Unable to get your GPS location. Please try manual search.');
+                        Notiflix.Notify.failure('Unable to get your GPS location. Please try manual search.');
                         break;
                 }
             },
@@ -265,7 +278,7 @@ export default function PublicBusinessIndex({
                     // Process the best position we have
                 } else {
                     setGettingLocation(false);
-                    alert('Could not get accurate GPS location. Please try again outdoors or use manual search.');
+                    Notiflix.Notify.failure('Could not get accurate GPS location. Please try again outdoors or use manual search.');
                 }
             }
         }, 25000);
@@ -740,10 +753,61 @@ export default function PublicBusinessIndex({
                 {businesses.data.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {businesses.data.map((business) => (
-                            <Card key={business.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-                                <Link href={`/tire-shops/${business.id}`}>
+                            <Card key={business.id} className="hover:shadow-lg transition-shadow py-0 cursor-pointer overflow-hidden">
+                                <Link href={`/tire-shops/${business.slug}`}>
+                                    {/* Business Image */}
+                                    <div className="relative h-48 bg-gray-200 overflow-hidden">
+                                        {business.image ? (
+                                            <img 
+                                                src={business.image} 
+                                                alt={business.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    const img = e.target as HTMLImageElement;
+                                                    img.style.display = 'none';
+                                                    const parent = img.parentElement;
+                                                    if (parent) {
+                                                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gray-100"><div class="text-center"><div class="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-lg flex items-center justify-center"><svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div><p class="text-sm text-gray-500">No image</p></div></div>';
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                <div className="text-center">
+                                                    <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-lg flex items-center justify-center">
+                                                        <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                    <p className="text-sm text-gray-500">No image</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {/* Distance Badge overlay */}
+                                        {business.distance !== undefined && userCoords && (
+                                            <div className="absolute top-3 left-3">
+                                                <Badge className="bg-green-600 text-white shadow-lg">
+                                                    {(() => {
+                                                        const distance = parseFloat(business.distance);
+                                                        if (distance < 1) {
+                                                            return `${(distance * 1000).toFixed(0)}m away`;
+                                                        } else {
+                                                            return `${distance.toFixed(1)}km away`;
+                                                        }
+                                                    })()}
+                                                </Badge>
+                                            </div>
+                                        )}
+                                        {/* Verified Badge overlay */}
+                                        <div className="absolute top-3 right-3">
+                                            <Badge className="bg-green-100 text-green-800 shadow-lg">
+                                                Verified
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                    
                                     <CardContent className="p-6">
-                                        <div className="flex items-start justify-between mb-4">
+                                        <div className="mb-4">
                                             <div className="flex-1">
                                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                                     {business.name}
@@ -759,9 +823,6 @@ export default function PublicBusinessIndex({
                                                     </div>
                                                 )}
                                             </div>
-                                            <Badge className="bg-green-100 text-green-800">
-                                                Verified
-                                            </Badge>
                                         </div>
 
                                         {business.descriptions && (

@@ -215,6 +215,7 @@ export interface Service {
 export interface Business {
     id: number;
     name: string;
+    slug: string;
     descriptions?: string;
     image?: string;
     created_by: number;

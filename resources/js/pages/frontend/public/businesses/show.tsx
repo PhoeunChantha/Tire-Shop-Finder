@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/types';
+import ReviewForm from '@/components/ReviewForm';
 import {
     ArrowLeft,
     MapPin,
@@ -25,6 +26,7 @@ interface BusinessShowProps {
 }
 
 export default function PublicBusinessShow({ business, nearbyBusinesses }: BusinessShowProps) {
+    const [showReviewForm, setShowReviewForm] = useState(false);
     const getLocationString = () => {
         const parts = [
             business.village?.name,
@@ -107,7 +109,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
     const handleCallBusiness = () => {
         // In a real app, this would be the business phone number
-        alert('Phone number would be displayed here');
+        Notiflix.Notify.info('Phone number would be displayed here');
     };
 
     return (
@@ -246,7 +248,10 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                         <p className="text-gray-600 mb-4">
                                             Be the first to review {business.name}
                                         </p>
-                                        <Button variant="outline">
+                                        <Button 
+                                            variant="outline"
+                                            onClick={() => setShowReviewForm(true)}
+                                        >
                                             Write a Review
                                         </Button>
                                     </div>
@@ -337,7 +342,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {nearbyBusinesses.map((nearbyBusiness) => (
                                     <Card key={nearbyBusiness.id} className="hover:shadow-lg transition-shadow">
-                                        <Link href={`/tire-shops/${nearbyBusiness.id}`}>
+                                        <Link href={`/tire-shops/${nearbyBusiness.slug}`}>
                                             <CardContent className="p-6">
                                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                                     {nearbyBusiness.name}
@@ -365,6 +370,14 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                     )}
                 </div>
             </div>
+
+            {/* Review Form Modal */}
+            <ReviewForm
+                isOpen={showReviewForm}
+                onClose={() => setShowReviewForm(false)}
+                businessId={business.id}
+                businessName={business.name}
+            />
         </WebsiteLayout>
     );
 }
