@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/types';
-import { 
-    ArrowLeft, 
-    MapPin, 
-    Clock, 
-    Phone, 
+import {
+    ArrowLeft,
+    MapPin,
+    Clock,
+    Phone,
     Mail,
-    Star, 
-    Wrench, 
+    Star,
+    Wrench,
     DollarSign,
     CheckCircle,
     Navigation,
@@ -32,18 +32,78 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
             business.district?.name,
             business.province?.name
         ].filter(Boolean);
-        
+
         return parts.join(', ');
     };
 
     const handleGetDirections = () => {
         if (business.latitude && business.longitude) {
-            window.open(
-                `https://www.google.com/maps/dir/?api=1&destination=${business.latitude},${business.longitude}`,
-                '_blank'
-            );
+            const destLat = parseFloat(business.latitude);
+            const destLng = parseFloat(business.longitude);
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+            if (navigator.geolocation) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000, // 10 seconds timeout
+                    maximumAge: 300000 // 5 minutes cache
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+
+                        console.log(`Got user location: ${userLat}, ${userLng}`);
+
+                        if (isIOS) {
+                            window.open(
+                                `http://maps.apple.com/?saddr=${userLat},${userLng}&daddr=${destLat},${destLng}`,
+                                '_blank'
+                            );
+                        } else {
+                            window.open(
+                                `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${destLat},${destLng}`,
+                                '_blank'
+                            );
+                        }
+                    },
+                    (error) => {
+                        console.log('Geolocation failed:', error.message);
+                        // Fallback to destination-only directions
+                        if (isIOS) {
+                            window.open(
+                                `http://maps.apple.com/?daddr=${destLat},${destLng}`,
+                                '_blank'
+                            );
+                        } else {
+                            window.open(
+                                `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}`,
+                                '_blank'
+                            );
+                        }
+                    },
+                    options
+                );
+            } else {
+                console.log('Geolocation not supported');
+                if (isIOS) {
+                    window.open(
+                        `http://maps.apple.com/?daddr=${destLat},${destLng}`,
+                        '_blank'
+                    );
+                } else {
+                    window.open(
+                        `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}`,
+                        '_blank'
+                    );
+                }
+            }
         }
     };
+
+
 
     const handleCallBusiness = () => {
         // In a real app, this would be the business phone number
@@ -53,7 +113,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
     return (
         <WebsiteLayout>
             <Head title={`${business.name} - Tire Shop Details`} />
-            
+
             <div className="min-h-screen bg-gray-50">
                 {/* Header */}
                 <div className="bg-white shadow-sm border-b">
@@ -66,7 +126,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                 </Button>
                             </Link>
                         </div>
-                        
+
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
@@ -78,7 +138,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                         Verified
                                     </Badge>
                                 </div>
-                                
+
                                 <div className="flex flex-wrap items-center gap-4 text-gray-600">
                                     <div className="flex items-center">
                                         <MapPin className="w-4 h-4 mr-1" />
@@ -92,14 +152,14 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     )}
                                 </div>
                             </div>
-                            
+
                             <div className="flex gap-3 mt-4 md:mt-0">
                                 <Button onClick={handleCallBusiness} className="flex-1 md:flex-none">
                                     <Phone className="w-4 h-4 mr-2" />
                                     Call Now
                                 </Button>
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     onClick={handleGetDirections}
                                     className="flex-1 md:flex-none"
                                 >
@@ -142,7 +202,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     <CardContent>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {business.services.map((service) => (
-                                                <div 
+                                                <div
                                                     key={service.id}
                                                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                                                 >
@@ -208,7 +268,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             {getLocationString()}
                                         </p>
                                     </div>
-                                    
+
                                     {business.formatted_hours && (
                                         <div>
                                             <h4 className="font-medium text-gray-900 mb-2">Business Hours</h4>
@@ -217,17 +277,17 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             </p>
                                         </div>
                                     )}
-                                    
+
                                     <div className="pt-4 space-y-2">
-                                        <Button 
-                                            onClick={handleCallBusiness} 
+                                        <Button
+                                            onClick={handleCallBusiness}
                                             className="w-full"
                                         >
                                             <Phone className="w-4 h-4 mr-2" />
                                             Call Business
                                         </Button>
-                                        <Button 
-                                            variant="outline" 
+                                        <Button
+                                            variant="outline"
                                             onClick={handleGetDirections}
                                             className="w-full"
                                         >

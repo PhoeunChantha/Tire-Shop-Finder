@@ -6,9 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Mail, Calendar, Shield, ShieldCheck } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Mail, Calendar, Shield, ShieldCheck, User as UserIcon } from "lucide-react";
 import ActionButtons from "@/components/action-button";
 import { PaginatedData, User } from "@/types";
+import { getImageUrl } from "@/lib/imageHelper";
 
 interface UsersTableProps {
   users: PaginatedData<User>;
@@ -28,7 +30,7 @@ export default function UsersTable({ users, getUserActions }: UsersTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
+            <TableHead>User</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created</TableHead>
@@ -39,7 +41,27 @@ export default function UsersTable({ users, getUserActions }: UsersTableProps) {
           {users.data?.length ? (
             users.data.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage 
+                        src={user.profile ? getImageUrl(user.profile, "users") : undefined}
+                        alt={user.name}
+                      />
+                      <AvatarFallback>
+                        <UserIcon className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium">{user.name}</div>
+                      {user.first_name && user.last_name && (
+                        <div className="text-sm text-muted-foreground">
+                          {user.first_name} {user.last_name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />

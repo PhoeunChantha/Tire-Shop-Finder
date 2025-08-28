@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backends;
 
+use App\Helpers\ImageManager;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -77,15 +78,21 @@ class UserController extends Controller
         $validated = $request->validated();
         
         try {
+            $profilePath = null;
+            if ($request->hasFile('profile')) {
+                $profilePath = ImageManager::uploadImage($request->file('profile'),'users');
+            }
+
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
                 'password' => Hash::make($validated['password']),
                 'first_name' => $validated['first_name'] ?? null,
                 'last_name' => $validated['last_name'] ?? null,
                 'dob' => $validated['dob'] ?? null,
                 'address' => $validated['address'] ?? null,
-                'profile' => $validated['profile'] ?? null,
+                'profile' => $profilePath,
                 'status' => $validated['status'] ?? false,
             ]);
 
@@ -117,7 +124,7 @@ class UserController extends Controller
         $user = User::with(['roles'])->findOrFail($id);
         
         return Inertia::render('admin/user/edit', [
-            'user' => $user,
+            'user'  => $user,
             'roles' => Role::all(),
         ]);
     }
@@ -125,24 +132,28 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserUpdateRequest $request, string $id)
+    public function update(UserUpdateRequest $request, $id)
     {
         $validated = $request->validated();
 
         try {
             $user = User::findOrFail($id);
-
-            // Update user basic info
-            $user->update([
+            $updateData = [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
                 'first_name' => $validated['first_name'] ?? null,
                 'last_name' => $validated['last_name'] ?? null,
                 'dob' => $validated['dob'] ?? null,
                 'address' => $validated['address'] ?? null,
-                'profile' => $validated['profile'] ?? null,
                 'status' => $validated['status'] ?? false,
-            ]);
+            ];
+            if ($request->hasFile('profile')) {
+                $profilePath = ImageManager::updateImage($request->file('profile'), $user->profile,'users');
+                $updateData['profile'] = $profilePath;
+            }
+
+            $user->update($updateData);
 
             // Update role if provided
             if ($request->has('role')) {

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,10 +13,181 @@ import {
   Navigation,
   Shield,
   Users,
-  CheckCircle
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
+interface Business {
+  id: number;
+  slug: string;
+  name: string;
+  location: string;
+  image: string | null;
+  average_rating: number;
+  review_count: number;
+  services: string[];
+  formatted_hours: string | null;
+  phone: string | null;
+}
+
+interface PageProps extends Record<string, any> {
+  featuredBusinesses: Business[];
+}
+
+function BusinessCard({ business }: { business: Business }) {
+  const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop";
+  
+  return (
+    <Card className="overflow-hidden p-0 hover:shadow-lg transition-shadow duration-300">
+      <div className="aspect-video relative">
+        <img 
+          src={business.image || defaultImage} 
+          alt={business.name}
+          className="w-full h-full object-cover"
+        />
+        {business.average_rating > 0 && (
+          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="text-sm font-medium">{business.average_rating}</span>
+          </div>
+        )}
+      </div>
+      
+      <CardContent className="p-4">
+        <h3 className="font-bold text-lg text-gray-900 mb-2">{business.name}</h3>
+        
+        <div className="flex items-center gap-1 text-gray-600 mb-2">
+          <MapPin className="w-4 h-4" />
+          <span className="text-sm">{business.location}</span>
+        </div>
+        
+        <div className="flex items-center gap-1 text-gray-600 mb-3">
+          <Users className="w-4 h-4" />
+          <span className="text-sm">{business.review_count} reviews</span>
+        </div>
+        
+        <div className="flex flex-wrap gap-1 mb-3">
+          {business.services.slice(0, 2).map((service, index) => (
+            <span 
+              key={index}
+              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+            >
+              {service}
+            </span>
+          ))}
+          {business.services.length > 2 && (
+            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+              +{business.services.length - 2} more
+            </span>
+          )}
+        </div>
+        
+        <div className="flex items-center justify-between">
+          {business.phone && (
+            <div className="flex items-center gap-1 text-gray-600">
+              <Phone className="w-4 h-4" />
+              <span className="text-sm font-medium">{business.phone}</span>
+            </div>
+          )}
+          <Link href={`/tire-shops/${business.slug || business.id}`}>
+            <Button size="sm" className="text-sm">
+              View Details
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BusinessCarousel({ businesses }: { businesses: Business[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const itemsPerView = 3;
+  const maxIndex = Math.max(0, businesses.length - itemsPerView);
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  };
+
+  useEffect(() => {
+    if (businesses.length > itemsPerView) {
+      const interval = setInterval(nextSlide, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [maxIndex, businesses.length]);
+
+  if (businesses.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No featured businesses available at the moment.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <div className="overflow-hidden">
+        <div 
+          className="flex transition-transform duration-500 ease-in-out gap-6"
+          style={{
+            transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`
+          }}
+        >
+          {businesses.map((business) => (
+            <div key={business.id} className="flex-none w-full md:w-1/3">
+              <BusinessCard business={business} />
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Navigation Buttons */}
+      {businesses.length > itemsPerView && (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg"
+            onClick={prevSlide}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg"
+            onClick={nextSlide}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+          
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-6 gap-2">
+            {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function Welcome() {
+  const { featuredBusinesses } = usePage<PageProps>().props;
+  
   return (
     <WebsiteLayout>
       {/* Hero Section */}
@@ -57,53 +228,26 @@ export default function Welcome() {
         </div>
       </section>
 
-      {/* Quick Actions Section */}
-      <section className="py-12 bg-gray-50">
+      {/* Featured Businesses Carousel */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Need help right now?
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Featured Tire Shops
             </h2>
-            <p className="text-gray-600">
-              Quick access to tire shops and emergency services
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover trusted and verified tire shops with excellent service across Cambodia
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <Link href="/tire-shops">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-200">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Browse All Shops</h3>
-                  <p className="text-sm text-gray-600">View all verified tire shops in your area</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/tire-shops?service=emergency">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-red-200">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Phone className="w-6 h-6 text-red-600" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Emergency Service</h3>
-                  <p className="text-sm text-gray-600">Find 24/7 tire repair services</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/create-business">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-green-200">
-                <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">List Your Business</h3>
-                  <p className="text-sm text-gray-600">Register your tire shop for free</p>
-                </CardContent>
-              </Card>
+          <BusinessCarousel businesses={featuredBusinesses} />
+          
+          <div className="text-center mt-8">
+            <Link href="/businesses">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Search className="w-5 h-5 mr-2" />
+                View All Tire Shops
+              </Button>
             </Link>
           </div>
         </div>

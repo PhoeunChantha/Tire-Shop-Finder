@@ -7,7 +7,6 @@ import { UserCreateProps } from "@/types";
 
 export default function Create({ auth, roles = [] }: UserCreateProps) {
   const { data, setData, submitCreate, processing, errors } = useUserForm();
-
   return (
     <AppLayout>
       <Head title="Add User" />

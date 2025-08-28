@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { router } from "@inertiajs/react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -155,6 +155,7 @@ export default function DataTableFilter({
     return { ...defaultFilters, ...filters }
   })
   const [showFilters, setShowFilters] = useState(showAdvanced)
+  const previousFilters = useRef()
 
   // Default config
   const defaultConfig = {
@@ -187,6 +188,13 @@ export default function DataTableFilter({
   }, [filters])
 
   useEffect(() => {
+    // Only trigger if filters actually changed
+    const filtersString = JSON.stringify(localFilters)
+    if (previousFilters.current === filtersString) {
+      return
+    }
+    previousFilters.current = filtersString
+
     const timeoutId = setTimeout(() => {
       if (onFilterChange) {
         onFilterChange(localFilters)

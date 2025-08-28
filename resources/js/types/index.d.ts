@@ -35,19 +35,20 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    phone?: string;
     avatar?: string;
     email_verified_at: string | null;
     first_name?: string;
     last_name?: string;
     dob?: string;
     address?: string;
-    profile?: string;
+    profile?: File | null;
     status: boolean;
     roles?: Role[];
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
 }
+
 
 export interface Role {
     id: number;

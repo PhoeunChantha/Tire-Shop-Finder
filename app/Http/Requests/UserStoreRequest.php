@@ -25,12 +25,13 @@ class UserStoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'first_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
             'dob' => ['nullable', 'date'],
             'address' => ['nullable', 'string', 'max:500'],
-            'profile' => ['nullable', 'string', 'max:255'],
+            'profile' => ['nullable', 'image', 'max:2048', 'mimes:jpeg,png,jpg,gif'],
             'status' => ['boolean'],
             'role' => ['nullable', 'string', 'exists:roles,name'],
         ];

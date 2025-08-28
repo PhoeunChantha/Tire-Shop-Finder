@@ -7,13 +7,17 @@ use App\Http\Controllers\Backends\RoleController;
 use App\Http\Controllers\Backends\PermissionController;
 use App\Http\Controllers\Backends\BusinessController as AdminBusinessController;
 use App\Http\Controllers\Backends\ServiceController as AdminServiceController;
+use App\Http\Controllers\Backends\BusinessSettingController;
 use App\Http\Controllers\Frontends\BusinessController;
+use App\Http\Controllers\Frontends\HomeController;
 use App\Http\Controllers\Frontends\ServiceController;
 use App\Http\Controllers\Frontends\PublicController;
 
-Route::get('/', function () {
-    return Inertia::render('frontend/welcome');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 // Public tire shop directory routes
 Route::get('/tire-shops', [PublicController::class, 'businesses'])->name('public.businesses');
@@ -81,6 +85,9 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     // Admin Service routes
     Route::get('businesses/{business}/services/create', [AdminServiceController::class, 'create'])->name('admin.services.create');
     Route::post('businesses/{business}/services', [AdminServiceController::class, 'store'])->name('admin.services.store');
+    
+    // Business Settings routes
+    Route::resource('business-settings', BusinessSettingController::class)->only(['index', 'store', 'update']);
 });
 
 require __DIR__.'/settings.php';

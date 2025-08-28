@@ -82,6 +82,21 @@ class Business extends Model
         return $this->hasMany(Service::class, 'bussiness_id');
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return $this->reviews()->avg('rate') ?? 0;
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->reviews()->count();
+    }
+
     public static function boot(): void
     {
         parent::boot();

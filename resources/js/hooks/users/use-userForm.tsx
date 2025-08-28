@@ -11,6 +11,7 @@ export default function useUserForm(initialData = {}) {
     last_name: "",
     dob: "",
     address: "",
+    phone: "",
     profile: "",
     status: false,
     role: "",
@@ -26,7 +27,7 @@ export default function useUserForm(initialData = {}) {
 
   const submitUpdate = (userId: number): FormEventHandler => (e) => {
     e.preventDefault();
-    put(route("users.update", userId));
+    post(`${route("users.update", userId)}?_method=PUT`);
   };
 
   return { 
