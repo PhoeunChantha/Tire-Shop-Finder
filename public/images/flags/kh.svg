@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" width="60" height="40">
+  <defs>
+    <!-- Angkor Wat silhouette -->
+    <path id="angkor" d="M20 25h20v-8h-2v-2h-2v-1h-2v-1h-2v-1h-4v1h-2v1h-2v1h-2v2h-2v8z M22 23h2v-4h2v-2h8v2h2v4h2v-6h-16v6z M26 19h8v-1h-8v1z"/>
+  </defs>
+  
+  <!-- Blue stripe -->
+  <rect width="60" height="13.33" fill="#032EA1"/>
+  
+  <!-- Red stripe -->
+  <rect y="13.33" width="60" height="13.33" fill="#E4002B"/>
+  
+  <!-- Blue stripe -->
+  <rect y="26.67" width="60" height="13.33" fill="#032EA1"/>
+  
+  <!-- Angkor Wat temple in white on red stripe -->
+  <g fill="#FFFFFF" transform="translate(10, 8)">
+    <!-- Simplified Angkor Wat representation -->
+    <rect x="8" y="16" width="24" height="8" fill="#FFFFFF"/>
+    
+    <!-- Central towers -->
+    <rect x="16" y="12" width="8" height="4" fill="#FFFFFF"/>
+    <rect x="18" y="8" width="4" height="4" fill="#FFFFFF"/>
+    <rect x="19" y="6" width="2" height="2" fill="#FFFFFF"/>
+    
+    <!-- Side towers -->
+    <rect x="12" y="14" width="4" height="2" fill="#FFFFFF"/>
+    <rect x="24" y="14" width="4" height="2" fill="#FFFFFF"/>
+    <rect x="10" y="15" width="2" height="1" fill="#FFFFFF"/>
+    <rect x="28" y="15" width="2" height="1" fill="#FFFFFF"/>
+  </g>
+</svg>

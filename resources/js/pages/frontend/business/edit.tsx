@@ -8,12 +8,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { TimeRangePicker } from '@/components/ui/time-range-picker';
-import { BusinessCreateProps, Province, District, Commune, Village } from '@/types';
-import { MapPin, Building, Clock } from 'lucide-react';
+import { Business, Province, District, Commune, Village } from '@/types';
+import { MapPin, Building, Clock, ArrowLeft } from 'lucide-react';
 import { SEOFields } from '@/components/seo-fields';
 import axios from 'axios';
 
-export default function CreateBusiness({ auth, provinces }: BusinessCreateProps) {
+interface BusinessEditProps {
+    auth: any;
+    business: Business;
+    provinces: Province[];
+}
+
+export default function EditBusiness({ auth, business, provinces }: BusinessEditProps) {
     const [districts, setDistricts] = useState<District[]>([]);
     const [communes, setCommunes] = useState<Commune[]>([]);
     const [villages, setVillages] = useState<Village[]>([]);
@@ -21,33 +27,45 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
     const [loadingCommunes, setLoadingCommunes] = useState(false);
     const [loadingVillages, setLoadingVillages] = useState(false);
     
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        descriptions: '',
-        province_id: '',
-        district_id: '',
-        commune_id: '',
-        village_id: '',
-        latitude: '',
-        longitude: '',
-        opening_time: '',
-        closing_time: '',
-        seo_title: '',
-        seo_description: '',
-        seo_image: '',
-        seo_keywords: [] as string[],
+    const { data, setData, put, processing, errors } = useForm({
+        name: business.name || '',
+        descriptions: business.descriptions || '',
+        province_id: business.province_id?.toString() || '',
+        district_id: business.district_id?.toString() || '',
+        commune_id: business.commune_id?.toString() || '',
+        village_id: business.village_id?.toString() || '',
+        latitude: business.latitude || '',
+        longitude: business.longitude || '',
+        opening_time: business.opening_time || '',
+        closing_time: business.closing_time || '',
+        seo_title: business.seo_title || '',
+        seo_description: business.seo_description || '',
+        seo_image: business.seo_image || '',
+        seo_keywords: business.seo_keywords || [],
     });
 
-    const handleProvinceChange = async (provinceId: string) => {
-        setData('province_id', provinceId);
-        setData('district_id', '');
-        setData('commune_id', '');
-        setData('village_id', '');
-        
-        setDistricts([]);
-        setCommunes([]);
-        setVillages([]);
+    // Load initial districts if province is selected
+    useEffect(() => {
+        if (business.province_id) {
+            loadDistricts(business.province_id.toString());
+        }
+    }, []);
 
+    // Load initial communes if district is selected  
+    useEffect(() => {
+        if (business.district_id && districts.length > 0) {
+            loadCommunes(business.district_id.toString());
+        }
+    }, [districts]);
+
+    // Load initial villages if commune is selected
+    useEffect(() => {
+        if (business.commune_id && communes.length > 0) {
+            loadVillages(business.commune_id.toString());
+        }
+    }, [communes]);
+
+    const loadDistricts = async (provinceId: string) => {
         if (provinceId) {
             setLoadingDistricts(true);
             try {
@@ -61,14 +79,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
         }
     };
 
-    const handleDistrictChange = async (districtId: string) => {
-        setData('district_id', districtId);
-        setData('commune_id', '');
-        setData('village_id', '');
-        
-        setCommunes([]);
-        setVillages([]);
-
+    const loadCommunes = async (districtId: string) => {
         if (districtId) {
             setLoadingCommunes(true);
             try {
@@ -82,12 +93,7 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
         }
     };
 
-    const handleCommuneChange = async (communeId: string) => {
-        setData('commune_id', communeId);
-        setData('village_id', '');
-        
-        setVillages([]);
-
+    const loadVillages = async (communeId: string) => {
         if (communeId) {
             setLoadingVillages(true);
             try {
@@ -101,24 +107,72 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
         }
     };
 
+    const handleProvinceChange = async (provinceId: string) => {
+        setData('province_id', provinceId);
+        setData('district_id', '');
+        setData('commune_id', '');
+        setData('village_id', '');
+        
+        setDistricts([]);
+        setCommunes([]);
+        setVillages([]);
+
+        if (provinceId) {
+            await loadDistricts(provinceId);
+        }
+    };
+
+    const handleDistrictChange = async (districtId: string) => {
+        setData('district_id', districtId);
+        setData('commune_id', '');
+        setData('village_id', '');
+        
+        setCommunes([]);
+        setVillages([]);
+
+        if (districtId) {
+            await loadCommunes(districtId);
+        }
+    };
+
+    const handleCommuneChange = async (communeId: string) => {
+        setData('commune_id', communeId);
+        setData('village_id', '');
+        
+        setVillages([]);
+
+        if (communeId) {
+            await loadVillages(communeId);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/create-business');
+        put(`/businesses/${business.id}`);
     };
 
     return (
         <WebsiteLayout>
-            <Head title="Create Your Tire Shop" />
+            <Head title={`Edit ${business.name}`} />
             
             <div className="min-h-screen bg-gray-50 py-12">
-                <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                            Register Your Tire Shop
-                        </h1>
-                        <p className="text-lg text-gray-600">
-                            Welcome, {auth.user.name}! Let's get your tire shop listed on our platform.
-                        </p>
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-6">
+                        <a
+                            href="/user-dashboard"
+                            className="inline-flex items-center text-gray-600 hover:text-gray-700 mb-4"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            Back to Dashboard
+                        </a>
+                        <div className="text-center">
+                            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                                Edit Your Tire Shop
+                            </h1>
+                            <p className="text-lg text-gray-600">
+                                Update your business information to keep customers informed.
+                            </p>
+                        </div>
                     </div>
 
                     <Card>
@@ -322,9 +376,14 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
                                     />
                                 </div>
 
-                                <div className="flex justify-end space-x-4 pt-4">
+                                <div className="flex justify-between space-x-4 pt-4">
+                                    <a href="/user-dashboard">
+                                        <Button type="button" variant="outline">
+                                            Cancel
+                                        </Button>
+                                    </a>
                                     <Button type="submit" disabled={processing} size="lg">
-                                        {processing ? 'Creating...' : 'Create Business'}
+                                        {processing ? 'Updating...' : 'Update Business'}
                                     </Button>
                                 </div>
                             </form>

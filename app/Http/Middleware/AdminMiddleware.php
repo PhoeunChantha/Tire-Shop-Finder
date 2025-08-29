@@ -23,7 +23,7 @@ class AdminMiddleware
 
         $user = Auth::user();
         
-        if (!$user->hasAnyRole(['admin', 'super-admin'])) {
+        if (!$user->hasAnyRole(['admin'])) {
             return redirect()->route('user.dashboard')->with('error', 'Access denied. Admin privileges required.');
         }
 

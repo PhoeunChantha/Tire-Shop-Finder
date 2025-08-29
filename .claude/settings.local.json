@@ -3,7 +3,15 @@
     "allow": [
       "Bash(composer dev:*)",
       "Bash(/mnt/c/laragon/bin/php/php-8.3.13-nts-Win32-vs16-x64/php artisan serve --port=8000)",
-      "Bash(\"/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe\" artisan serve --port=8000)"
+      "Bash(\"/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe\" artisan serve --port=8000)",
+      "Bash(npm install:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run types:*)",
+      "Bash(php artisan migrate:*)",
+      "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan migrate:status)",
+      "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan make:migration add_seo_fields_to_businesses_table --table=businesses)",
+      "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan make:migration add_seo_fields_to_services_table --table=services)",
+      "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan migrate)"
     ],
     "deny": [],
     "ask": [],

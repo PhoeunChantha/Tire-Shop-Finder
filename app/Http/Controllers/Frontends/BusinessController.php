@@ -38,6 +38,11 @@ class BusinessController extends Controller
             'longitude' => 'nullable|string',
             'opening_time' => 'nullable|string',
             'closing_time' => 'nullable|string',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            'seo_image' => 'nullable|string|max:2048',
+            'seo_keywords' => 'nullable|array',
+            'seo_keywords.*' => 'string|max:100',
         ]);
 
         $business = Business::create([
@@ -51,6 +56,10 @@ class BusinessController extends Controller
             'longitude' => $validated['longitude'],
             'opening_time' => $validated['opening_time'],
             'closing_time' => $validated['closing_time'],
+            'seo_title' => $validated['seo_title'] ?? null,
+            'seo_description' => $validated['seo_description'] ?? null,
+            'seo_image' => $validated['seo_image'] ?? null,
+            'seo_keywords' => $validated['seo_keywords'] ?? null,
             'created_by' => Auth::id(),
             'status' => true,
             'is_vierify' => false, // Requires admin verification
@@ -58,6 +67,52 @@ class BusinessController extends Controller
 
         return redirect()->route('services.create', $business->id)
             ->with('success', 'Business created successfully! Now add your services.');
+    }
+
+    public function edit(Business $business): Response
+    {
+        // Ensure user can only edit their own business
+        if ($business->created_by !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business->load(['province', 'district', 'commune', 'village']);
+        
+        return Inertia::render('frontend/business/edit', [
+            'business' => $business,
+            'provinces' => Province::all(),
+        ]);
+    }
+
+    public function update(Request $request, Business $business): RedirectResponse
+    {
+        // Ensure user can only update their own business
+        if ($business->created_by !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'descriptions' => 'nullable|string',
+            'province_id' => 'required|exists:provinces,id',
+            'district_id' => 'required|exists:districts,id',
+            'commune_id' => 'nullable|exists:communes,id',
+            'village_id' => 'nullable|exists:villages,id',
+            'latitude' => 'nullable|string',
+            'longitude' => 'nullable|string',
+            'opening_time' => 'nullable|string',
+            'closing_time' => 'nullable|string',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            'seo_image' => 'nullable|string|max:2048',
+            'seo_keywords' => 'nullable|array',
+            'seo_keywords.*' => 'string|max:100',
+        ]);
+
+        $business->update($validated);
+
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Business updated successfully!');
     }
 
     // API endpoints for location dropdowns

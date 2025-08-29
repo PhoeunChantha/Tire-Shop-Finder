@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { TimeRangePicker } from '@/components/ui/time-range-picker';
 import { Switch } from '@/components/ui/switch';
+import { SEOFields } from '@/components/seo-fields';
 import { Province, District, Commune, Village, User } from '@/types';
 import { MapPin, Building, Clock, User as UserIcon, Settings } from 'lucide-react';
 import axios from 'axios';
@@ -41,6 +42,10 @@ export default function AdminBusinessCreate({ auth, provinces, users }: AdminBus
         closing_time: '',
         status: true,
         is_vierify: true,
+        seo_title: '',
+        seo_description: '',
+        seo_image: '',
+        seo_keywords: [] as string[],
     });
 
     const handleProvinceChange = async (provinceId: string) => {
@@ -362,6 +367,21 @@ export default function AdminBusinessCreate({ auth, provinces, users }: AdminBus
                                         />
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* SEO Fields */}
+                            <div className="pt-6">
+                                <SEOFields
+                                    seoTitle={data.seo_title}
+                                    seoDescription={data.seo_description}
+                                    seoImage={data.seo_image}
+                                    seoKeywords={data.seo_keywords}
+                                    onSeoTitleChange={(value) => setData('seo_title', value)}
+                                    onSeoDescriptionChange={(value) => setData('seo_description', value)}
+                                    onSeoImageChange={(value) => setData('seo_image', value)}
+                                    onSeoKeywordsChange={(keywords) => setData('seo_keywords', keywords)}
+                                    errors={errors}
+                                />
                             </div>
 
                             <div className="flex justify-end space-x-4 pt-6 border-t">

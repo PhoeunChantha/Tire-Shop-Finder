@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TimeRangePicker } from '@/components/ui/time-range-picker';
+import { SEOFields } from '@/components/seo-fields';
 import { BusinessEditProps, District, Commune, Village } from '@/types';
 import { ArrowLeft, Building, MapPin, Settings } from 'lucide-react';
 import axios from 'axios';
@@ -31,6 +32,10 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
         closing_time: business.closing_time || '',
         status: business.status || false,
         is_vierify: business.is_vierify || false,
+        seo_title: business.seo_title || '',
+        seo_description: business.seo_description || '',
+        seo_image: business.seo_image || '',
+        seo_keywords: business.seo_keywords || [],
     });
 
     // Load initial districts if province is selected
@@ -316,6 +321,23 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                                 )}
                                             </div>
                                         </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* SEO Fields */}
+                                <Card>
+                                    <CardContent className="pt-6">
+                                        <SEOFields
+                                            seoTitle={data.seo_title}
+                                            seoDescription={data.seo_description}
+                                            seoImage={data.seo_image}
+                                            seoKeywords={data.seo_keywords}
+                                            onSeoTitleChange={(value) => setData('seo_title', value)}
+                                            onSeoDescriptionChange={(value) => setData('seo_description', value)}
+                                            onSeoImageChange={(value) => setData('seo_image', value)}
+                                            onSeoKeywordsChange={(keywords) => setData('seo_keywords', keywords)}
+                                            errors={errors}
+                                        />
                                     </CardContent>
                                 </Card>
                             </div>

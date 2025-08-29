@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { SEOHead } from '@/components/seo-head';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +49,7 @@ export default function PublicBusinessIndex({
     filters,
     userLocation 
 }: BusinessIndexProps) {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedProvince, setSelectedProvince] = useState(filters.province_id || '');
     const [selectedDistrict, setSelectedDistrict] = useState(filters.district_id || '');
@@ -448,16 +451,81 @@ export default function PublicBusinessIndex({
         return 'Location not specified';
     };
 
+    const getLocationName = () => {
+        const parts = [];
+        if (selectedVillage && villages.length > 0) {
+            const village = villages.find(v => v.id.toString() === selectedVillage);
+            if (village) parts.push(village.name);
+        }
+        if (selectedCommune && communes.length > 0) {
+            const commune = communes.find(c => c.id.toString() === selectedCommune);
+            if (commune) parts.push(commune.name);
+        }
+        if (selectedDistrict && districts.length > 0) {
+            const district = districts.find(d => d.id.toString() === selectedDistrict);
+            if (district) parts.push(district.name);
+        }
+        if (selectedProvince) {
+            const province = provinces.find(p => p.id.toString() === selectedProvince);
+            if (province) parts.push(province.name);
+        }
+        return parts.length > 0 ? parts.join(', ') : 'Cambodia';
+    };
+
+    const getSEOTitle = () => {
+        const location = getLocationName();
+        if (searchTerm) {
+            return `${searchTerm} Tire Shops in ${location}`;
+        }
+        if (userCoords) {
+            return `Nearest Tire Shops - Find Tire Services Near You`;
+        }
+        return location !== 'Cambodia' ? `Tire Shops in ${location}` : 'Find Tire Shops in Cambodia';
+    };
+
+    const getSEODescription = () => {
+        const location = getLocationName();
+        const count = businesses.total;
+        if (userCoords) {
+            return `Find the nearest tire shops and services near your location. ${count} verified tire shops in Cambodia with professional installation, repair, and replacement services.`;
+        }
+        if (searchTerm) {
+            return `Search results for "${searchTerm}" tire services in ${location}. ${count} professional tire shops offering quality services and competitive prices.`;
+        }
+        return `Discover ${count} verified tire shops in ${location}. Professional tire installation, repair, balancing, and replacement services across Cambodia.`;
+    };
+
+    const getSEOKeywords = () => {
+        const keywords = ['tire shops', 'tire services', 'tire installation', 'tire repair', 'Cambodia'];
+        const location = getLocationName();
+        if (location !== 'Cambodia') {
+            keywords.push(location);
+        }
+        if (searchTerm) {
+            keywords.push(searchTerm);
+        }
+        if (userCoords) {
+            keywords.push('nearest tire shop', 'tire shop near me');
+        }
+        return keywords;
+    };
+
     return (
         <WebsiteLayout>
-            <Head title="Find Tire Shops Near You" />
+            <SEOHead
+                title={getSEOTitle()}
+                description={getSEODescription()}
+                keywords={getSEOKeywords()}
+                type="website"
+                url={typeof window !== 'undefined' ? window.location.href : undefined}
+            />
             
             {/* Hero Section */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
                         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                            Find Tire Shops Near You
+                            {t('find_tire_shops')}
                         </h1>
                         <p className="text-xl text-blue-100 mb-8">
                             Quick, reliable tire services when you need them most
@@ -469,7 +537,7 @@ export default function PublicBusinessIndex({
                                 <div className="relative flex-1">
                                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                                     <Input
-                                        placeholder="Search tire shops..."
+                                        placeholder={t('search_tire_shops')}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         className="pl-10 text-gray-900"
@@ -478,7 +546,7 @@ export default function PublicBusinessIndex({
                                 </div>
                                 <Button onClick={handleSearch} size="lg" className="px-8 shrink-0">
                                     <Search className="w-4 h-4 mr-2" />
-                                    Search
+                                    {t('search')}
                                 </Button>
                             </div>
                         </div>
@@ -530,7 +598,7 @@ export default function PublicBusinessIndex({
                                     ) : (
                                         <>
                                             <LocationIcon className="w-4 h-4 mr-2" />
-                                            Use My Location
+                                            {t('use_my_location')}
                                         </>
                                     )}
                                 </Button>

@@ -28,6 +28,10 @@ class Business extends Model
         'opening_time',
         'closing_time',
         'slug',
+        'seo_title',
+        'seo_description',
+        'seo_image',
+        'seo_keywords',
     ];
 
     protected $casts = [
@@ -35,6 +39,7 @@ class Business extends Model
         'is_vierify' => 'boolean',
         'opening_time' => 'datetime:H:i',
         'closing_time' => 'datetime:H:i',
+        'seo_keywords' => 'array',
     ];
 
     /**
@@ -95,6 +100,30 @@ class Business extends Model
     public function getReviewCountAttribute(): int
     {
         return $this->reviews()->count();
+    }
+
+    /**
+     * Get SEO title with fallback to business name
+     */
+    public function getSeoTitleAttribute($value): string
+    {
+        return $value ?: $this->name;
+    }
+
+    /**
+     * Get SEO description with fallback to business description
+     */
+    public function getSeoDescriptionAttribute($value): string
+    {
+        return $value ?: $this->descriptions ?: "Professional tire services at {$this->name}. Find tire installation, repair, and replacement services.";
+    }
+
+    /**
+     * Get SEO image with fallback to business image
+     */
+    public function getSeoImageAttribute($value): ?string
+    {
+        return $value ?: $this->image;
     }
 
     public static function boot(): void

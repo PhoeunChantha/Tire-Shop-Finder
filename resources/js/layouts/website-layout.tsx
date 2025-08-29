@@ -13,6 +13,8 @@ import {
   X
 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher, LanguageSwitcherCompact } from '@/components/language-switcher';
 
 interface WebsiteLayoutProps {
   children: React.ReactNode;
@@ -23,6 +25,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
   const { auth } = usePage().props as any;
   const { url } = usePage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -60,7 +63,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600'
                   }`}
                 >
-                  Home
+                  {t('home')}
                 </Link>
                 <Link 
                   href="/tire-shops" 
@@ -70,7 +73,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600'
                   }`}
                 >
-                  Find Tire Shops
+                  {t('find_tire_shops')}
                 </Link>
                 <Link 
                   href="/about" 
@@ -80,7 +83,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600'
                   }`}
                 >
-                  About
+                  {t('about')}
                 </Link>
                 <Link 
                   href="/contact" 
@@ -90,13 +93,14 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600'
                   }`}
                 >
-                  Contact
+                  {t('contact')}
                 </Link>
               </div>
             </div>
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex md:items-center md:space-x-4">
+              <LanguageSwitcherCompact />
               {auth?.user ? (
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-700">
@@ -106,7 +110,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                     href={auth.user?.roles?.some(role => ['admin', 'super-admin'].includes(role.name)) ? "/admin/dashboard" : "/user-dashboard"}
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
                   >
-                    Dashboard
+                    {t('dashboard')}
                   </Link>
                   <Link 
                     href="/logout" 
@@ -114,7 +118,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                     as="button"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
                   >
-                    Logout
+                    {t('logout')}
                   </Link>
                 </div>
               ) : (
@@ -123,20 +127,21 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                     href="/login"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
                   >
-                    Login
+                    {t('login')}
                   </Link>
                   <Link 
                     href="/register"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
                   >
-                    Register
+                    {t('register')}
                   </Link>
                 </>
               )}
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden flex items-center">
+            <div className="md:hidden flex items-center space-x-2">
+              <LanguageSwitcherCompact />
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
@@ -162,7 +167,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                 >
-                  Home
+                  {t('home')}
                 </Link>
                 <Link 
                   href="/tire-shops" 
@@ -172,7 +177,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                 >
-                  Find Tire Shops
+                  {t('find_tire_shops')}
                 </Link>
                 <Link 
                   href="/about" 
@@ -182,7 +187,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                 >
-                  About
+                  {t('about')}
                 </Link>
                 <Link 
                   href="/contact" 
@@ -192,7 +197,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                       : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                 >
-                  Contact
+                  {t('contact')}
                 </Link>
                 
                 {/* Mobile Auth */}
@@ -208,7 +213,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                         href={auth.user?.roles?.some(role => ['admin', 'super-admin'].includes(role.name)) ? "/admin/dashboard" : "/user-dashboard"}
                         className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
                       >
-                        Dashboard
+                        {t('dashboard')}
                       </Link>
                       <Link 
                         href="/logout" 
@@ -216,7 +221,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                         as="button"
                         className="block w-full text-left px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
                       >
-                        Logout
+                        {t('logout')}
                       </Link>
                     </div>
                   ) : (
@@ -225,13 +230,13 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                         href="/login"
                         className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
                       >
-                        Login
+                        {t('login')}
                       </Link>
                       <Link 
                         href="/register"
                         className="block px-3 py-2 text-base font-medium text-blue-600 hover:text-blue-700"
                       >
-                        Register
+                        {t('register')}
                       </Link>
                     </div>
                   )}

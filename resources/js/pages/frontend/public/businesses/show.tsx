@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/types';
 import ReviewForm from '@/components/ReviewForm';
+import { SEOHead } from '@/components/seo-head';
 import {
     ArrowLeft,
     MapPin,
@@ -114,7 +115,14 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
     return (
         <WebsiteLayout>
-            <Head title={`${business.name} - Tire Shop Details`} />
+            <SEOHead
+                title={business.seo_title || business.name}
+                description={business.seo_description || business.descriptions || `Professional tire services at ${business.name}. Find tire installation, repair, and replacement services in ${getLocationString()}.`}
+                image={business.seo_image || business.image}
+                type="business.business"
+                keywords={business.seo_keywords || [`tire shop`, `tire services`, business.name, getLocationString()]}
+                url={typeof window !== 'undefined' ? window.location.href : undefined}
+            />
 
             <div className="min-h-screen bg-gray-50">
                 {/* Header */}

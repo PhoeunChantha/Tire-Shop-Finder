@@ -210,6 +210,10 @@ export interface Service {
     bussiness_id: number;
     created_at: string;
     updated_at: string;
+    seo_title?: string;
+    seo_description?: string;
+    seo_image?: string;
+    seo_keywords?: string[];
 }
 
 export interface Business {
@@ -239,6 +243,10 @@ export interface Business {
     commune?: Commune;
     village?: Village;
     distance?: string; // Distance in km when calculated from user location
+    seo_title?: string;
+    seo_description?: string;
+    seo_image?: string;
+    seo_keywords?: string[];
 }
 
 export interface BusinessCreateProps {

@@ -20,6 +20,17 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
+// Language switching
+Route::get('/language/{locale}', function ($locale) {
+    $availableLocales = config('app.available_locales', ['en']);
+    
+    if (in_array($locale, $availableLocales)) {
+        session(['locale' => $locale]);
+    }
+    
+    return redirect()->back();
+})->name('language.switch');
+
 // Public tire shop directory routes
 Route::get('/tire-shops', [PublicController::class, 'businesses'])->name('public.businesses');
 Route::get('/tire-shops/{business:slug}', [PublicController::class, 'businessDetail'])->name('public.business.show');
@@ -37,9 +48,20 @@ Route::get('/api/businesses/{business}/reviews', [ReviewController::class, 'getB
 Route::get('/api/businesses/{business}/review-stats', [ReviewController::class, 'getBusinessReviewStats'])->name('reviews.stats');
 
 // Business creation routes (for new users after registration)
-// Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+    // User dashboard
+    Route::get('user-dashboard', function () {
+        $business = \App\Models\Business::where('created_by', auth()->id())->with('services')->first();
+        return Inertia::render('frontend/user/dashboard', [
+            'business' => $business
+        ]);
+    })->name('user.dashboard');
     Route::get('create-business', [BusinessController::class, 'create'])->name('business.create');
     Route::post('create-business', [BusinessController::class, 'store'])->name('business.store');
+    
+    // Business edit routes (for business owners)
+    Route::get('businesses/{business:slug}/edit', [BusinessController::class, 'edit'])->name('business.edit');
+    Route::put('businesses/{business:slug}', [BusinessController::class, 'update'])->name('business.update');
     
     // API endpoints for location dropdowns
     Route::get('api/districts/{province}', [BusinessController::class, 'getDistricts']);
@@ -47,24 +69,17 @@ Route::get('/api/businesses/{business}/review-stats', [ReviewController::class, 
     Route::get('api/villages/{commune}', [BusinessController::class, 'getVillages']);
     
     // Service management routes
-    Route::get('businesses/{business}/services/create', [ServiceController::class, 'create'])->name('services.create');
-    Route::post('businesses/{business}/services', [ServiceController::class, 'store'])->name('services.store');
-    Route::get('businesses/{business}/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
-    Route::put('businesses/{business}/services/{service}', [ServiceController::class, 'update'])->name('services.update');
-    Route::delete('businesses/{business}/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    Route::get('businesses/{business:slug}/services/create', [ServiceController::class, 'create'])->name('services.create');
+    Route::post('businesses/{business:slug}/services', [ServiceController::class, 'store'])->name('services.store');
+    Route::get('businesses/{business:slug}/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+    Route::put('businesses/{business:slug}/services/{service}', [ServiceController::class, 'update'])->name('services.update');
+    Route::delete('businesses/{business:slug}/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
     
-    // User dashboard (separate from admin)
-    Route::get('user-dashboard', function () {
-        $business = \App\Models\Business::where('created_by', auth()->id())->with('services')->first();
-        return Inertia::render('frontend/user/dashboard', [
-            'business' => $business
-        ]);
-    })->name('user.dashboard');
-// });
+   
+});
 
-// Admin routes - protected by admin middleware
-// Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(function () {
-Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+// Admin routes
+Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('admin/dashboard');
     })->name('dashboard');

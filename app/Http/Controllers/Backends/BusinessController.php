@@ -83,6 +83,11 @@ class BusinessController extends Controller
             'closing_time' => 'nullable|string',
             'status' => 'nullable|boolean',
             'is_vierify' => 'nullable|boolean',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            'seo_image' => 'nullable|string|max:2048',
+            'seo_keywords' => 'nullable|array',
+            'seo_keywords.*' => 'string|max:100',
         ]);
 
         // Default values for admin-created businesses
@@ -145,6 +150,11 @@ class BusinessController extends Controller
             'longitude' => 'nullable|string',
             'opening_time' => 'nullable|string',
             'closing_time' => 'nullable|string',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:500',
+            'seo_image' => 'nullable|string|max:2048',
+            'seo_keywords' => 'nullable|array',
+            'seo_keywords.*' => 'string|max:100',
         ]);
 
         $business->update($validated);

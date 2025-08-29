@@ -101,15 +101,17 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                                                 <p className="text-gray-600 mb-4">
                                                     Your tire shop is now visible to customers on our platform.
                                                 </p>
-                                                <div className="space-y-2">
-                                                    <Button variant="outline" className="w-full">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <Button variant="outline" className="w-fit">
                                                         <Eye className="w-4 h-4 mr-2" />
                                                         View Public Listing
                                                     </Button>
-                                                    <Button variant="ghost" className="w-full">
-                                                        <Edit className="w-4 h-4 mr-2" />
-                                                        Edit Business Details
-                                                    </Button>
+                                                    <Link href={`/businesses/${business.slug}/edit`}>
+                                                        <Button variant="outline" className="w-fit">
+                                                            <Edit className="w-4 h-4 mr-2" />
+                                                            Edit Business Details
+                                                        </Button>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         ) : (
@@ -122,10 +124,12 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                                                     Your tire shop has been submitted for admin review. We'll notify you once it's approved and live on the platform.
                                                 </p>
                                                 <div className="space-y-2">
-                                                    <Button variant="outline" className="w-full">
-                                                        <Edit className="w-4 h-4 mr-2" />
-                                                        Edit Business Details
-                                                    </Button>
+                                                    <Link href={`/businesses/${business.slug}/edit`}>
+                                                        <Button variant="outline" className="w-full">
+                                                            <Edit className="w-4 h-4 mr-2" />
+                                                            Edit Business Details
+                                                        </Button>
+                                                    </Link>
                                                 </div>
                                             </div>
                                         )}
@@ -183,7 +187,7 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                                         )}
                                         
                                         <div className="space-y-2 pt-2">
-                                            <Link href={`/businesses/${business.id}/services/create`}>
+                                            <Link href={`/businesses/${business.slug}/services/create`}>
                                                 <Button variant="outline" size="sm" className="w-full">
                                                     <Plus className="w-4 h-4 mr-1" />
                                                     Add More Services
@@ -201,7 +205,7 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                                             Add services to help customers find what they need
                                         </p>
                                         {business ? (
-                                            <Link href={`/businesses/${business.id}/services/create`}>
+                                            <Link href={`/businesses/${business?.slug}/services/create`}>
                                                 <Button size="sm" className="w-full">
                                                     <Plus className="w-4 h-4 mr-1" />
                                                     Add Your Services
@@ -275,7 +279,7 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                                     Add, edit, or remove services to showcase what you offer
                                 </p>
                                 {business ? (
-                                    <Link href={`/businesses/${business.id}/services/create`}>
+                                    <Link href={`/businesses/${business.slug}/services/create`}>
                                         <Button variant="outline" size="sm">
                                             Manage Services
                                         </Button>
