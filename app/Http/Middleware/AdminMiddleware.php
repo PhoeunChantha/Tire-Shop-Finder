@@ -22,9 +22,15 @@ class AdminMiddleware
         }
 
         $user = Auth::user();
-        
-        if (!$user->hasAnyRole(['admin'])) {
-            return redirect()->route('user.dashboard')->with('error', 'Access denied. Admin privileges required.');
+
+        if (!$user->hasRole('admin')) {
+            if ($user->hasRole('customer')) {
+                return redirect()->route('home')->with('error', 'Access denied. Admin privileges required.');
+            } elseif ($user->hasRole('business')) {
+                return redirect()->route('user.dashboard')->with('error', 'Access denied. Admin privileges required.');
+            } else {
+                return redirect()->route('home')->with('error', 'Access denied. Admin privileges required.');
+            }
         }
 
         return $next($request);

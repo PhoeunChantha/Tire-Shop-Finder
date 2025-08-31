@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import DataTableFilter from '@/components/DefaultDataTableFilter';
 import PaginationWrapper from '@/components/PaginationWrapper';
 import { BusinessIndexProps } from '@/types';
-import { Building, Eye, Edit, CheckCircle, XCircle, Clock, MapPin, Plus } from 'lucide-react';
+import { Building, Eye, Edit, CheckCircle, XCircle, Clock, MapPin, Plus, ImageIcon } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageHelper';
 
 export default function BusinessIndex({ auth, businesses, filters, provinces }: BusinessIndexProps) {
     const filterConfig = {
@@ -54,6 +55,13 @@ export default function BusinessIndex({ auth, businesses, filters, provinces }: 
         }
     };
 
+    const getBusinessImageUrl = (business: any) => {
+        if (business.image) {
+            return getImageUrl(business.image, 'businesses');
+        }
+        return null;
+    };
+
     return (
         <AppLayout>
             <Head title="Business Management" />
@@ -94,7 +102,7 @@ export default function BusinessIndex({ auth, businesses, filters, provinces }: 
                             ) : (
                                 businesses.data.map((business) => (
                                     <div key={business.id} className="border rounded-lg p-6 hover:shadow-sm transition-shadow">
-                                        <div className="flex items-start justify-between">
+                                        <div className="flex items-start gap-4">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <h3 className="text-lg font-semibold text-gray-900">
@@ -153,15 +161,19 @@ export default function BusinessIndex({ auth, businesses, filters, provinces }: 
                                                 </div>
                                             </div>
 
-                                            {business.image && (
-                                                <div className="ml-6">
+                                            <div className="flex-shrink-0">
+                                                {getBusinessImageUrl(business) ? (
                                                     <img 
-                                                        src={business.image} 
+                                                        src={getBusinessImageUrl(business)!} 
                                                         alt={business.name}
-                                                        className="w-24 h-24 object-cover rounded-lg"
+                                                        className="w-35 h-35 object-cover rounded-lg border border-gray-200"
                                                     />
-                                                </div>
-                                            )}
+                                                ) : (
+                                                    <div className="w-35 h-35 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                                                        <ImageIcon className="w-8 h-8 text-gray-400" />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))

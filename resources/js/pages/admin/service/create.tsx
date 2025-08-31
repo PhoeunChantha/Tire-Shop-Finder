@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -203,11 +203,11 @@ export default function AdminServiceCreate({ business }: AdminServiceCreateProps
                             </div>
 
                             <div className="flex justify-end space-x-4 pt-6 border-t">
-                                <a href={route('businesses.index')}>
+                                <Link href={route('businesses.index')}>
                                     <Button type="button" variant="outline">
                                         Skip for Now
                                     </Button>
-                                </a>
+                                </Link>
                                 <Button type="submit" disabled={processing} size="lg">
                                     {processing ? 'Adding Services...' : 'Add Services'}
                                 </Button>

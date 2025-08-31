@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import InputError from "@/components/input-error";
 import UploadImage from "@/components/ui/upload-image";
 
@@ -32,14 +34,21 @@ export default function BusinessSettingForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      {/* Business Information Section */}
-      <div className="space-y-4">
-        <div className="border-b border-gray-200 pb-4">
-          <h3 className="text-lg font-medium text-gray-900">Business Information</h3>
-          <p className="mt-1 text-sm text-gray-600">
-            Basic information about your business.
-          </p>
-        </div>
+      <Tabs defaultValue="business-info" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="business-info">Business Information</TabsTrigger>
+          <TabsTrigger value="socialite">Social Login</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="business-info" className="space-y-6">
+          {/* Business Information Section */}
+          <div className="space-y-4">
+            <div className="border-b border-gray-200 pb-4">
+              <h3 className="text-lg font-medium text-gray-900">Business Information</h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Basic information about your business.
+              </p>
+            </div>
 
         <div className="grid gap-4">
           <div className="space-y-2">
@@ -132,6 +141,146 @@ export default function BusinessSettingForm({
           </div>
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="socialite" className="space-y-6">
+          {/* Social Login Configuration Section */}
+          <div className="space-y-4">
+            <div className="border-b border-gray-200 pb-4">
+              <h3 className="text-lg font-medium text-gray-900">Social Login Configuration</h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Configure social login providers for user authentication.
+              </p>
+            </div>
+
+            {/* Google Login Settings */}
+            <div className="space-y-4 p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-base font-medium text-gray-900">Google Login</h4>
+                  <p className="text-sm text-gray-600">Enable users to login with their Google account</p>
+                </div>
+                <Switch
+                  checked={data.type?.google_login_status === 'enabled' || data.type?.google_login_status === '1'}
+                  onCheckedChange={(checked) => 
+                    handleInputChange("google_login_status", checked ? 'enabled' : 'disabled')
+                  }
+                />
+              </div>
+
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="google_client_id">
+                    Google Client ID
+                  </Label>
+                  <Input
+                    id="google_client_id"
+                    type="text"
+                    value={data.type?.google_client_id || ""}
+                    onChange={(e) => handleInputChange("google_client_id", e.target.value)}
+                    placeholder="Your Google Client ID"
+                    className="font-mono text-sm"
+                  />
+                  <InputError message={errors?.google_client_id} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="google_client_secret">
+                    Google Client Secret
+                  </Label>
+                  <Input
+                    id="google_client_secret"
+                    type="password"
+                    value={data.type?.google_client_secret || ""}
+                    onChange={(e) => handleInputChange("google_client_secret", e.target.value)}
+                    placeholder="Your Google Client Secret"
+                    className="font-mono text-sm"
+                  />
+                  <InputError message={errors?.google_client_secret} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="google_redirect_uri">
+                    Google Redirect URI
+                  </Label>
+                  <Input
+                    id="google_redirect_uri"
+                    type="url"
+                    value={data.type?.google_redirect_uri || `${window.location.origin}/auth/google/callback`}
+                    onChange={(e) => handleInputChange("google_redirect_uri", e.target.value)}
+                    placeholder={`${window.location.origin}/auth/google/callback`}
+                    className="font-mono text-sm"
+                  />
+                  <InputError message={errors?.google_redirect_uri} />
+                </div>
+              </div>
+            </div>
+
+            {/* Facebook Login Settings */}
+            <div className="space-y-4 p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-base font-medium text-gray-900">Facebook Login</h4>
+                  <p className="text-sm text-gray-600">Enable users to login with their Facebook account</p>
+                </div>
+                <Switch
+                  checked={data.type?.facebook_login_status === 'enabled' || data.type?.facebook_login_status === '1'}
+                  onCheckedChange={(checked) => 
+                    handleInputChange("facebook_login_status", checked ? 'enabled' : 'disabled')
+                  }
+                />
+              </div>
+
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="facebook_client_id">
+                    Facebook Client ID
+                  </Label>
+                  <Input
+                    id="facebook_client_id"
+                    type="text"
+                    value={data.type?.facebook_client_id || ""}
+                    onChange={(e) => handleInputChange("facebook_client_id", e.target.value)}
+                    placeholder="123456789012345"
+                    className="font-mono text-sm"
+                  />
+                  <InputError message={errors?.facebook_client_id} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="facebook_client_secret">
+                    Facebook Client Secret
+                  </Label>
+                  <Input
+                    id="facebook_client_secret"
+                    type="password"
+                    value={data.type?.facebook_client_secret || ""}
+                    onChange={(e) => handleInputChange("facebook_client_secret", e.target.value)}
+                    placeholder="your-facebook-client-secret"
+                    className="font-mono text-sm"
+                  />
+                  <InputError message={errors?.facebook_client_secret} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="facebook_redirect_uri">
+                    Facebook Redirect URI
+                  </Label>
+                  <Input
+                    id="facebook_redirect_uri"
+                    type="url"
+                    value={data.type?.facebook_redirect_uri || `${window.location.origin}/auth/facebook/callback`}
+                    onChange={(e) => handleInputChange("facebook_redirect_uri", e.target.value)}
+                    placeholder={`${window.location.origin}/auth/facebook/callback`}
+                    className="font-mono text-sm"
+                  />
+                  <InputError message={errors?.facebook_redirect_uri} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Submit Section */}
       <div className="flex justify-end pt-4 border-t border-gray-200">

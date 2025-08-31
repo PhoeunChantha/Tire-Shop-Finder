@@ -20,8 +20,10 @@ class PublicController extends Controller
         $userLng = $request->input('user_lng');
 
         $query = Business::with(['province', 'district', 'commune', 'village', 'services'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rate')
             ->where('status', true)
-            ->where('is_vierify', true); // Only show verified businesses
+            ->where('is_vierify', true); 
 
         // If user location is provided, calculate distances and sort by proximity
         if ($userLat && $userLng) {
@@ -113,11 +115,21 @@ class PublicController extends Controller
             'village', 
             'services' => function ($query) {
                 $query->where('status', true);
+            },
+            'reviews' => function ($query) {
+                $query->with('user:id,name,email')
+                      ->orderBy('created_at', 'desc')
+                      ->limit(10); // Show latest 10 reviews
             }
         ]);
 
+        $business->loadCount('reviews');
+        $business->loadAvg('reviews', 'rate');
+
         // Get nearby businesses (same district)
         $nearbyBusinesses = Business::with(['province', 'district'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rate')
             ->where('district_id', $business->district_id)
             ->where('id', '!=', $business->id)
             ->where('status', true)

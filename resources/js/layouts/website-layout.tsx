@@ -1,6 +1,8 @@
 import React from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import UserProfileDropdown from '@/components/user-profile-dropdown';
+import UserProfileDropdownMobile from '@/components/user-profile-dropdown-mobile';
 import { 
   Search, 
   MapPin, 
@@ -26,6 +28,9 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
   const { url } = usePage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
+
+  // Debug: log auth state
+  console.log('Auth state in WebsiteLayout:', auth);
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -102,25 +107,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
             <div className="hidden md:flex md:items-center md:space-x-4">
               <LanguageSwitcherCompact />
               {auth?.user ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-700">
-                    Welcome, {auth.user.name}
-                  </span>
-                  <Link 
-                    href={auth.user?.roles?.some(role => ['admin', 'super-admin'].includes(role.name)) ? "/admin/dashboard" : "/user-dashboard"}
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  >
-                    {t('dashboard')}
-                  </Link>
-                  <Link 
-                    href="/logout" 
-                    method="post" 
-                    as="button"
-                    className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  >
-                    {t('logout')}
-                  </Link>
-                </div>
+                <UserProfileDropdown user={auth.user} />
               ) : (
                 <>
                   <Link 
@@ -201,46 +188,31 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                 </Link>
                 
                 {/* Mobile Auth */}
-                <div className="pt-4 pb-3 border-t border-gray-200">
-                  {auth?.user ? (
-                    <div className="space-y-2">
-                      <div className="px-3 py-2">
-                        <span className="text-sm text-gray-700">
-                          Welcome, {auth.user.name}
-                        </span>
-                      </div>
-                      <Link 
-                        href={auth.user?.roles?.some(role => ['admin', 'super-admin'].includes(role.name)) ? "/admin/dashboard" : "/user-dashboard"}
-                        className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
-                      >
-                        {t('dashboard')}
-                      </Link>
-                      <Link 
-                        href="/logout" 
-                        method="post" 
-                        as="button"
-                        className="block w-full text-left px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
-                      >
-                        {t('logout')}
-                      </Link>
-                    </div>
-                  ) : (
+                {auth?.user ? (
+                  <UserProfileDropdownMobile 
+                    user={auth.user} 
+                    onLinkClick={() => setMobileMenuOpen(false)}
+                  />
+                ) : (
+                  <div className="pt-4 pb-3 border-t border-gray-200">
                     <div className="space-y-2">
                       <Link 
                         href="/login"
                         className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
+                        onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('login')}
                       </Link>
                       <Link 
                         href="/register"
                         className="block px-3 py-2 text-base font-medium text-blue-600 hover:text-blue-700"
+                        onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('register')}
                       </Link>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

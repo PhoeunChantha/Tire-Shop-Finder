@@ -9,6 +9,9 @@ use App\Models\District;
 use App\Models\Commune;
 use App\Models\Village;
 use App\Models\User;
+use App\Services\BusinessService;
+use App\Http\Requests\BusinessStoreRequest;
+use App\Http\Requests\BusinessUpdateRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,6 +21,10 @@ use App\Http\Traits\HasDataTableFilters;
 class BusinessController extends Controller
 {
     use HasDataTableFilters;
+
+    public function __construct(
+        private BusinessService $businessService
+    ) {}
 
     public function index(Request $request): Response
     {
@@ -67,34 +74,11 @@ class BusinessController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(BusinessStoreRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'descriptions' => 'nullable|string',
-            'created_by' => 'required|exists:users,id',
-            'province_id' => 'required|exists:provinces,id',
-            'district_id' => 'required|exists:districts,id',
-            'commune_id' => 'nullable|exists:communes,id',
-            'village_id' => 'nullable|exists:villages,id',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
-            'opening_time' => 'nullable|string',
-            'closing_time' => 'nullable|string',
-            'status' => 'nullable|boolean',
-            'is_vierify' => 'nullable|boolean',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string|max:500',
-            'seo_image' => 'nullable|string|max:2048',
-            'seo_keywords' => 'nullable|array',
-            'seo_keywords.*' => 'string|max:100',
-        ]);
+        $validated = $request->validated();
 
-        // Default values for admin-created businesses
-        $validated['status'] = $validated['status'] ?? true;
-        $validated['is_vierify'] = $validated['is_vierify'] ?? true;
-
-        $business = Business::create($validated);
+        $business = $this->businessService->createBusiness($validated);
 
         return redirect()->route('admin.services.create', $business->id)
             ->with('success', 'Business created successfully! Now add services for this business.');
@@ -118,7 +102,7 @@ class BusinessController extends Controller
 
     public function show(Business $business): Response
     {
-        $business->load(['owner', 'province', 'district', 'commune', 'village']);
+        $business->load(['owner', 'province', 'district', 'commune', 'village', 'services']);
         
         return Inertia::render('admin/business/show', [
             'business' => $business
@@ -127,7 +111,7 @@ class BusinessController extends Controller
 
     public function edit(Business $business): Response
     {
-        $business->load(['owner', 'province', 'district', 'commune', 'village']);
+        $business->load(['owner', 'province', 'district', 'commune', 'village', 'services']);
         
         return Inertia::render('admin/business/edit', [
             'business' => $business,
@@ -135,29 +119,11 @@ class BusinessController extends Controller
         ]);
     }
 
-    public function update(Request $request, Business $business): RedirectResponse
+    public function update(BusinessUpdateRequest $request, Business $business): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'descriptions' => 'nullable|string',
-            'status' => 'required|boolean',
-            'is_vierify' => 'required|boolean',
-            'province_id' => 'required|exists:provinces,id',
-            'district_id' => 'required|exists:districts,id',
-            'commune_id' => 'nullable|exists:communes,id',
-            'village_id' => 'nullable|exists:villages,id',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
-            'opening_time' => 'nullable|string',
-            'closing_time' => 'nullable|string',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string|max:500',
-            'seo_image' => 'nullable|string|max:2048',
-            'seo_keywords' => 'nullable|array',
-            'seo_keywords.*' => 'string|max:100',
-        ]);
+        $validated = $request->validated();
 
-        $business->update($validated);
+        $this->businessService->updateBusiness($business, $validated);
 
         return redirect()->route('businesses.index')
             ->with('success', 'Business updated successfully!');
@@ -173,20 +139,14 @@ class BusinessController extends Controller
 
     public function verify(Business $business): RedirectResponse
     {
-        $business->update([
-            'is_vierify' => true,
-            'status' => true
-        ]);
+        $this->businessService->verifyBusiness($business);
 
         return back()->with('success', 'Business verified successfully!');
     }
 
     public function reject(Business $business): RedirectResponse
     {
-        $business->update([
-            'is_vierify' => false,
-            'status' => false
-        ]);
+        $this->businessService->rejectBusiness($business);
 
         return back()->with('success', 'Business rejected successfully!');
     }

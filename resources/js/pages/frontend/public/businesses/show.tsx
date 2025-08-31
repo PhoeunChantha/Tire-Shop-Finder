@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/types';
 import ReviewForm from '@/components/ReviewForm';
+import ReviewCard from '@/components/reviews/ReviewCard';
+import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 import { SEOHead } from '@/components/seo-head';
 import {
     ArrowLeft,
@@ -28,6 +30,31 @@ interface BusinessShowProps {
 
 export default function PublicBusinessShow({ business, nearbyBusinesses }: BusinessShowProps) {
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const { props } = usePage();
+    const auth = props.auth as { user: any };
+    const url = props.ziggy?.location || window.location.pathname;
+    
+    const safeString = (value: unknown): string => {
+        if (value == null || typeof value === 'symbol') {
+            return '';
+        }
+        return String(value);
+    };
+
+    const renderStars = (rating: number) => {
+        return [1, 2, 3, 4, 5].map((star) => (
+            <Star 
+                key={star} 
+                className={`w-4 h-4 ${
+                    star <= rating 
+                        ? 'text-yellow-500 fill-current' 
+                        : 'text-gray-300'
+                }`} 
+            />
+        ));
+    };
+    
     const getLocationString = () => {
         const parts = [
             business.village?.name,
@@ -110,17 +137,25 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
     const handleCallBusiness = () => {
         // In a real app, this would be the business phone number
-        Notiflix.Notify.info('Phone number would be displayed here');
+        toast.info('Phone number would be displayed here');
+    };
+
+    const handleWriteReview = () => {
+        if (!auth.user) {
+            setShowLoginModal(true);
+        } else {
+            setShowReviewForm(true);
+        }
     };
 
     return (
         <WebsiteLayout>
             <SEOHead
-                title={business.seo_title || business.name}
-                description={business.seo_description || business.descriptions || `Professional tire services at ${business.name}. Find tire installation, repair, and replacement services in ${getLocationString()}.`}
-                image={business.seo_image || business.image}
+                title={safeString(business.seo_title || business.name)}
+                description={safeString(business.seo_description || business.descriptions || `Professional tire services at ${safeString(business.name)}. Find tire installation, repair, and replacement services in ${getLocationString()}.`)}
+                image={safeString(business.seo_image || business.image)}
                 type="business.business"
-                keywords={business.seo_keywords || [`tire shop`, `tire services`, business.name, getLocationString()]}
+                keywords={business.seo_keywords || [`tire shop`, `tire services`, safeString(business.name), getLocationString()]}
                 url={typeof window !== 'undefined' ? window.location.href : undefined}
             />
 
@@ -141,7 +176,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
                                     <h1 className="text-3xl font-bold text-gray-900">
-                                        {business.name}
+                                        {String(business.name)}
                                     </h1>
                                     <Badge className="bg-green-100 text-green-800">
                                         <CheckCircle className="w-3 h-3 mr-1" />
@@ -157,7 +192,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     {business.formatted_hours && (
                                         <div className="flex items-center">
                                             <Clock className="w-4 h-4 mr-1" />
-                                            {business.formatted_hours}
+                                            {String(business.formatted_hours)}
                                         </div>
                                     )}
                                 </div>
@@ -190,11 +225,11 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                             {business.descriptions && (
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>About {business.name}</CardTitle>
+                                        <CardTitle>About {String(business.name)}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-gray-700 leading-relaxed">
-                                            {business.descriptions}
+                                            {String(business.descriptions)}
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -241,28 +276,60 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
                             {/* Reviews Section */}
                             <Card>
-                                <CardHeader>
+                                <CardHeader className="flex flex-row items-center justify-between">
                                     <CardTitle className="flex items-center gap-2">
                                         <Star className="w-5 h-5" />
                                         Customer Reviews
+                                        {business.reviews && business.reviews.length > 0 && (
+                                            <span className="text-sm font-normal text-gray-500">
+                                                ({business.reviews.length} review{business.reviews.length !== 1 ? 's' : ''})
+                                            </span>
+                                        )}
                                     </CardTitle>
+                                    <Button 
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleWriteReview}
+                                    >
+                                        Write a Review
+                                    </Button>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-center py-8">
-                                        <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                            No reviews yet
-                                        </h3>
-                                        <p className="text-gray-600 mb-4">
-                                            Be the first to review {business.name}
-                                        </p>
-                                        <Button 
-                                            variant="outline"
-                                            onClick={() => setShowReviewForm(true)}
-                                        >
-                                            Write a Review
-                                        </Button>
-                                    </div>
+                                    {business.reviews && business.reviews.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {business.reviews.map((review) => (
+                                                <ReviewCard key={review.id} review={review} />
+                                            ))}
+                                            
+                                            {/* Show more reviews link if there are more */}
+                                            {business.reviews_count > business.reviews.length && (
+                                                <div className="text-center pt-4 border-t">
+                                                    <p className="text-gray-600 mb-2">
+                                                        Showing {business.reviews.length} of {business.reviews_count} reviews
+                                                    </p>
+                                                    <Button variant="outline" size="sm">
+                                                        View All Reviews
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                                No reviews yet
+                                            </h3>
+                                            <p className="text-gray-600 mb-4">
+                                                Be the first to review {String(business.name)}
+                                            </p>
+                                            <Button 
+                                                variant="outline"
+                                                onClick={handleWriteReview}
+                                            >
+                                                Write a Review
+                                            </Button>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
                         </div>
@@ -286,7 +353,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                         <div>
                                             <h4 className="font-medium text-gray-900 mb-2">Business Hours</h4>
                                             <p className="text-gray-600">
-                                                {business.formatted_hours}
+                                                {String(business.formatted_hours)}
                                             </p>
                                         </div>
                                     )}
@@ -326,8 +393,19 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-600">Rating</span>
                                         <div className="flex items-center">
-                                            <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
-                                            <span className="font-medium">New</span>
+                                            {business.reviews_count && business.reviews_count > 0 ? (
+                                                <>
+                                                    <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
+                                                    <span className="font-medium">
+                                                        {(business.reviews_avg_rate || 0).toFixed(1)} ({business.reviews_count} review{business.reviews_count !== 1 ? 's' : ''})
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Star className="w-4 h-4 text-gray-300 mr-1" />
+                                                    <span className="font-medium text-gray-500">No reviews yet</span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between">
@@ -360,10 +438,21 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                                     {nearbyBusiness.district?.name}, {nearbyBusiness.province?.name}
                                                 </div>
                                                 <div className="flex items-center justify-between">
-                                                    <div className="flex items-center text-yellow-500">
-                                                        {[1, 2, 3, 4, 5].map((star) => (
-                                                            <Star key={star} className="w-4 h-4 fill-current" />
-                                                        ))}
+                                                    <div className="flex items-center">
+                                                        {nearbyBusiness.reviews_count && nearbyBusiness.reviews_count > 0 ? (
+                                                            <>
+                                                                <div className="flex items-center">
+                                                                    {renderStars(Math.round(nearbyBusiness.reviews_avg_rate || 0))}
+                                                                </div>
+                                                                <span className="text-gray-600 text-xs ml-1">
+                                                                    ({nearbyBusiness.reviews_count})
+                                                                </span>
+                                                            </>
+                                                        ) : (
+                                                            <div className="flex items-center text-gray-300">
+                                                                {renderStars(0)}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <Badge className="bg-green-100 text-green-800">
                                                         Verified
@@ -384,7 +473,15 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                 isOpen={showReviewForm}
                 onClose={() => setShowReviewForm(false)}
                 businessId={business.id}
-                businessName={business.name}
+                businessName={String(business.name)}
+            />
+
+            {/* Login Required Modal */}
+            <LoginRequiredModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                action="write a review"
+                redirectUrl={url}
             />
         </WebsiteLayout>
     );

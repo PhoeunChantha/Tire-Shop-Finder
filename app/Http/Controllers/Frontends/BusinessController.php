@@ -65,6 +65,12 @@ class BusinessController extends Controller
             'is_vierify' => false, // Requires admin verification
         ]);
 
+        // Assign business role to the user when they create their first business
+        $user = Auth::user();
+        if (!$user->hasRole('business')) {
+            $user->assignRole('business');
+        }
+
         return redirect()->route('services.create', $business->id)
             ->with('success', 'Business created successfully! Now add your services.');
     }

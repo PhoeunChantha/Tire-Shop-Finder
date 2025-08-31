@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { TimeRangePicker } from '@/components/ui/time-range-picker';
 import { SEOFields } from '@/components/seo-fields';
 import { BusinessEditProps, District, Commune, Village } from '@/types';
-import { ArrowLeft, Building, MapPin, Settings } from 'lucide-react';
+import { ArrowLeft, Building, MapPin, Settings, Plus, Edit } from 'lucide-react';
 import axios from 'axios';
 
 export default function BusinessEdit({ auth, business, provinces }: BusinessEditProps) {
@@ -338,6 +338,64 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                             onSeoKeywordsChange={(keywords) => setData('seo_keywords', keywords)}
                                             errors={errors}
                                         />
+                                    </CardContent>
+                                </Card>
+
+                                {/* Business Services */}
+                                <Card>
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between">
+                                            <CardTitle className="flex items-center gap-2">
+                                                <Settings className="w-5 h-5" />
+                                                Services ({business.services?.length || 0})
+                                            </CardTitle>
+                                            <Link href={route('admin.services.create', business.id)}>
+                                                <Button type="button" size="sm">
+                                                    <Plus className="w-4 h-4 mr-1" />
+                                                    Add Service
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        {business.services && business.services.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {business.services.map((service: any) => (
+                                                    <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                        <div>
+                                                            <h4 className="font-medium text-gray-900">{service.name}</h4>
+                                                            {service.description && (
+                                                                <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                                                            )}
+                                                            {service.price && (
+                                                                <p className="text-sm font-medium text-green-600 mt-1">
+                                                                    ${service.price}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Link href={route('admin.services.edit', service.id)}>
+                                                                <Button type="button" size="sm" variant="outline">
+                                                                    <Edit className="w-3 h-3" />
+                                                                </Button>
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-6">
+                                                <Settings className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                                                <h3 className="text-sm font-medium text-gray-900 mb-1">No services added yet</h3>
+                                                <p className="text-sm text-gray-600 mb-3">Add services to this business.</p>
+                                                <Link href={route('admin.services.create', business.id)}>
+                                                    <Button type="button" size="sm">
+                                                        <Plus className="w-4 h-4 mr-1" />
+                                                        Add First Service
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </div>

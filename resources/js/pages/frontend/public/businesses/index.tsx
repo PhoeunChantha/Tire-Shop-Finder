@@ -141,7 +141,7 @@ export default function PublicBusinessIndex({
     // Get high-accuracy current location like mobile Maps apps
     const getCurrentLocation = () => {
         if (!navigator.geolocation) {
-            Notiflix.Notify.failure('GPS location services are not available on this device');
+            toast.error('GPS location services are not available on this device');
             return;
         }
 
@@ -173,14 +173,14 @@ export default function PublicBusinessIndex({
                     if (shouldStop && bestPosition) {
                         navigator.geolocation.clearWatch(watchId);
                         
-                        const finalAccuracy = bestPosition.coords.accuracy;
+                        const finalAccuracy = bestPosition?.coords.accuracy || 0;
                         console.log(`Using position with ${finalAccuracy.toFixed(1)}m accuracy`);
                         
                         const processLocation = async () => {
                             // Call reverse geocoding API with best coordinates
                             const response = await axios.post('/api/public/reverse-geocode', {
-                                latitude: bestPosition.coords.latitude,
-                                longitude: bestPosition.coords.longitude,
+                                latitude: bestPosition?.coords.latitude,
+                                longitude: bestPosition?.coords.longitude,
                                 accuracy: finalAccuracy
                             });
 
@@ -188,8 +188,8 @@ export default function PublicBusinessIndex({
                             
                             // Store best coordinates with accuracy
                             setUserCoords({ 
-                                lat: bestPosition.coords.latitude, 
-                                lng: bestPosition.coords.longitude, 
+                                lat: bestPosition?.coords.latitude || 0, 
+                                lng: bestPosition?.coords.longitude || 0, 
                                 accuracy: finalAccuracy 
                             });
 
@@ -209,7 +209,7 @@ export default function PublicBusinessIndex({
 
                             // Automatically show nearby businesses
                             setTimeout(() => {
-                                if (bestPosition) {
+                                if (bestPosition?.coords) {
                                     searchWithLocation(bestPosition.coords.latitude, bestPosition.coords.longitude);
                                 }
                             }, 300);
@@ -219,19 +219,8 @@ export default function PublicBusinessIndex({
                         
                         // Warn user if accuracy is still poor
                         if (finalAccuracy > 1000) {
-                            Notiflix.Confirm.show(
-                                'Low GPS Accuracy',
-                                `Location accuracy is low (${(finalAccuracy/1000).toFixed(1)}km). This might show distant results. Continue anyway?`,
-                                'Yes, Continue',
-                                'Cancel',
-                                function okCb() {
-                                    processLocation();
-                                },
-                                function cancelCb() {
-                                    setGettingLocation(false);
-                                    return;
-                                }
-                            );
+                            toast.warning(`Location accuracy is low (${(finalAccuracy/1000).toFixed(1)}km). Results might be distant.`);
+                            processLocation();
                         } else {
                             processLocation();
                         }
@@ -239,7 +228,7 @@ export default function PublicBusinessIndex({
                 } catch (error) {
                     navigator.geolocation.clearWatch(watchId);
                     console.error('Error processing location:', error);
-                    Notiflix.Notify.failure('Unable to find tire shops near your location. Please try manual search.');
+                    toast.error('Unable to find tire shops near your location. Please try manual search.');
                     setGettingLocation(false);
                 }
             },
@@ -250,16 +239,16 @@ export default function PublicBusinessIndex({
                 
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
-                        Notiflix.Notify.failure('Location permission denied. Please enable location services and allow GPS access.');
+                        toast.error('Location permission denied. Please enable location services and allow GPS access.');
                         break;
                     case error.POSITION_UNAVAILABLE:
-                        Notiflix.Notify.failure('GPS signal not available. Please ensure location services are enabled and try outdoors.');
+                        toast.error('GPS signal not available. Please ensure location services are enabled and try outdoors.');
                         break;
                     case error.TIMEOUT:
-                        Notiflix.Notify.failure('GPS timeout. Please check your location settings or try again outdoors.');
+                        toast.error('GPS timeout. Please check your location settings or try again outdoors.');
                         break;
                     default:
-                        Notiflix.Notify.failure('Unable to get your GPS location. Please try manual search.');
+                        toast.error('Unable to get your GPS location. Please try manual search.');
                         break;
                 }
             },
@@ -281,7 +270,7 @@ export default function PublicBusinessIndex({
                     // Process the best position we have
                 } else {
                     setGettingLocation(false);
-                    Notiflix.Notify.failure('Could not get accurate GPS location. Please try again outdoors or use manual search.');
+                    toast.error('Could not get accurate GPS location. Please try again outdoors or use manual search.');
                 }
             }
         }, 25000);
@@ -436,7 +425,7 @@ export default function PublicBusinessIndex({
     const getDistanceText = (business: Business) => {
         // Show distance if available and user has location
         if (business.distance !== undefined && userCoords) {
-            const distance = parseFloat(business.distance);
+            const distance = parseFloat(String(business.distance));
             if (distance < 1) {
                 return `${(distance * 1000).toFixed(0)}m away`;
             } else {
@@ -508,6 +497,19 @@ export default function PublicBusinessIndex({
             keywords.push('nearest tire shop', 'tire shop near me');
         }
         return keywords;
+    };
+
+    const renderStars = (rating: number) => {
+        return [1, 2, 3, 4, 5].map((star) => (
+            <Star 
+                key={star} 
+                className={`w-4 h-4 ${
+                    star <= rating 
+                        ? 'text-yellow-500 fill-current' 
+                        : 'text-gray-300'
+                }`} 
+            />
+        ));
     };
 
     return (
@@ -820,15 +822,15 @@ export default function PublicBusinessIndex({
                 {/* Business Grid */}
                 {businesses.data.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {businesses.data.map((business) => (
-                            <Card key={business.id} className="hover:shadow-lg transition-shadow py-0 cursor-pointer overflow-hidden">
-                                <Link href={`/tire-shops/${business.slug}`}>
+                        {businesses.data.map((business, index) => (
+                            <Card key={`business-${business.id || index}`} className="hover:shadow-lg transition-shadow py-0 cursor-pointer overflow-hidden">
+                                <Link href={`/tire-shops/${String(business.slug)}`}>
                                     {/* Business Image */}
                                     <div className="relative h-48 bg-gray-200 overflow-hidden">
                                         {business.image ? (
                                             <img 
-                                                src={business.image} 
-                                                alt={business.name}
+                                                src={String(business.image)} 
+                                                alt={String(business.name)}
                                                 className="w-full h-full object-cover"
                                                 onError={(e) => {
                                                     const img = e.target as HTMLImageElement;
@@ -856,7 +858,7 @@ export default function PublicBusinessIndex({
                                             <div className="absolute top-3 left-3">
                                                 <Badge className="bg-green-600 text-white shadow-lg">
                                                     {(() => {
-                                                        const distance = parseFloat(business.distance);
+                                                        const distance = parseFloat(String(business.distance));
                                                         if (distance < 1) {
                                                             return `${(distance * 1000).toFixed(0)}m away`;
                                                         } else {
@@ -878,7 +880,7 @@ export default function PublicBusinessIndex({
                                         <div className="mb-4">
                                             <div className="flex-1">
                                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                                    {business.name}
+                                                    {String(business.name)}
                                                 </h3>
                                                 <div className="flex items-center text-sm text-gray-600 mb-2">
                                                     <MapPin className="w-4 h-4 mr-1" />
@@ -887,7 +889,7 @@ export default function PublicBusinessIndex({
                                                 {business.formatted_hours && (
                                                     <div className="flex items-center text-sm text-gray-600 mb-3">
                                                         <Clock className="w-4 h-4 mr-1" />
-                                                        {business.formatted_hours}
+                                                        {String(business.formatted_hours)}
                                                     </div>
                                                 )}
                                             </div>
@@ -895,7 +897,7 @@ export default function PublicBusinessIndex({
 
                                         {business.descriptions && (
                                             <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                                                {business.descriptions}
+                                                {String(business.descriptions)}
                                             </p>
                                         )}
 
@@ -925,11 +927,26 @@ export default function PublicBusinessIndex({
                                         )}
 
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center text-yellow-500">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <Star key={star} className="w-4 h-4 fill-current" />
-                                                ))}
-                                                <span className="text-gray-600 text-sm ml-1">(0 reviews)</span>
+                                            <div className="flex items-center">
+                                                {business.reviews_count && business.reviews_count > 0 ? (
+                                                    <>
+                                                        <div className="flex items-center">
+                                                            {renderStars(Math.round(business.reviews_avg_rate || 0))}
+                                                        </div>
+                                                        <span className="text-gray-600 text-sm ml-1">
+                                                            ({business.reviews_count} review{business.reviews_count !== 1 ? 's' : ''})
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="flex items-center text-gray-300">
+                                                            {renderStars(0)}
+                                                        </div>
+                                                        <span className="text-gray-600 text-sm ml-1">
+                                                            (No reviews yet)
+                                                        </span>
+                                                    </>
+                                                )}
                                             </div>
                                             <ChevronRight className="w-4 h-4 text-gray-400" />
                                         </div>

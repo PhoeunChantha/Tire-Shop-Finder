@@ -22,39 +22,40 @@ class ReviewController extends Controller
             'user_id' => 'nullable|string|max:255',
         ]);
 
-        // Set user_id from authenticated user if available
-        if (auth()->check()) {
-            $validated['user_id'] = auth()->id();
+        try {
+            if (auth()->check()) {
+                $validated['user_id'] = auth()->id();
+            }
+
+            // Prevent duplicate reviews from the same device for the same business
+            $existingReview = DB::table('reviews')
+                ->where('business_id', $validated['business_id'])
+                ->where(function ($query) use ($validated) {
+                    if (!empty($validated['user_id'])) {
+                        $query->where('user_id', $validated['user_id']);
+                    } else {
+                        $query->where('device_id', $validated['device_id']);
+                    }
+                })
+                ->exists();
+
+            if ($existingReview) {
+                return back()->with('error', 'You have already reviewed this business.');
+            }
+
+            DB::table('reviews')->insert([
+                'comment' => $validated['comment'],
+                'rate' => $validated['rate'],
+                'business_id' => $validated['business_id'],
+                'device_id' => $validated['device_id'],
+                'user_id' => $validated['user_id'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            return back()->with('success', 'Review submitted successfully! Thank you for your feedback.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred while submitting your review. Please try again.');
         }
-
-        // Prevent duplicate reviews from the same device for the same business
-        $existingReview = DB::table('reviews')
-            ->where('business_id', $validated['business_id'])
-            ->where(function ($query) use ($validated) {
-                if (!empty($validated['user_id'])) {
-                    $query->where('user_id', $validated['user_id']);
-                } else {
-                    $query->where('device_id', $validated['device_id']);
-                }
-            })
-            ->exists();
-
-        if ($existingReview) {
-            return back()->with('error', 'You have already reviewed this business.');
-        }
-
-        // Store the review
-        DB::table('reviews')->insert([
-            'comment' => $validated['comment'],
-            'rate' => $validated['rate'],
-            'business_id' => $validated['business_id'],
-            'device_id' => $validated['device_id'],
-            'user_id' => $validated['user_id'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return back()->with('success', 'Review submitted successfully! Thank you for your feedback.');
     }
 
     /**

@@ -19,6 +19,38 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /**
+     * Determines how to format page titles.
+     *
+     * @see https://inertiajs.com/title-and-meta
+     *
+     * @param  string  $title
+     * @return string
+     */
+    public function title(string $title): string
+    {
+        // Try to get business name from settings, fallback to config
+        try {
+            $businessSettings = \App\Models\BusinessSetting::pluck('value', 'type')->toArray();
+            $businessName = $businessSettings['business_name'] ?? config('app.name');
+        } catch (\Exception $e) {
+            $businessName = config('app.name');
+        }
+        
+        // If title is empty, use business name
+        if (empty($title)) {
+            return $businessName;
+        }
+        
+        // If title matches business name, just return title
+        if ($title === $businessName) {
+            return $title;
+        }
+        
+        // Return title with business name
+        return $title . ' - ' . $businessName;
+    }
+
+    /**
      * Determines the current asset version.
      *
      * @see https://inertiajs.com/asset-versioning
@@ -44,7 +76,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()?->load('roles'),
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),

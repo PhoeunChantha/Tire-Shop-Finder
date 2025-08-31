@@ -5,21 +5,28 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
-import Notiflix from 'notiflix';
+import { toast } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-// Make Notiflix available globally
-window.Notiflix = Notiflix;
+// Make toast available globally
+window.toast = toast;
 
-// Flash message handler using Notiflix
+// Flash message handler using Sonner
 const showFlashMessages = (page) => {
     const flash = page.props.flash;
     if (flash?.success) {
-        Notiflix.Notify.success(flash.success);
+        toast.success(flash.success);
     }
     if (flash?.error) {
-        Notiflix.Notify.failure(flash.error);
+        toast.error(flash.error);
+    }
+    if (flash?.info) {
+        toast.info(flash.info);
+    }
+    if (flash?.warning) {
+        toast.warning(flash.warning);
     }
 };
 
@@ -32,7 +39,12 @@ createInertiaApp({
         // Show flash messages on page render
         showFlashMessages(props.initialPage);
 
-        root.render(<App {...props} />);
+        root.render(
+            <>
+                <App {...props} />
+                <Toaster />
+            </>
+        );
     },
     progress: {
         color: '#4B5563',

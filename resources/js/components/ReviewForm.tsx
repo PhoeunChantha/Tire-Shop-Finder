@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,19 +29,20 @@ export default function ReviewForm({ isOpen, onClose, businessId, businessName }
         e.preventDefault();
         
         if (rating === 0) {
-            Notiflix.Notify.warning('Please select a rating before submitting your review.');
+            toast.warning('Please select a rating before submitting your review.');
             return;
         }
 
-        // Update the form data with the current rating
+        // Create submission data with current rating
         const submitData = {
-            ...data,
+            comment: data.comment,
             rate: rating.toString(),
-            business_id: businessId
+            business_id: businessId,
+            device_id: data.device_id,
+            user_id: data.user_id
         };
         
-        post('/reviews', {
-            data: submitData,
+        router.post('/reviews', submitData, {
             onSuccess: () => {
                 reset();
                 setRating(0);
@@ -52,9 +53,9 @@ export default function ReviewForm({ isOpen, onClose, businessId, businessName }
                 console.error('Review submission error:', errors);
                 if (Object.keys(errors).length > 0) {
                     const errorMessages = Object.values(errors).join('\n');
-                    Notiflix.Notify.failure(`Error submitting review:\n${errorMessages}`);
+                    toast.error(`Error submitting review: ${errorMessages}`);
                 } else {
-                    Notiflix.Notify.failure('Error submitting review. Please try again.');
+                    toast.error('Error submitting review. Please try again.');
                 }
             }
         });

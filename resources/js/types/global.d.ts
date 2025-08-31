@@ -1,12 +1,25 @@
 import type { route as routeFn } from 'ziggy-js';
-import type Notiflix from 'notiflix';
 
 declare global {
     const route: typeof routeFn;
     
     interface Window {
-        Notiflix: typeof Notiflix;
+        toast: {
+            success: (message: string) => void;
+            error: (message: string) => void;
+            info: (message: string) => void;
+            warning: (message: string) => void;
+            message: (message: string) => void;
+            loading: (message: string) => void;
+        };
     }
     
-    const Notiflix: typeof import('notiflix').default;
+    const toast: {
+        success: (message: string) => void;
+        error: (message: string) => void;
+        info: (message: string) => void;
+        warning: (message: string) => void;
+        message: (message: string) => void;
+        loading: (message: string) => void;
+    };
 }

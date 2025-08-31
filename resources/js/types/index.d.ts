@@ -1,6 +1,20 @@
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
+// Global toast declaration
+declare global {
+    interface Window {
+        toast: {
+            success: (message: string) => void;
+            error: (message: string) => void;
+            info: (message: string) => void;
+            warning: (message: string) => void;
+            message: (message: string) => void;
+            loading: (message: string) => void;
+        };
+    }
+}
+
 export interface Auth {
     user: User;
 }
@@ -17,9 +31,10 @@ export interface NavGroup {
 
 export interface NavItem {
     title: string;
-    href: string;
+    href?: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    items?: NavItem[];
 }
 
 export interface SharedData {
@@ -216,6 +231,22 @@ export interface Service {
     seo_keywords?: string[];
 }
 
+export interface Review {
+    id: number;
+    comment: string;
+    rate: number;
+    device_id?: string;
+    user_id: number;
+    business_id: number;
+    created_at: string;
+    updated_at: string;
+    user?: {
+        id: number;
+        name: string;
+        email: string;
+    } | null;
+}
+
 export interface Business {
     id: number;
     name: string;
@@ -235,6 +266,7 @@ export interface Business {
     closing_time?: string;
     formatted_hours?: string;
     services?: Service[];
+    reviews?: Review[];
     created_at: string;
     updated_at: string;
     owner?: User;
@@ -247,6 +279,8 @@ export interface Business {
     seo_description?: string;
     seo_image?: string;
     seo_keywords?: string[];
+    reviews_count?: number;
+    reviews_avg_rate?: number;
 }
 
 export interface BusinessCreateProps {

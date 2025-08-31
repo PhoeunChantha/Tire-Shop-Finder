@@ -56,7 +56,7 @@ export default function useBusinessSettingForm({
     const submitOptions = {
       onSuccess: handleSuccess,
       onError: handleError,
-      forceFormData: true, // Required for file uploads
+      forceFormData: true, 
     };
 
     post(route("business-settings.store"), submitOptions);

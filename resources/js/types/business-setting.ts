@@ -16,6 +16,14 @@ export interface BusinessSettingFormData {
     login_bg_image?: File | null;
     system_logo?: File | null;
     system_fav_icon?: File | null;
+    google_login_status?: string;
+    google_client_id?: string;
+    google_client_secret?: string;
+    google_redirect_uri?: string;
+    facebook_login_status?: string;
+    facebook_client_id?: string;
+    facebook_client_secret?: string;
+    facebook_redirect_uri?: string;
   };
   current_login_bg_image?: string | null;
   current_system_logo?: string | null;
@@ -28,6 +36,12 @@ export interface BusinessSettingErrors {
   login_bg_image?: string;
   system_logo?: string;
   system_fav_icon?: string;
+  google_client_id?: string;
+  google_client_secret?: string;
+  google_redirect_uri?: string;
+  facebook_client_id?: string;
+  facebook_client_secret?: string;
+  facebook_redirect_uri?: string;
   [key: string]: string | undefined; // Allow any additional error keys
 }
 
@@ -43,7 +57,7 @@ export interface BusinessSettingFormProps {
 }
 
 export interface BusinessSettingIndexProps {
-  businessSettings: BusinessSetting[];
+  businessSettingsData: BusinessSetting[];
 }
 
 // Hook types

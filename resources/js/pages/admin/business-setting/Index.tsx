@@ -19,8 +19,8 @@ const IMAGE_SETTING_TYPES = ['login_bg_image', 'system_logo', 'system_fav_icon']
  * Business Settings Index Page
  * Handles both creation and editing of business settings in a unified form
  */
-export default function Index({ businessSettings }: BusinessSettingIndexProps) {
-  const isEdit = businessSettings.length > 0;
+export default function Index({ businessSettingsData }: BusinessSettingIndexProps) {
+  const isEdit = businessSettingsData.length > 0;
 
   /**
    * Transform business settings array into form data structure
@@ -30,7 +30,7 @@ export default function Index({ businessSettings }: BusinessSettingIndexProps) {
     const typeData: Record<string, any> = {};
     const imageData: Record<string, string | null> = {};
 
-    businessSettings.forEach(setting => {
+    businessSettingsData.forEach(setting => {
       if (IMAGE_SETTING_TYPES.includes(setting.type as any)) {
         typeData[setting.type] = null;
         const imageUrl = setting.value
@@ -47,7 +47,7 @@ export default function Index({ businessSettings }: BusinessSettingIndexProps) {
       ...imageData
     };
     return result;
-  }, [businessSettings]);
+  }, [businessSettingsData]);
 
   const { data, setData, submit, processing, errors } = useBusinessSettingForm({
     initialData: initialFormData,

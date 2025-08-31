@@ -16,7 +16,9 @@ import {
     CheckCircle,
     XCircle,
     Edit,
-    Trash2
+    Trash2,
+    Settings,
+    Plus
 } from 'lucide-react';
 
 export default function BusinessShow({ auth, business }: BusinessShowProps) {
@@ -70,19 +72,21 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                             </Link>
 
                             {!business.is_vierify ? (
-                                <Link href={`/admin/businesses/${business.id}/verify`} method="patch" as="button">
-                                    <Button className="bg-green-600 hover:bg-green-700">
-                                        <CheckCircle className="w-4 h-4 mr-1" />
-                                        Verify Business
-                                    </Button>
-                                </Link>
+                                <Button 
+                                    className="bg-green-600 hover:bg-green-700"
+                                    onClick={() => router.patch(route('businesses.verify', business.id))}
+                                >
+                                    <CheckCircle className="w-4 h-4 mr-1" />
+                                    Verify Business
+                                </Button>
                             ) : (
-                                <Link href={`/admin/businesses/${business.id}/reject`} method="patch" as="button">
-                                    <Button variant="destructive">
-                                        <XCircle className="w-4 h-4 mr-1" />
-                                        Revoke Verification
-                                    </Button>
-                                </Link>
+                                <Button 
+                                    variant="destructive"
+                                    onClick={() => router.patch(route('businesses.reject', business.id))}
+                                >
+                                    <XCircle className="w-4 h-4 mr-1" />
+                                    Revoke Verification
+                                </Button>
                             )}
                         </div>
                     </div>
@@ -177,6 +181,78 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                     </CardContent>
                                 </Card>
                             )}
+
+                            {/* Business Services */}
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Settings className="w-5 h-5" />
+                                            Services ({business.services?.length || 0})
+                                        </CardTitle>
+                                        <Link href={route('admin.services.create', business.id)}>
+                                            <Button size="sm">
+                                                <Plus className="w-4 h-4 mr-1" />
+                                                Add Service
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    {business.services && business.services.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {business.services.map((service: any) => (
+                                                <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                    <div>
+                                                        <h4 className="font-medium text-gray-900">{service.name}</h4>
+                                                        {service.description && (
+                                                            <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                                                        )}
+                                                        {service.price && (
+                                                            <p className="text-sm font-medium text-green-600 mt-1">
+                                                                ${service.price}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Link href={route('admin.services.edit', service.id)}>
+                                                            <Button size="sm" variant="outline">
+                                                                <Edit className="w-3 h-3" />
+                                                            </Button>
+                                                        </Link>
+                                                        <Button 
+                                                            size="sm" 
+                                                            variant="destructive"
+                                                            onClick={() => {
+                                                                if (confirm('Are you sure you want to delete this service?')) {
+                                                                    router.delete(route('admin.services.destroy', service.id))
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Trash2 className="w-3 h-3" />
+                                                        </Button>
+                                                        <Badge variant={service.status ? "default" : "secondary"}>
+                                                            {service.status ? "Active" : "Inactive"}
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-6">
+                                            <Settings className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                                            <h3 className="text-sm font-medium text-gray-900 mb-1">No services added yet</h3>
+                                            <p className="text-sm text-gray-600 mb-3">This business hasn't added any services yet.</p>
+                                            <Link href={route('admin.services.create', business.id)}>
+                                                <Button size="sm">
+                                                    <Plus className="w-4 h-4 mr-1" />
+                                                    Add First Service
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
                         </div>
 
                         {/* Sidebar */}

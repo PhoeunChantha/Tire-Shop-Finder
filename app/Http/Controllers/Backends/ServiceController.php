@@ -45,4 +45,40 @@ class ServiceController extends Controller
         return redirect()->route('businesses.index')
             ->with('success', 'Services added successfully to ' . $business->name . '!');
     }
+
+    public function edit(Service $service): Response
+    {
+        $service->load(['business.owner', 'business.province', 'business.district', 'business.commune', 'business.village']);
+        
+        return Inertia::render('admin/service/edit', [
+            'service' => $service,
+            'business' => $service->business,
+        ]);
+    }
+
+    public function update(Request $request, Service $service): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'descriptions' => 'nullable|string',
+            'status' => 'required|boolean',
+        ]);
+
+        $service->update($validated);
+
+        return redirect()->route('businesses.show', $service->business->id)
+            ->with('success', 'Service updated successfully!');
+    }
+
+    public function destroy(Service $service): RedirectResponse
+    {
+        $businessName = $service->business->name;
+        $serviceName = $service->name;
+        
+        $service->delete();
+
+        return redirect()->back()
+            ->with('success', "Service '{$serviceName}' deleted from {$businessName} successfully!");
+    }
 }
