@@ -113,8 +113,12 @@ class BusinessController extends Controller
     {
         $business->load(['owner', 'province', 'district', 'commune', 'village', 'services']);
         
+        // Get raw business data and add translation arrays for form editing
+        $businessData = $business->toArray();
+        $translations = $business->getTranslationsForForm();
+        
         return Inertia::render('admin/business/edit', [
-            'business' => $business,
+            'business' => array_merge($businessData, $translations),
             'provinces' => Province::all(),
         ]);
     }

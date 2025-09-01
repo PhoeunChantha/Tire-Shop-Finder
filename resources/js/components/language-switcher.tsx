@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Button } from './ui/button';
 import {
     DropdownMenu,
@@ -122,19 +122,28 @@ export function LanguageSwitcherExtended() {
 
 export function LanguageSwitcherCompact() {
     const { i18n, t } = useTranslation();
+    const { locale } = usePage().props as { locale: string };
 
     const changeLanguage = (languageCode: string) => {
-        // Change frontend language
+        // Change frontend language first for immediate UI response
         i18n.changeLanguage(languageCode);
         
-        // Sync with backend via Laravel route
+        // Sync with backend via Laravel route (this will reload the page)
         router.get(`/language/${languageCode}`, {}, {
             preserveScroll: true,
-            preserveState: true,
+            preserveState: false, // Allow state refresh to sync locale
+            onSuccess: () => {
+                // Ensure i18n is synced after Laravel responds
+                if (i18n.language !== languageCode) {
+                    i18n.changeLanguage(languageCode);
+                }
+            }
         });
     };
 
-    const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+    // Use Laravel's locale as source of truth, fallback to i18n
+    const currentLang = locale || i18n.language;
+    const currentLanguage = languages.find(lang => lang.code === currentLang) || languages[0];
 
     return (
         <DropdownMenu>

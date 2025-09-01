@@ -11,7 +11,8 @@
       "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan migrate:status)",
       "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan make:migration add_seo_fields_to_businesses_table --table=businesses)",
       "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan make:migration add_seo_fields_to_services_table --table=services)",
-      "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan migrate)"
+      "Bash(/mnt/c/laragon/bin/php/php-8.2.17-Win32-vs16-x64/php.exe artisan migrate)",
+      "Bash(composer:*)"
     ],
     "deny": [],
     "ask": [],

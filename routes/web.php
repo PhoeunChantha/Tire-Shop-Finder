@@ -36,6 +36,11 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
+// Test translations page
+Route::get('/test-translations', function () {
+    return \Inertia\Inertia::render('test-translations');
+})->name('test.translations');
+
 // Language switching
 Route::get('/language/{locale}', function ($locale) {
     $availableLocales = config('app.available_locales', ['en']);

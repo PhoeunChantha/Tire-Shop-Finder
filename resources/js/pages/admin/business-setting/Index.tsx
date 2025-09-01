@@ -38,7 +38,17 @@ export default function Index({ businessSettingsData }: BusinessSettingIndexProp
           : null;
         imageData[`current_${setting.type}`] = imageUrl;
       } else {
-        typeData[setting.type] = setting.value;
+        // Handle translation data
+        if (setting.type.endsWith('_translations')) {
+          try {
+            typeData[setting.type] = JSON.parse(setting.value);
+          } catch (e) {
+            // If JSON parsing fails, treat as empty translations
+            typeData[setting.type] = { en: '', km: '' };
+          }
+        } else {
+          typeData[setting.type] = setting.value;
+        }
       }
     });
 

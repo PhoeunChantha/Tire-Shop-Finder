@@ -24,8 +24,15 @@ class BusinessSettingStoreRequest extends FormRequest
     {
         return [
             'type' => 'required|array',
-            'type.business_name' => 'required|string|max:255',
-            'type.description' => 'nullable|string|max:1000',
+            'type.name' => 'required|string|max:255',
+            'type.descriptions' => 'nullable|string|max:1000',
+            // Translation fields
+            'type.name_translations' => 'nullable|array',
+            'type.name_translations.en' => 'required|string|max:255',
+            'type.name_translations.km' => 'nullable|string|max:255',
+            'type.descriptions_translations' => 'nullable|array',
+            'type.descriptions_translations.en' => 'nullable|string|max:1000',
+            'type.descriptions_translations.km' => 'nullable|string|max:1000',
             'type.login_bg_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
             'type.system_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB
             'type.system_fav_icon' => 'nullable|file|mimes:jpeg,png,jpg,gif,ico|max:2048', // 2MB for favicon

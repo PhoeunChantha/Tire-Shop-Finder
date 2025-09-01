@@ -219,6 +219,14 @@ export interface Service {
     name: string;
     price: number;
     descriptions?: string;
+    name_translations?: {
+        en: string;
+        km: string;
+    };
+    descriptions_translations?: {
+        en: string;
+        km: string;
+    };
     status: boolean;
     image?: string;
     icon?: string;
@@ -252,6 +260,14 @@ export interface Business {
     name: string;
     slug: string;
     descriptions?: string;
+    name_translations?: {
+        en: string;
+        km: string;
+    };
+    descriptions_translations?: {
+        en: string;
+        km: string;
+    };
     image?: string;
     created_by: number;
     latitude?: string;
@@ -279,6 +295,14 @@ export interface Business {
     seo_description?: string;
     seo_image?: string;
     seo_keywords?: string[];
+    seo_title_translations?: {
+        en: string;
+        km: string;
+    };
+    seo_description_translations?: {
+        en: string;
+        km: string;
+    };
     reviews_count?: number;
     reviews_avg_rate?: number;
 }

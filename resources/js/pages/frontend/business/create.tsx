@@ -8,8 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { TimeRangePicker } from '@/components/ui/time-range-picker';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BusinessCreateProps, Province, District, Commune, Village } from '@/types';
-import { MapPin, Building, Clock } from 'lucide-react';
+import { MapPin, Building, Clock, Globe } from 'lucide-react';
 import { SEOFields } from '@/components/seo-fields';
 import axios from 'axios';
 
@@ -20,10 +21,19 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
     const [loadingDistricts, setLoadingDistricts] = useState(false);
     const [loadingCommunes, setLoadingCommunes] = useState(false);
     const [loadingVillages, setLoadingVillages] = useState(false);
+    const [activeLanguage, setActiveLanguage] = useState<'en' | 'km'>('en');
     
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         descriptions: '',
+        name_translations: {
+            en: '',
+            km: ''
+        },
+        descriptions_translations: {
+            en: '',
+            km: ''
+        },
         province_id: '',
         district_id: '',
         commune_id: '',
@@ -34,6 +44,14 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
         closing_time: '',
         seo_title: '',
         seo_description: '',
+        seo_title_translations: {
+            en: '',
+            km: ''
+        },
+        seo_description_translations: {
+            en: '',
+            km: ''
+        },
         seo_image: '',
         seo_keywords: [] as string[],
     });
@@ -130,34 +148,115 @@ export default function CreateBusiness({ auth, provinces }: BusinessCreateProps)
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Business Name <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        placeholder="e.g., Phnom Penh Tire Center"
-                                        className={errors.name ? 'border-red-500' : ''}
-                                    />
-                                    {errors.name && (
-                                        <p className="text-sm text-red-500">{errors.name}</p>
-                                    )}
-                                </div>
+                                {/* Language Tabs */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Globe className="w-5 h-5" />
+                                        <h3 className="text-lg font-medium">Business Information</h3>
+                                    </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="descriptions">Business Description</Label>
-                                    <Textarea
-                                        id="descriptions"
-                                        value={data.descriptions}
-                                        onChange={(e) => setData('descriptions', e.target.value)}
-                                        placeholder="Tell customers about your tire shop, services, and specialties..."
-                                        rows={3}
-                                        className={errors.descriptions ? 'border-red-500' : ''}
-                                    />
-                                    {errors.descriptions && (
-                                        <p className="text-sm text-red-500">{errors.descriptions}</p>
-                                    )}
+                                    <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as 'en' | 'km')}>
+                                        <TabsList className="grid w-full grid-cols-2 mb-6">
+                                            <TabsTrigger value="en" className="flex items-center gap-2">
+                                                <span>🇺🇸</span>
+                                                <span>English</span>
+                                            </TabsTrigger>
+                                            <TabsTrigger value="km" className="flex items-center gap-2">
+                                                <span>🇰🇭</span>
+                                                <span>ខ្មែរ</span>
+                                            </TabsTrigger>
+                                        </TabsList>
+
+                                        <TabsContent value="en" className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="name_en">Business Name (English) <span className="text-red-500">*</span></Label>
+                                                <Input
+                                                    id="name_en"
+                                                    type="text"
+                                                    value={data.name_translations.en}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setData('name_translations', {
+                                                            ...data.name_translations,
+                                                            en: value
+                                                        });
+                                                        // Also update main field
+                                                        setData('name', value);
+                                                    }}
+                                                    placeholder="e.g., Phnom Penh Tire Center"
+                                                    className={errors['name_translations.en'] ? 'border-red-500' : ''}
+                                                />
+                                                {errors['name_translations.en'] && (
+                                                    <p className="text-sm text-red-500">{errors['name_translations.en']}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="descriptions_en">Business Description (English)</Label>
+                                                <Textarea
+                                                    id="descriptions_en"
+                                                    value={data.descriptions_translations.en}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setData('descriptions_translations', {
+                                                            ...data.descriptions_translations,
+                                                            en: value
+                                                        });
+                                                        // Also update main field
+                                                        setData('descriptions', value);
+                                                    }}
+                                                    placeholder="Tell customers about your tire shop, services, and specialties..."
+                                                    rows={3}
+                                                    className={errors['descriptions_translations.en'] ? 'border-red-500' : ''}
+                                                />
+                                                {errors['descriptions_translations.en'] && (
+                                                    <p className="text-sm text-red-500">{errors['descriptions_translations.en']}</p>
+                                                )}
+                                            </div>
+                                        </TabsContent>
+
+                                        <TabsContent value="km" className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="name_km">ឈ្មោះអាជីវកម្ម (ខ្មែរ)</Label>
+                                                <Input
+                                                    id="name_km"
+                                                    type="text"
+                                                    value={data.name_translations.km}
+                                                    onChange={(e) => {
+                                                        setData('name_translations', {
+                                                            ...data.name_translations,
+                                                            km: e.target.value
+                                                        });
+                                                    }}
+                                                    placeholder="ឧ. ហាងកង់ភ្នំពេញ"
+                                                    className={errors['name_translations.km'] ? 'border-red-500' : ''}
+                                                />
+                                                {errors['name_translations.km'] && (
+                                                    <p className="text-sm text-red-500">{errors['name_translations.km']}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="descriptions_km">ការពិពណ៌នាអាជីវកម្ម (ខ្មែរ)</Label>
+                                                <Textarea
+                                                    id="descriptions_km"
+                                                    value={data.descriptions_translations.km}
+                                                    onChange={(e) => {
+                                                        setData('descriptions_translations', {
+                                                            ...data.descriptions_translations,
+                                                            km: e.target.value
+                                                        });
+                                                    }}
+                                                    placeholder="ប្រាប់អតិថិជនអំពីហាងកង់របស់អ្នក សេវាកម្ម និងជំនាញ..."
+                                                    rows={3}
+                                                    className={errors['descriptions_translations.km'] ? 'border-red-500' : ''}
+                                                />
+                                                {errors['descriptions_translations.km'] && (
+                                                    <p className="text-sm text-red-500">{errors['descriptions_translations.km']}</p>
+                                                )}
+                                            </div>
+                                        </TabsContent>
+                                    </Tabs>
                                 </div>
 
                                 <div className="space-y-4">

@@ -35,21 +35,6 @@ class Service extends Model
         return $this->belongsTo(Business::class, 'bussiness_id');
     }
 
-    /**
-     * Get SEO title with fallback to service name
-     */
-    public function getSeoTitleAttribute($value): string
-    {
-        return $value ?: $this->name;
-    }
-
-    /**
-     * Get SEO description with fallback to service description
-     */
-    public function getSeoDescriptionAttribute($value): string
-    {
-        return $value ?: $this->descriptions ?: "Quality {$this->name} service with professional installation and competitive pricing.";
-    }
 
     /**
      * Get SEO image with fallback to service image
@@ -57,5 +42,78 @@ class Service extends Model
     public function getSeoImageAttribute($value): ?string
     {
         return $value ?: $this->image;
+    }
+
+    /**
+     * Define translatable attributes for Spatie Laravel Translatable
+     */
+    public $translatable = [
+        'name',
+        'descriptions', 
+        'seo_title',
+        'seo_description'
+    ];
+
+    /**
+     * Accessor for name - handles JSON translations until Spatie is fully installed
+     */
+    public function getNameAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            return $translations[$locale] ?? $translations['en'] ?? '';
+        }
+        return $value;
+    }
+
+    /**
+     * Accessor for descriptions - handles JSON translations 
+     */
+    public function getDescriptionsAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            return $translations[$locale] ?? $translations['en'] ?? '';
+        }
+        return $value;
+    }
+
+    /**
+     * Accessor for seo_title - handles JSON translations 
+     */
+    public function getSeoTitleAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            $translated = $translations[$locale] ?? $translations['en'] ?? '';
+            return $translated ?: $this->name;
+        }
+        return $value ?: $this->name;
+    }
+
+    /**
+     * Accessor for seo_description - handles JSON translations 
+     */
+    public function getSeoDescriptionAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            $translated = $translations[$locale] ?? $translations['en'] ?? '';
+            return $translated ?: ($this->descriptions ?: "Quality {$this->name} service with professional installation and competitive pricing.");
+        }
+        return $value ?: ($this->descriptions ?: "Quality {$this->name} service with professional installation and competitive pricing.");
+    }
+
+    /**
+     * Check if a string is valid JSON
+     */
+    private function isJson($string)
+    {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 }

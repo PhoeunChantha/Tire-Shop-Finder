@@ -12,8 +12,14 @@ class BusinessSettingService
     public function updateSettings(array $validated): void
     {
         foreach ($validated['type'] as $key => $value) {
-            if (is_null($value) && $key !== 'business_name') {
+            // Skip null values except for required fields
+            if (is_null($value) && !in_array($key, ['name', 'name_translations', 'descriptions_translations'])) {
                 continue;
+            }
+
+            // Handle translation data by converting to JSON
+            if (str_ends_with($key, '_translations') && is_array($value)) {
+                $value = json_encode($value);
             }
 
             $existingSetting = BusinessSetting::where('type', $key)->first();

@@ -6,7 +6,7 @@ import { Upload, X, Image as ImageIcon, ExternalLink } from 'lucide-react';
 
 interface ImageUploadProps {
     label: string;
-    value?: string | File;
+    value?: string | File | null;
     onChange: (file: File | null, url?: string) => void;
     accept?: string;
     maxSize?: number; // in MB
@@ -117,7 +117,7 @@ export function ImageUpload({
     return (
         <div className={`space-y-3 ${className}`}>
             <Label className="flex items-center gap-2">
-                <ImageIcon className="w-4 h-4" />
+                {/* <ImageIcon className="w-4 h-4" /> */}
                 {label}
             </Label>
 

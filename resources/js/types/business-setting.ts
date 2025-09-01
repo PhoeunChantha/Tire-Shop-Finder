@@ -11,8 +11,16 @@ export interface BusinessSetting {
 
 export interface BusinessSettingFormData {
   type: {
-    business_name?: string;
-    description?: string;
+    name?: string;
+    descriptions?: string;
+    name_translations?: {
+      en: string;
+      km: string;
+    };
+    descriptions_translations?: {
+      en: string;
+      km: string;
+    };
     login_bg_image?: File | null;
     system_logo?: File | null;
     system_fav_icon?: File | null;
@@ -24,6 +32,8 @@ export interface BusinessSettingFormData {
     facebook_client_id?: string;
     facebook_client_secret?: string;
     facebook_redirect_uri?: string;
+    // Index signature to allow dynamic property access
+    [key: string]: any;
   };
   current_login_bg_image?: string | null;
   current_system_logo?: string | null;
@@ -31,8 +41,12 @@ export interface BusinessSettingFormData {
 }
 
 export interface BusinessSettingErrors {
-  business_name?: string;
-  description?: string;
+  name?: string;
+  descriptions?: string;
+  'name_translations.en'?: string;
+  'name_translations.km'?: string;
+  'descriptions_translations.en'?: string;
+  'descriptions_translations.km'?: string;
   login_bg_image?: string;
   system_logo?: string;
   system_fav_icon?: string;

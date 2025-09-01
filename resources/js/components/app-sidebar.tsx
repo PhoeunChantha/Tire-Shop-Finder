@@ -5,64 +5,66 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, Users, Shield, Key, Building, Settings, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/admin/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Businesses',
-        href: '/admin/businesses',
-        icon: Building,
-    },
-    {
-        title: 'Users',
-        href: '/admin/users',
-        icon: Users,
-    },
-    {
-        title: 'Roles',
-        href: '/admin/roles',
-        icon: Shield,
-    },
-    {
-        title: 'Permissions',
-        href: '/admin/permissions',
-        icon: Key,
-    },
-    {
-        title: 'Settings',
-        icon: Settings,
-        items: [
-            {
-                title: 'Business Settings',
-                href: '/admin/business-settings',
-            },
-            {
-                title: 'SEO',
-                href: '/admin/seo',
-            },
-        ],
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
 export function AppSidebar() {
+    const { t } = useTranslation();
+    
+    const mainNavItems: NavItem[] = [
+        {
+            title: t('dashboard'),
+            href: '/admin/dashboard',
+            icon: LayoutGrid,
+        },
+        {
+            title: t('businesses'),
+            href: '/admin/businesses',
+            icon: Building,
+        },
+        {
+            title: t('users'),
+            href: '/admin/users',
+            icon: Users,
+        },
+        {
+            title: t('roles'),
+            href: '/admin/roles',
+            icon: Shield,
+        },
+        {
+            title: t('permissions'),
+            href: '/admin/permissions',
+            icon: Key,
+        },
+        {
+            title: t('settings'),
+            icon: Settings,
+            items: [
+                {
+                    title: t('business_settings'),
+                    href: '/admin/business-settings',
+                },
+                {
+                    title: t('seo'),
+                    href: '/admin/seo',
+                },
+            ],
+        },
+    ];
+
+    const footerNavItems: NavItem[] = [
+        {
+            title: 'Repository',
+            href: 'https://github.com/laravel/react-starter-kit',
+            icon: Folder,
+        },
+        {
+            title: 'Documentation',
+            href: 'https://laravel.com/docs/starter-kits#react',
+            icon: BookOpen,
+        },
+    ];
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>

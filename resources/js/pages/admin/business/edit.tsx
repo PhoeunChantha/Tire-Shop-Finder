@@ -9,19 +9,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TimeRangePicker } from '@/components/ui/time-range-picker';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SEOFields } from '@/components/seo-fields';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { BusinessEditProps, District, Commune, Village } from '@/types';
-import { ArrowLeft, Building, MapPin, Settings, Plus, Edit } from 'lucide-react';
+import { ArrowLeft, Building, MapPin, Settings, Plus, Edit, Globe, Image } from 'lucide-react';
 import axios from 'axios';
 
 export default function BusinessEdit({ auth, business, provinces }: BusinessEditProps) {
     const [districts, setDistricts] = useState<District[]>([]);
     const [communes, setCommunes] = useState<Commune[]>([]);
     const [villages, setVillages] = useState<Village[]>([]);
+    const [activeLanguage, setActiveLanguage] = useState<'en' | 'km'>('en');
 
     const { data, setData, put, processing, errors } = useForm({
         name: business.name || '',
         descriptions: business.descriptions || '',
+        name_translations: business.name_translations || { en: business.name || '', km: '' },
+        descriptions_translations: business.descriptions_translations || { en: business.descriptions || '', km: '' },
         province_id: business.province_id?.toString() || '',
         district_id: business.district_id?.toString() || '',
         commune_id: business.commune_id?.toString() || '',
@@ -30,12 +35,15 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
         longitude: business.longitude || '',
         opening_time: business.opening_time || '',
         closing_time: business.closing_time || '',
-        status: business.status || false,
-        is_vierify: business.is_vierify || false,
+        status: business.status ?? false,
+        is_vierify: business.is_vierify ?? false,
         seo_title: business.seo_title || '',
         seo_description: business.seo_description || '',
-        seo_image: business.seo_image || '',
+        seo_title_translations: business.seo_title_translations || { en: business.seo_title || '', km: '' },
+        seo_description_translations: business.seo_description_translations || { en: business.seo_description || '', km: '' },
+        seo_image: business.seo_image || '' as string | File,
         seo_keywords: business.seo_keywords || [],
+        image: business.image || null as File | string | null,
     });
 
     // Load initial districts if province is selected
@@ -154,42 +162,117 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2">
-                                            <Building className="w-5 h-5" />
+                                            <Globe className="w-5 h-5" />
                                             Business Information
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="name">Business Name *</Label>
-                                            <Input
-                                                id="name"
-                                                type="text"
-                                                value={data.name}
-                                                onChange={(e) => setData('name', e.target.value)}
-                                                placeholder="Business name"
-                                                className={errors.name ? 'border-red-500' : ''}
-                                            />
-                                            {errors.name && (
-                                                <p className="text-sm text-red-500">{errors.name}</p>
-                                            )}
-                                        </div>
+                                    <CardContent className="space-y-6">
+                                        {/* Language Tabs for Business Information */}
+                                        <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as 'en' | 'km')}>
+                                            <TabsList className="grid w-full grid-cols-2 mb-6 max-w-md">
+                                                <TabsTrigger value="en" className="flex items-center gap-2">
+                                                    <span>🇺🇸</span>
+                                                    <span>English</span>
+                                                </TabsTrigger>
+                                                <TabsTrigger value="km" className="flex items-center gap-2">
+                                                    <span>🇰🇭</span>
+                                                    <span>ខ្មែរ</span>
+                                                </TabsTrigger>
+                                            </TabsList>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor="descriptions">Business Description</Label>
-                                            <Textarea
-                                                id="descriptions"
-                                                value={data.descriptions}
-                                                onChange={(e) => setData('descriptions', e.target.value)}
-                                                placeholder="Describe the business..."
-                                                rows={3}
-                                                className={errors.descriptions ? 'border-red-500' : ''}
-                                            />
-                                            {errors.descriptions && (
-                                                <p className="text-sm text-red-500">{errors.descriptions}</p>
-                                            )}
-                                        </div>
+                                            <TabsContent value="en" className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="name_en">Business Name (English) *</Label>
+                                                    <Input
+                                                        id="name_en"
+                                                        type="text"
+                                                        value={data.name_translations?.en || ''}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setData('name_translations', {
+                                                                ...data.name_translations,
+                                                                en: value
+                                                            });
+                                                            // Also update main field
+                                                            setData('name', value);
+                                                        }}
+                                                        placeholder="e.g., Phnom Penh Tire Center"
+                                                        className={`max-w-2xl ${errors['name_translations.en'] || errors.name ? 'border-red-500' : ''}`}
+                                                    />
+                                                    {(errors['name_translations.en'] || errors.name) && (
+                                                        <p className="text-sm text-red-500">{errors['name_translations.en'] || errors.name}</p>
+                                                    )}
+                                                </div>
 
-                                        <div className="space-y-2">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="descriptions_en">Business Description (English)</Label>
+                                                    <Textarea
+                                                        id="descriptions_en"
+                                                        value={data.descriptions_translations?.en || ''}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setData('descriptions_translations', {
+                                                                ...data.descriptions_translations,
+                                                                en: value
+                                                            });
+                                                            // Also update main field
+                                                            setData('descriptions', value);
+                                                        }}
+                                                        placeholder="Tell customers about the tire shop, services, and specialties..."
+                                                        rows={3}
+                                                        className={`max-w-2xl ${errors['descriptions_translations.en'] || errors.descriptions ? 'border-red-500' : ''}`}
+                                                    />
+                                                    {(errors['descriptions_translations.en'] || errors.descriptions) && (
+                                                        <p className="text-sm text-red-500">{errors['descriptions_translations.en'] || errors.descriptions}</p>
+                                                    )}
+                                                </div>
+                                            </TabsContent>
+
+                                            <TabsContent value="km" className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="name_km">ឈ្មោះអាជីវកម្ម (ខ្មែរ)</Label>
+                                                    <Input
+                                                        id="name_km"
+                                                        type="text"
+                                                        value={data.name_translations?.km || ''}
+                                                        onChange={(e) => {
+                                                            setData('name_translations', {
+                                                                ...data.name_translations,
+                                                                km: e.target.value
+                                                            });
+                                                        }}
+                                                        placeholder="ឧ. ហាងកង់ភ្នំពេញ"
+                                                        className={`max-w-2xl ${errors['name_translations.km'] ? 'border-red-500' : ''}`}
+                                                    />
+                                                    {errors['name_translations.km'] && (
+                                                        <p className="text-sm text-red-500">{errors['name_translations.km']}</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="descriptions_km">ការពិពណ៌នាអាជីវកម្ម (ខ្មែរ)</Label>
+                                                    <Textarea
+                                                        id="descriptions_km"
+                                                        value={data.descriptions_translations?.km || ''}
+                                                        onChange={(e) => {
+                                                            setData('descriptions_translations', {
+                                                                ...data.descriptions_translations,
+                                                                km: e.target.value
+                                                            });
+                                                        }}
+                                                        placeholder="ប្រាប់អតិថិជនអំពីហាងកង់ សេវាកម្ម និងជំនាញ..."
+                                                        rows={3}
+                                                        className={`max-w-2xl ${errors['descriptions_translations.km'] ? 'border-red-500' : ''}`}
+                                                    />
+                                                    {errors['descriptions_translations.km'] && (
+                                                        <p className="text-sm text-red-500">{errors['descriptions_translations.km']}</p>
+                                                    )}
+                                                </div>
+                                            </TabsContent>
+                                        </Tabs>
+
+                                        {/* Business Hours */}
+                                        <div className="space-y-2 pt-4 border-t">
                                             <Label>Business Hours</Label>
                                             <TimeRangePicker
                                                 startTime={data.opening_time}
@@ -326,18 +409,182 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
 
                                 {/* SEO Fields */}
                                 <Card>
-                                    <CardContent className="pt-6">
-                                        <SEOFields
-                                            seoTitle={data.seo_title}
-                                            seoDescription={data.seo_description}
-                                            seoImage={data.seo_image}
-                                            seoKeywords={data.seo_keywords}
-                                            onSeoTitleChange={(value) => setData('seo_title', value)}
-                                            onSeoDescriptionChange={(value) => setData('seo_description', value)}
-                                            onSeoImageChange={(value) => setData('seo_image', value)}
-                                            onSeoKeywordsChange={(keywords) => setData('seo_keywords', keywords)}
-                                            errors={errors}
-                                        />
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Settings className="w-5 h-5" />
+                                            SEO Settings
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-6">
+                                        {/* Language Tabs for SEO */}
+                                        <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as 'en' | 'km')}>
+                                            <TabsList className="grid w-full grid-cols-2 mb-6 max-w-md">
+                                                <TabsTrigger value="en" className="flex items-center gap-2">
+                                                    <span>🇺🇸</span>
+                                                    <span>English</span>
+                                                </TabsTrigger>
+                                                <TabsTrigger value="km" className="flex items-center gap-2">
+                                                    <span>🇰🇭</span>
+                                                    <span>ខ្មែរ</span>
+                                                </TabsTrigger>
+                                            </TabsList>
+
+                                            <TabsContent value="en" className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seo_title_en">SEO Title (English)</Label>
+                                                    <Input
+                                                        id="seo_title_en"
+                                                        type="text"
+                                                        value={data.seo_title_translations?.en || ''}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setData('seo_title_translations', {
+                                                                ...data.seo_title_translations,
+                                                                en: value
+                                                            });
+                                                            setData('seo_title', value);
+                                                        }}
+                                                        placeholder="SEO title for search engines"
+                                                        className={`max-w-2xl ${errors['seo_title_translations.en'] || errors.seo_title ? 'border-red-500' : ''}`}
+                                                    />
+                                                    <div className="text-sm text-muted-foreground">
+                                                        {(data.seo_title_translations?.en || '').length}/60 characters
+                                                        {(data.seo_title_translations?.en || '').length > 60 && (
+                                                            <span className="text-amber-600 ml-2">May be truncated in search results</span>
+                                                        )}
+                                                    </div>
+                                                    {(errors['seo_title_translations.en'] || errors.seo_title) && (
+                                                        <p className="text-sm text-red-500">{errors['seo_title_translations.en'] || errors.seo_title}</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seo_description_en">SEO Description (English)</Label>
+                                                    <Textarea
+                                                        id="seo_description_en"
+                                                        value={data.seo_description_translations?.en || ''}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setData('seo_description_translations', {
+                                                                ...data.seo_description_translations,
+                                                                en: value
+                                                            });
+                                                            setData('seo_description', value);
+                                                        }}
+                                                        placeholder="SEO description for search engines (150-160 characters recommended)"
+                                                        rows={3}
+                                                        className={`max-w-2xl ${errors['seo_description_translations.en'] || errors.seo_description ? 'border-red-500' : ''}`}
+                                                    />
+                                                    <div className="text-sm text-muted-foreground">
+                                                        {(data.seo_description_translations?.en || '').length}/160 characters
+                                                        {(data.seo_description_translations?.en || '').length > 160 && (
+                                                            <span className="text-amber-600 ml-2">May be truncated in search results</span>
+                                                        )}
+                                                    </div>
+                                                    {(errors['seo_description_translations.en'] || errors.seo_description) && (
+                                                        <p className="text-sm text-red-500">{errors['seo_description_translations.en'] || errors.seo_description}</p>
+                                                    )}
+                                                </div>
+                                            </TabsContent>
+
+                                            <TabsContent value="km" className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seo_title_km">ចំណងជើង SEO (ខ្មែរ)</Label>
+                                                    <Input
+                                                        id="seo_title_km"
+                                                        type="text"
+                                                        value={data.seo_title_translations?.km || ''}
+                                                        onChange={(e) => {
+                                                            setData('seo_title_translations', {
+                                                                ...data.seo_title_translations,
+                                                                km: e.target.value
+                                                            });
+                                                        }}
+                                                        placeholder="ចំណងជើង SEO សម្រាប់ម៉ាស៊ីនស្វែងរក"
+                                                        className={`max-w-2xl ${errors['seo_title_translations.km'] ? 'border-red-500' : ''}`}
+                                                    />
+                                                    <div className="text-sm text-muted-foreground">
+                                                        {(data.seo_title_translations?.km || '').length}/60 តួអក្សរ
+                                                    </div>
+                                                    {errors['seo_title_translations.km'] && (
+                                                        <p className="text-sm text-red-500">{errors['seo_title_translations.km']}</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seo_description_km">ការពិពណ៌នា SEO (ខ្មែរ)</Label>
+                                                    <Textarea
+                                                        id="seo_description_km"
+                                                        value={data.seo_description_translations?.km || ''}
+                                                        onChange={(e) => {
+                                                            setData('seo_description_translations', {
+                                                                ...data.seo_description_translations,
+                                                                km: e.target.value
+                                                            });
+                                                        }}
+                                                        placeholder="ការពិពណ៌នា SEO សម្រាប់ម៉ាស៊ីនស្វែងរក"
+                                                        rows={3}
+                                                        className={`max-w-2xl ${errors['seo_description_translations.km'] ? 'border-red-500' : ''}`}
+                                                    />
+                                                    <div className="text-sm text-muted-foreground">
+                                                        {(data.seo_description_translations?.km || '').length}/160 តួអក្សរ
+                                                    </div>
+                                                    {errors['seo_description_translations.km'] && (
+                                                        <p className="text-sm text-red-500">{errors['seo_description_translations.km']}</p>
+                                                    )}
+                                                </div>
+                                            </TabsContent>
+                                        </Tabs>
+
+                                        {/* SEO Image and Keywords */}
+                                        <div className="space-y-4 pt-4 border-t">
+                                            <div className="space-y-4">
+                                                {/* SEO Image */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seo_image">SEO Image</Label>
+                                                    <Input
+                                                        id="seo_image"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                setData('seo_image', file);
+                                                            }
+                                                        }}
+                                                        className={`max-w-md ${errors.seo_image ? 'border-red-500' : ''}`}
+                                                    />
+                                                    {errors.seo_image && (
+                                                        <p className="text-sm text-red-500">{errors.seo_image}</p>
+                                                    )}
+                                                    {data.seo_image && typeof data.seo_image === 'string' && (
+                                                        <p className="text-sm text-muted-foreground">Current: {data.seo_image}</p>
+                                                    )}
+                                                </div>
+
+                                                {/* SEO Keywords */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="seo_keywords">SEO Keywords (comma-separated)</Label>
+                                                    <Input
+                                                        id="seo_keywords"
+                                                        type="text"
+                                                        value={data.seo_keywords.join(', ')}
+                                                        onChange={(e) => {
+                                                            const keywords = e.target.value
+                                                                .split(',')
+                                                                .map(k => k.trim())
+                                                                .filter(k => k.length > 0);
+                                                            setData('seo_keywords', keywords);
+                                                        }}
+                                                        placeholder="tire, car, automotive, repair, service"
+                                                        className={`max-w-2xl ${errors.seo_keywords ? 'border-red-500' : ''}`}
+                                                    />
+                                                    {errors.seo_keywords && (
+                                                        <p className="text-sm text-red-500">{errors.seo_keywords}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
 
@@ -437,6 +684,33 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                             <p>• Active Status: Whether the business is currently operational</p>
                                             <p>• Verified: Admin approval to show on the public website</p>
                                         </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Business Image */}
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Image className="w-5 h-5" />
+                                            Business Image
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ImageUpload
+                                            label=""
+                                            value={data.image}
+                                            onChange={(file, url) => {
+                                                if (file) {
+                                                    setData('image', file);
+                                                } else if (url) {
+                                                    setData('image', url);
+                                                } else {
+                                                    setData('image', null);
+                                                }
+                                            }}
+                                            error={errors.image}
+                                            placeholder="Upload business image or enter URL"
+                                        />
                                     </CardContent>
                                 </Card>
 

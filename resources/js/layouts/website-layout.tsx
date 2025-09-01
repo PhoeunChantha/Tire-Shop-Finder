@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher, LanguageSwitcherCompact } from '@/components/language-switcher';
+import { LanguageSwitcher } from '@/components/ui/language-switcher';
 
 interface WebsiteLayoutProps {
   children: React.ReactNode;
@@ -105,7 +105,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex md:items-center md:space-x-4">
-              <LanguageSwitcherCompact />
+              <LanguageSwitcher />
               {auth?.user ? (
                 <UserProfileDropdown user={auth.user} />
               ) : (
@@ -128,7 +128,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-2">
-              <LanguageSwitcherCompact />
+              <LanguageSwitcher />
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
@@ -237,7 +237,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                 <span className="text-xl font-bold">Tire Shop Finder</span>
               </div>
               <p className="text-gray-300 text-sm">
-                Find the best tire shops across Cambodia. Connect with trusted tire dealers and service providers near you.
+                {t('website_description')}
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -254,26 +254,26 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('quick_links')}</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link href="/" className="text-gray-300 hover:text-white transition-colors">
-                    Home
+                    {t('home')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/tire-shops" className="text-gray-300 hover:text-white transition-colors">
-                    Find Tire Shops
+                    {t('find_tire_shops')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
-                    About Us
+                    {t('about')} {t('us')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
-                    Contact
+                    {t('contact')}
                   </Link>
                 </li>
               </ul>
@@ -281,26 +281,26 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
 
             {/* Services */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Services</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('services')}</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    Tire Installation
+                    {t('tire_installation')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    Tire Repair
+                    {t('tire_repair')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    Wheel Alignment
+                    {t('wheel_alignment')}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    Tire Replacement
+                    {t('tire_replacement')}
                   </a>
                 </li>
               </ul>
@@ -308,7 +308,7 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
 
             {/* Contact Info */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('contact_info')}</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center space-x-2">
                   <MapPin className="w-4 h-4 text-blue-400" />

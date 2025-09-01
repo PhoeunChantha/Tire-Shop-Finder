@@ -73,6 +73,8 @@ const resources = {
       roles: 'Roles',
       permissions: 'Permissions',
       settings: 'Settings',
+      business_settings: 'Business Settings',
+      seo: 'SEO',
       business_management: 'Business Management',
       user_management: 'User Management',
       
@@ -108,6 +110,16 @@ const resources = {
       submit_review: 'Submit Review',
       no_reviews: 'No reviews yet',
       stars: '{{count}} stars',
+      
+      // Website Content
+      website_description: 'Find the best tire shops across Cambodia. Connect with trusted tire dealers and service providers near you.',
+      quick_links: 'Quick Links',
+      us: 'Us',
+      contact_info: 'Contact Info',
+      tire_installation: 'Tire Installation',
+      tire_repair: 'Tire Repair',
+      wheel_alignment: 'Wheel Alignment',
+      tire_replacement: 'Tire Replacement',
       
       // Language
       language: 'Language',
@@ -161,7 +173,7 @@ const resources = {
       // Search & Filter
       search: 'ស្វែងរក',
       filter: 'តម្រង',
-      filters: 'តម្រងများ',
+      filters: 'តម្រង',
       clear_filters: 'សម្អាតតម្រង',
       no_results: 'រកមិនឃើញលទ្ធផល',
       showing_results: 'បង្ហាញលទ្ធផល {{count}}',
@@ -184,6 +196,8 @@ const resources = {
       roles: 'តួនាទី',
       permissions: 'សិទ្ធិ',
       settings: 'ការកំណត់',
+      business_settings: 'ការកំណត់អាជីវកម្ម',
+      seo: 'SEO',
       business_management: 'ការគ្រប់គ្រងអាជីវកម្ម',
       user_management: 'ការគ្រប់គ្រងអ្នកប្រើប្រាស់',
       
@@ -220,6 +234,16 @@ const resources = {
       no_reviews: 'មិនទាន់មានការវាយតម្លៃនៅឡើយទេ',
       stars: '{{count}} ផ្កាយ',
       
+      // Website Content
+      website_description: 'រកហាងកង់ដ៏ល្អបំផុតនៅទូទាំងកម្ពុជា។ ទាក់ទងជាមួយអ្នកលក់កង់ និងអ្នកផ្តល់សេវាកម្មដែលអាចទុកចិត្តបាននៅជិតអ្នក។',
+      quick_links: 'តំណភ្ជាប់រហ័ស',
+      us: 'យើង',
+      contact_info: 'ព័ត៌មានទំនាក់ទំនង',
+      tire_installation: 'ការដំឡើងកង់',
+      tire_repair: 'ការជួសជុលកង់',
+      wheel_alignment: 'ការតម្រឹមកង់',
+      tire_replacement: 'ការប្តូរកង់',
+      
       // Language
       language: 'ភាសា',
       english: 'English',
@@ -251,5 +275,41 @@ i18n
     defaultNS: 'common',
     ns: ['common'],
   });
+
+// Sync with Laravel locale on page load
+if (typeof window !== 'undefined') {
+  // Listen for page loads and sync with Laravel locale
+  const syncLanguageWithLaravel = () => {
+    const pageElement = document.getElementById('app');
+    if (pageElement) {
+      const pageData = pageElement.getAttribute('data-page');
+      if (pageData) {
+        try {
+          const parsed = JSON.parse(pageData);
+          const laravelLocale = parsed.props?.locale;
+          if (laravelLocale && ['en', 'km'].includes(laravelLocale) && laravelLocale !== i18n.language) {
+            i18n.changeLanguage(laravelLocale);
+          }
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+    }
+  };
+
+  // Sync immediately and on DOM changes
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncLanguageWithLaravel);
+  } else {
+    syncLanguageWithLaravel();
+  }
+  
+  // Also sync on navigation (for SPA behavior)
+  const originalPushState = window.history.pushState;
+  window.history.pushState = function(...args) {
+    originalPushState.apply(window.history, args);
+    setTimeout(syncLanguageWithLaravel, 100);
+  };
+}
 
 export default i18n;

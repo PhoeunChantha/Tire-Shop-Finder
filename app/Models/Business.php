@@ -102,21 +102,6 @@ class Business extends Model
         return $this->reviews()->count();
     }
 
-    /**
-     * Get SEO title with fallback to business name
-     */
-    public function getSeoTitleAttribute($value): string
-    {
-        return $value ?: $this->name;
-    }
-
-    /**
-     * Get SEO description with fallback to business description
-     */
-    public function getSeoDescriptionAttribute($value): string
-    {
-        return $value ?: $this->descriptions ?: "Professional tire services at {$this->name}. Find tire installation, repair, and replacement services.";
-    }
 
     /**
      * Get SEO image with fallback to business image
@@ -135,6 +120,106 @@ class Business extends Model
                 $business->slug = Str::slug($business->name) . '-' . Str::random(4);
             }
         });
+    }
+
+    /**
+     * Define translatable attributes for Spatie Laravel Translatable
+     */
+    public $translatable = [
+        'name',
+        'descriptions', 
+        'seo_title',
+        'seo_description'
+    ];
+
+    /**
+     * Accessor for name - handles JSON translations until Spatie is fully installed
+     */
+    public function getNameAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            return $translations[$locale] ?? $translations['en'] ?? '';
+        }
+        return $value;
+    }
+
+    /**
+     * Accessor for descriptions - handles JSON translations 
+     */
+    public function getDescriptionsAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            return $translations[$locale] ?? $translations['en'] ?? '';
+        }
+        return $value;
+    }
+
+    /**
+     * Accessor for seo_title - handles JSON translations 
+     */
+    public function getSeoTitleAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            $translated = $translations[$locale] ?? $translations['en'] ?? '';
+            return $translated ?: $this->name;
+        }
+        return $value ?: $this->name;
+    }
+
+    /**
+     * Accessor for seo_description - handles JSON translations 
+     */
+    public function getSeoDescriptionAttribute($value)
+    {
+        if (is_string($value) && $this->isJson($value)) {
+            $translations = json_decode($value, true);
+            $locale = app()->getLocale();
+            $translated = $translations[$locale] ?? $translations['en'] ?? '';
+            return $translated ?: ($this->descriptions ?: "Professional tire services at {$this->name}. Find tire installation, repair, and replacement services.");
+        }
+        return $value ?: ($this->descriptions ?: "Professional tire services at {$this->name}. Find tire installation, repair, and replacement services.");
+    }
+
+    /**
+     * Check if a string is valid JSON
+     */
+    private function isJson($string)
+    {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+
+    /**
+     * Get translations for form editing
+     * Returns array with individual translations for each locale
+     */
+    public function getTranslationsForForm(): array
+    {
+        $translations = [];
+        $translatableFields = ['name', 'descriptions', 'seo_title', 'seo_description'];
+        
+        foreach ($translatableFields as $field) {
+            $rawValue = $this->getAttributes()[$field] ?? null;
+            
+            if ($rawValue && $this->isJson($rawValue)) {
+                $fieldTranslations = json_decode($rawValue, true);
+                $translations[$field . '_translations'] = $fieldTranslations;
+            } else {
+                // Fallback for non-JSON data
+                $translations[$field . '_translations'] = [
+                    'en' => $rawValue ?? '',
+                    'km' => ''
+                ];
+            }
+        }
+        
+        return $translations;
     }
 
 }

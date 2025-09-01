@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import InputError from "@/components/input-error";
 import UploadImage from "@/components/ui/upload-image";
+import { Globe } from "lucide-react";
 
 import type { BusinessSettingFormProps } from "@/types/business-setting";
 
@@ -25,11 +26,31 @@ export default function BusinessSettingForm({
   isEdit = false,
 }: BusinessSettingFormProps): React.ReactElement {
   
+  const [activeLanguage, setActiveLanguage] = useState<'en' | 'km'>('en');
+  
   /**
    * Handle input change for nested form fields
    */
   const handleInputChange = (field: string, value: string | File | null) => {
     setData(`type[${field}]`, value);
+  };
+
+  /**
+   * Handle translation input changes
+   */
+  const handleTranslationChange = (field: string, locale: 'en' | 'km', value: string) => {
+    const translationsField = `${field}_translations`;
+    const currentTranslations = data.type?.[translationsField] || { en: '', km: '' };
+    
+    setData(`type[${translationsField}]`, {
+      ...currentTranslations,
+      [locale]: value
+    });
+
+    // Also update the main field with English value for backwards compatibility
+    if (locale === 'en') {
+      setData(`type[${field}]`, value);
+    }
   };
 
   return (
@@ -44,43 +65,88 @@ export default function BusinessSettingForm({
           {/* Business Information Section */}
           <div className="space-y-4">
             <div className="border-b border-gray-200 pb-4">
-              <h3 className="text-lg font-medium text-gray-900">Business Information</h3>
+              <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <Globe className="w-5 h-5" />
+                Business Information
+              </h3>
               <p className="mt-1 text-sm text-gray-600">
-                Basic information about your business.
+                Basic information about your business in multiple languages.
               </p>
             </div>
 
-        <div className="grid gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="business_name" className="required">
-              Business Name
-            </Label>
-            <Input
-              id="business_name"
-              type="text"
-              value={data.type?.business_name || ""}
-              onChange={(e) => handleInputChange("business_name", e.target.value)}
-              placeholder="Enter your business name"
-              required
-              className="max-w-md"
-            />
-            <InputError message={errors?.business_name} />
-          </div>
+            {/* Language Tabs for Business Information */}
+            <Tabs value={activeLanguage} onValueChange={(value) => setActiveLanguage(value as 'en' | 'km')}>
+              <TabsList className="grid w-full grid-cols-2 mb-6 max-w-md">
+                <TabsTrigger value="en" className="flex items-center gap-2">
+                  <span>🇺🇸</span>
+                  <span>English</span>
+                </TabsTrigger>
+                <TabsTrigger value="km" className="flex items-center gap-2">
+                  <span>🇰🇭</span>
+                  <span>ខ្មែរ</span>
+                </TabsTrigger>
+              </TabsList>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={data.type?.description || ""}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Brief description of your business (optional)"
-              rows={3}
-              className="max-w-md"
-            />
-            <InputError message={errors?.description} />
+              <TabsContent value="en" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name_en" className="required">
+                    Business Name (English)
+                  </Label>
+                  <Input
+                    id="name_en"
+                    type="text"
+                    value={data.type?.name_translations?.en || data.type?.name || ""}
+                    onChange={(e) => handleTranslationChange("name", "en", e.target.value)}
+                    placeholder="Enter your business name in English"
+                    required
+                    className="max-w-md"
+                  />
+                  <InputError message={errors?.name || errors?.['name_translations.en']} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="descriptions_en">Description (English)</Label>
+                  <Textarea
+                    id="descriptions_en"
+                    value={data.type?.descriptions_translations?.en || data.type?.descriptions || ""}
+                    onChange={(e) => handleTranslationChange("descriptions", "en", e.target.value)}
+                    placeholder="Brief description of your business in English (optional)"
+                    rows={3}
+                    className="max-w-md"
+                  />
+                  <InputError message={errors?.descriptions || errors?.['descriptions_translations.en']} />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="km" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name_km">ឈ្មោះអាជីវកម្ម (ខ្មែរ)</Label>
+                  <Input
+                    id="name_km"
+                    type="text"
+                    value={data.type?.name_translations?.km || ""}
+                    onChange={(e) => handleTranslationChange("name", "km", e.target.value)}
+                    placeholder="បញ្ចូលឈ្មោះអាជីវកម្មរបស់អ្នកជាភាសាខ្មែរ"
+                    className="max-w-md"
+                  />
+                  <InputError message={errors?.['name_translations.km']} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="descriptions_km">ការពិពណ៌នា (ខ្មែរ)</Label>
+                  <Textarea
+                    id="descriptions_km"
+                    value={data.type?.descriptions_translations?.km || ""}
+                    onChange={(e) => handleTranslationChange("descriptions", "km", e.target.value)}
+                    placeholder="ការពិពណ៌នាអាជីវកម្មរបស់អ្នកជាភាសាខ្មែរ (ស្រេចចិត្ត)"
+                    rows={3}
+                    className="max-w-md"
+                  />
+                  <InputError message={errors?.['descriptions_translations.km']} />
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
-        </div>
-      </div>
 
       {/* Branding Section */}
       <div className="space-y-4">
