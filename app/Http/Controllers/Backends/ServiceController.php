@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Backends;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Models\Service;
+use App\Helpers\ImageManager;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
@@ -35,6 +37,8 @@ class ServiceController extends Controller
             'services.*.descriptions_translations.en' => 'nullable|string',
             'services.*.descriptions_translations.km' => 'nullable|string',
             'services.*.status' => 'required|boolean',
+            'services.*.image' => 'nullable',
+            'services.*.icon' => 'nullable|string|max:100',
         ]);
 
         // Create services for the business
@@ -44,6 +48,18 @@ class ServiceController extends Controller
                 'price' => $serviceData['price'],
                 'status' => $serviceData['status'],
             ];
+
+            // Handle image upload
+            if (isset($serviceData['image']) && $serviceData['image'] instanceof UploadedFile) {
+                $createData['image'] = ImageManager::uploadImage($serviceData['image'], 'services');
+            } elseif (isset($serviceData['image']) && is_string($serviceData['image']) && !empty($serviceData['image'])) {
+                $createData['image'] = $serviceData['image']; // URL string
+            }
+
+            // Handle icon
+            if (isset($serviceData['icon']) && !empty($serviceData['icon'])) {
+                $createData['icon'] = $serviceData['icon'];
+            }
 
             // Handle translations for name
             if (isset($serviceData['name_translations'])) {
@@ -124,6 +140,8 @@ class ServiceController extends Controller
             'descriptions_translations.en' => 'nullable|string',
             'descriptions_translations.km' => 'nullable|string',
             'status' => 'required|boolean',
+            'image' => 'nullable',
+            'icon' => 'nullable|string|max:100',
         ]);
 
         // Update the service with both translation and main fields
@@ -131,6 +149,20 @@ class ServiceController extends Controller
             'price' => $validated['price'],
             'status' => $validated['status'],
         ];
+
+        // Handle image upload/update
+        if (isset($validated['image']) && $validated['image'] instanceof UploadedFile) {
+            $updateData['image'] = ImageManager::updateImage($validated['image'], $service->image, 'services');
+        } elseif (isset($validated['image']) && is_string($validated['image']) && !empty($validated['image'])) {
+            $updateData['image'] = $validated['image']; // URL string
+        } elseif (isset($validated['image']) && empty($validated['image'])) {
+            // Keep existing image if empty string is passed
+        }
+
+        // Handle icon
+        if (isset($validated['icon'])) {
+            $updateData['icon'] = $validated['icon'];
+        }
 
         // Handle translations for name
         if (isset($validated['name_translations'])) {

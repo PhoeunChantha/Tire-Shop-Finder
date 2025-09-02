@@ -1,11 +1,33 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building, MapPin, Clock, Star, Eye, Edit, Wrench, Plus, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import DeleteModal from '@/components/DeleteModal';
+import { Building, MapPin, Clock, Star, Eye, Edit, Wrench, Plus, CheckCircle, AlertCircle, ExternalLink, Trash2 } from 'lucide-react';
 
 export default function UserDashboard({ auth, business }: { auth: any; business?: any }) {
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [serviceToDelete, setServiceToDelete] = useState<any>(null);
+    const [processing, setProcessing] = useState(false);
+
+    const handleDeleteClick = (service: any) => {
+        setServiceToDelete(service);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (serviceToDelete) {
+            setProcessing(true);
+            router.delete(`/businesses/${business.slug}/services/${serviceToDelete.id}`, {
+                onFinish: () => {
+                    setProcessing(false);
+                    setDeleteModalOpen(false);
+                    setServiceToDelete(null);
+                }
+            });
+        }
+    };
     return (
         <WebsiteLayout>
             <Head title="My Dashboard" />
@@ -169,8 +191,29 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                                                         <div className="flex-1">
                                                             <h4 className="font-medium text-gray-900">{service.name}</h4>
                                                             <p className="text-sm text-gray-600">${service.price}</p>
+                                                            {service.descriptions && (
+                                                                <p className="text-xs text-gray-500 mt-1 line-clamp-1">{service.descriptions}</p>
+                                                            )}
                                                         </div>
-                                                        <div className={`w-2 h-2 rounded-full ${service.status ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                                                        <div className="flex items-center gap-2 ml-4">
+                                                            <div className={`w-2 h-2 rounded-full ${service.status ? 'bg-green-500' : 'bg-gray-400'}`} title={service.status ? 'Active' : 'Inactive'}></div>
+                                                            <div className="flex items-center gap-1">
+                                                                <Link href={`/businesses/${business.slug}/services/${service.id}/edit`}>
+                                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Edit service">
+                                                                        <Edit className="w-3 h-3" />
+                                                                    </Button>
+                                                                </Link>
+                                                                <Button 
+                                                                    variant="ghost" 
+                                                                    size="sm" 
+                                                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50" 
+                                                                    onClick={() => handleDeleteClick(service)}
+                                                                    title="Delete service"
+                                                                >
+                                                                    <Trash2 className="w-3 h-3" />
+                                                                </Button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -218,6 +261,18 @@ export default function UserDashboard({ auth, business }: { auth: any; business?
                     )}
                 </div>
             </div>
+
+            {/* Delete Modal */}
+            <DeleteModal
+                open={deleteModalOpen}
+                setOpen={setDeleteModalOpen}
+                onConfirm={handleDeleteConfirm}
+                title="Delete Service"
+                description="Are you sure you want to delete this service? This action cannot be undone and will remove the service from your business listing."
+                itemName={serviceToDelete?.name}
+                confirmText="Delete Service"
+                processing={processing}
+            />
         </WebsiteLayout>
     );
 }

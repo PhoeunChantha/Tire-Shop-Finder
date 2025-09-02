@@ -60,9 +60,18 @@ class BusinessController extends Controller
             'seo_keywords.*' => 'string|max:100',
         ]);
 
+        // Handle translations by storing as JSON
+        $nameTranslations = $validated['name_translations'] ?? ['en' => $validated['name'], 'km' => ''];
+        $descriptionsTranslations = $validated['descriptions_translations'] ?? ['en' => $validated['descriptions'] ?? '', 'km' => ''];
+        $seoTitleTranslations = $validated['seo_title_translations'] ?? ['en' => $validated['seo_title'] ?? '', 'km' => ''];
+        $seoDescriptionTranslations = $validated['seo_description_translations'] ?? ['en' => $validated['seo_description'] ?? '', 'km' => ''];
+
+        // Create the business with JSON translations
         $business = Business::create([
-            'name' => $validated['name'],
-            'descriptions' => $validated['descriptions'],
+            'name' => json_encode($nameTranslations),
+            'descriptions' => json_encode($descriptionsTranslations),
+            'seo_title' => json_encode($seoTitleTranslations),
+            'seo_description' => json_encode($seoDescriptionTranslations),
             'province_id' => $validated['province_id'],
             'district_id' => $validated['district_id'],
             'commune_id' => $validated['commune_id'],
@@ -71,35 +80,12 @@ class BusinessController extends Controller
             'longitude' => $validated['longitude'],
             'opening_time' => $validated['opening_time'],
             'closing_time' => $validated['closing_time'],
-            'seo_title' => $validated['seo_title'] ?? null,
-            'seo_description' => $validated['seo_description'] ?? null,
             'seo_image' => $validated['seo_image'] ?? null,
             'seo_keywords' => $validated['seo_keywords'] ?? null,
             'created_by' => Auth::id(),
             'status' => true,
             'is_vierify' => false, // Requires admin verification
         ]);
-
-        // Save translations using Spatie's approach
-        if (!empty($validated['name_translations'])) {
-            \Log::info('Saving name translations:', $validated['name_translations']);
-            $business->setTranslations('name', $validated['name_translations']);
-        }
-
-        if (!empty($validated['descriptions_translations'])) {
-            $business->setTranslations('descriptions', $validated['descriptions_translations']);
-        }
-
-        if (!empty($validated['seo_title_translations'])) {
-            $business->setTranslations('seo_title', $validated['seo_title_translations']);
-        }
-
-        if (!empty($validated['seo_description_translations'])) {
-            $business->setTranslations('seo_description', $validated['seo_description_translations']);
-        }
-        
-        // Save the business to persist translations
-        $business->save();
 
         // Assign business role to the user when they create their first business
         $user = Auth::user();
@@ -140,6 +126,12 @@ class BusinessController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'descriptions' => 'nullable|string',
+            'name_translations' => 'nullable|array',
+            'name_translations.en' => 'required|string|max:255',
+            'name_translations.km' => 'nullable|string|max:255',
+            'descriptions_translations' => 'nullable|array',
+            'descriptions_translations.en' => 'nullable|string',
+            'descriptions_translations.km' => 'nullable|string',
             'province_id' => 'required|exists:provinces,id',
             'district_id' => 'required|exists:districts,id',
             'commune_id' => 'nullable|exists:communes,id',
@@ -150,12 +142,40 @@ class BusinessController extends Controller
             'closing_time' => 'nullable|string',
             'seo_title' => 'nullable|string|max:255',
             'seo_description' => 'nullable|string|max:500',
+            'seo_title_translations' => 'nullable|array',
+            'seo_title_translations.en' => 'nullable|string|max:255',
+            'seo_title_translations.km' => 'nullable|string|max:255',
+            'seo_description_translations' => 'nullable|array',
+            'seo_description_translations.en' => 'nullable|string|max:500',
+            'seo_description_translations.km' => 'nullable|string|max:500',
             'seo_image' => 'nullable|string|max:2048',
             'seo_keywords' => 'nullable|array',
             'seo_keywords.*' => 'string|max:100',
         ]);
 
-        $business->update($validated);
+        // Handle translations by storing as JSON
+        $nameTranslations = $validated['name_translations'] ?? ['en' => $validated['name'], 'km' => ''];
+        $descriptionsTranslations = $validated['descriptions_translations'] ?? ['en' => $validated['descriptions'] ?? '', 'km' => ''];
+        $seoTitleTranslations = $validated['seo_title_translations'] ?? ['en' => $validated['seo_title'] ?? '', 'km' => ''];
+        $seoDescriptionTranslations = $validated['seo_description_translations'] ?? ['en' => $validated['seo_description'] ?? '', 'km' => ''];
+
+        // Update business with JSON translations
+        $business->update([
+            'name' => json_encode($nameTranslations),
+            'descriptions' => json_encode($descriptionsTranslations),
+            'seo_title' => json_encode($seoTitleTranslations),
+            'seo_description' => json_encode($seoDescriptionTranslations),
+            'province_id' => $validated['province_id'],
+            'district_id' => $validated['district_id'],
+            'commune_id' => $validated['commune_id'],
+            'village_id' => $validated['village_id'],
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'opening_time' => $validated['opening_time'],
+            'closing_time' => $validated['closing_time'],
+            'seo_image' => $validated['seo_image'],
+            'seo_keywords' => $validated['seo_keywords'],
+        ]);
 
         return redirect()->route('user.dashboard')
             ->with('success', 'Business updated successfully!');

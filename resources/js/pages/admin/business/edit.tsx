@@ -14,6 +14,7 @@ import { SEOFields } from '@/components/seo-fields';
 import { ImageUpload } from '@/components/ui/image-upload';
 import { BusinessEditProps, District, Commune, Village } from '@/types';
 import { ArrowLeft, Building, MapPin, Settings, Plus, Edit, Globe, Image } from 'lucide-react';
+import { router } from '@inertiajs/react';
 import axios from 'axios';
 
 export default function BusinessEdit({ auth, business, provinces }: BusinessEditProps) {
@@ -135,7 +136,9 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/businesses/${business.id}`);
+        const formData = { ...data };
+        formData._method = 'PUT';
+        router.post(`/admin/businesses/${business.id}`, formData);
     };
 
     return (

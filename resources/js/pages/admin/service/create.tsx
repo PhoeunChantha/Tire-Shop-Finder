@@ -8,8 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ImageUpload } from '@/components/ui/image-upload';
+import { IconInput } from '@/components/ui/icon-input';
 import { Business } from '@/types';
-import { Building, Plus, Trash2, Wrench, Globe } from 'lucide-react';
+import { Building, Plus, Trash2, Wrench, Globe, Image } from 'lucide-react';
 
 interface AdminServiceCreateProps {
     business: Business;
@@ -28,6 +30,8 @@ interface ServiceFormData {
         km: string;
     };
     status: boolean;
+    image: File | string | null;
+    icon: string | null;
 }
 
 export default function AdminServiceCreate({ business }: AdminServiceCreateProps) {
@@ -39,7 +43,9 @@ export default function AdminServiceCreate({ business }: AdminServiceCreateProps
             descriptions: '', 
             name_translations: { en: '', km: '' },
             descriptions_translations: { en: '', km: '' },
-            status: true 
+            status: true,
+            image: null,
+            icon: null
         }
     ]);
 
@@ -50,7 +56,9 @@ export default function AdminServiceCreate({ business }: AdminServiceCreateProps
             descriptions: '', 
             name_translations: { en: '', km: '' },
             descriptions_translations: { en: '', km: '' },
-            status: true 
+            status: true,
+            image: null,
+            icon: null
         }]
     });
 
@@ -75,7 +83,9 @@ export default function AdminServiceCreate({ business }: AdminServiceCreateProps
             descriptions: '', 
             name_translations: { en: '', km: '' },
             descriptions_translations: { en: '', km: '' },
-            status: true 
+            status: true,
+            image: null,
+            icon: null
         }];
         setServices(newServices);
         setData('services', newServices);
@@ -210,6 +220,46 @@ export default function AdminServiceCreate({ business }: AdminServiceCreateProps
                                                         {errors[`services.${index}.price`] && (
                                                             <p className="text-sm text-red-500">{errors[`services.${index}.price`]}</p>
                                                         )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {/* Service Image */}
+                                                    <div className="space-y-2">
+                                                        <ImageUpload
+                                                            label="Service Image"
+                                                            value={service.image}
+                                                            onChange={(file, url) => {
+                                                                const newServices = [...services];
+                                                                if (file) {
+                                                                    newServices[index] = { ...newServices[index], image: file };
+                                                                } else if (url) {
+                                                                    newServices[index] = { ...newServices[index], image: url };
+                                                                } else {
+                                                                    newServices[index] = { ...newServices[index], image: null };
+                                                                }
+                                                                setServices(newServices);
+                                                                setData('services', newServices);
+                                                            }}
+                                                            error={errors[`services.${index}.image`]}
+                                                            placeholder="Upload service image or enter URL"
+                                                        />
+                                                    </div>
+
+                                                    {/* Service Icon */}
+                                                    <div className="space-y-2">
+                                                        <IconInput
+                                                            label="Service Icon"
+                                                            value={service.icon || ''}
+                                                            onChange={(iconName) => {
+                                                                const newServices = [...services];
+                                                                newServices[index] = { ...newServices[index], icon: iconName };
+                                                                setServices(newServices);
+                                                                setData('services', newServices);
+                                                            }}
+                                                            error={errors[`services.${index}.icon`]}
+                                                            placeholder="battery-charging, wrench, car..."
+                                                        />
                                                     </div>
                                                 </div>
 

@@ -8,8 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ImageUpload } from '@/components/ui/image-upload';
+import { IconInput } from '@/components/ui/icon-input';
 import { Business, Service } from '@/types';
-import { Wrench, ArrowLeft, Globe } from 'lucide-react';
+import { Wrench, ArrowLeft, Globe, Image } from 'lucide-react';
 
 interface AdminServiceEditProps {
     service: Service;
@@ -26,6 +28,8 @@ export default function AdminServiceEdit({ service, business }: AdminServiceEdit
         name_translations: service.name_translations || { en: service.name || '', km: '' },
         descriptions_translations: service.descriptions_translations || { en: service.descriptions || '', km: '' },
         status: service.status ?? true,
+        image: service.image || null as File | string | null,
+        icon: service.icon || null,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -114,6 +118,40 @@ export default function AdminServiceEdit({ service, business }: AdminServiceEdit
                                                 {errors.price && (
                                                     <p className="text-sm text-red-500">{errors.price}</p>
                                                 )}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {/* Service Image */}
+                                            <div className="space-y-2">
+                                                <ImageUpload
+                                                    label="Service Image"
+                                                    value={data.image}
+                                                    onChange={(file, url) => {
+                                                        if (file) {
+                                                            setData('image', file);
+                                                        } else if (url) {
+                                                            setData('image', url);
+                                                        } else {
+                                                            setData('image', null);
+                                                        }
+                                                    }}
+                                                    error={errors.image}
+                                                    placeholder="Upload service image or enter URL"
+                                                />
+                                            </div>
+
+                                            {/* Service Icon */}
+                                            <div className="space-y-2">
+                                                <IconInput
+                                                    label="Service Icon"
+                                                    value={data.icon || ''}
+                                                    onChange={(iconName) => {
+                                                        setData('icon', iconName);
+                                                    }}
+                                                    error={errors.icon}
+                                                    placeholder="battery-charging, wrench, car..."
+                                                />
                                             </div>
                                         </div>
 
