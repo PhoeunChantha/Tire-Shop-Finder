@@ -14,10 +14,14 @@ import PaginationWrapper from "@/components/PaginationWrapper"
 import useRolesIndex from "@/hooks/roles/use-rolesIndex";
 import RolesTable from "@/components/roles/RolesTable"
 import CreateRoleModal from "@/pages/admin/role/create"
+import EditRoleModal from "@/pages/admin/role/edit"
 import { RoleIndexProps } from "@/types";
 
 export default function Index({ auth, roles, permissions, filters }: RoleIndexProps) {
   const {
+    editingRole,
+    editModalOpen,
+    setEditModalOpen,
     deleteModalOpen,
     setDeleteModalOpen,
     deletingRole,
@@ -58,6 +62,14 @@ export default function Index({ auth, roles, permissions, filters }: RoleIndexPr
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Role Modal */}
+      <EditRoleModal
+        role={editingRole}
+        permissions={permissions}
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+      />
 
       <DeleteModal
         open={deleteModalOpen}

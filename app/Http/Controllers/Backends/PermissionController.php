@@ -9,7 +9,6 @@ use App\Http\Traits\HasDataTableFilters;
 use App\Http\Requests\PermissionStoreRequest;
 use App\Http\Requests\PermissionUpdateRequest;
 use Spatie\Permission\Models\Permission;
-
 class PermissionController extends Controller
 {
     use HasDataTableFilters;

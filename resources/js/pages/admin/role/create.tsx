@@ -72,7 +72,6 @@ export default function CreateRoleModal({
 
         <RoleForm
           data={data}
-          setData={setData}
           errors={errors}
           processing={processing}
           permissions={permissions}

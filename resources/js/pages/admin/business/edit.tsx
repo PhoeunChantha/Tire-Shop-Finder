@@ -15,6 +15,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { BusinessEditProps, District, Commune, Village } from '@/types';
 import { ArrowLeft, Building, MapPin, Settings, Plus, Edit, Globe, Image } from 'lucide-react';
 import { router } from '@inertiajs/react';
+import { getImageUrl } from '@/lib/imageHelper';
 import axios from 'axios';
 
 export default function BusinessEdit({ auth, business, provinces }: BusinessEditProps) {
@@ -42,9 +43,9 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
         seo_description: business.seo_description || '',
         seo_title_translations: business.seo_title_translations || { en: business.seo_title || '', km: '' },
         seo_description_translations: business.seo_description_translations || { en: business.seo_description || '', km: '' },
-        seo_image: business.seo_image || '' as string | File,
+        seo_image: business.seo_image ? (business.seo_image.startsWith('http') || business.seo_image.startsWith('/') ? business.seo_image : getImageUrl(business.seo_image, 'businesses')) : '' as string | File,
         seo_keywords: business.seo_keywords || [],
-        image: business.image || null as File | string | null,
+        image: business.image ? getImageUrl(business.image, 'businesses') : null as File | string | null,
     });
 
     // Load initial districts if province is selected
@@ -544,25 +545,22 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                             <div className="space-y-4">
                                                 {/* SEO Image */}
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="seo_image">SEO Image</Label>
-                                                    <Input
-                                                        id="seo_image"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => {
-                                                            const file = e.target.files?.[0];
+                                                    <ImageUpload
+                                                        label="SEO Image"
+                                                        value={data.seo_image}
+                                                        onChange={(file, url) => {
                                                             if (file) {
                                                                 setData('seo_image', file);
+                                                            } else if (url) {
+                                                                setData('seo_image', url);
+                                                            } else {
+                                                                setData('seo_image', '');
                                                             }
                                                         }}
-                                                        className={`max-w-md ${errors.seo_image ? 'border-red-500' : ''}`}
+                                                        error={errors.seo_image}
+                                                        placeholder="Upload SEO image or enter URL (1200x630 recommended)"
+                                                        maxSize={10}
                                                     />
-                                                    {errors.seo_image && (
-                                                        <p className="text-sm text-red-500">{errors.seo_image}</p>
-                                                    )}
-                                                    {data.seo_image && typeof data.seo_image === 'string' && (
-                                                        <p className="text-sm text-muted-foreground">Current: {data.seo_image}</p>
-                                                    )}
                                                 </div>
 
                                                 {/* SEO Keywords */}

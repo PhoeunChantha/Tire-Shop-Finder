@@ -11,7 +11,6 @@ use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
-
 class ServiceController extends Controller
 {
     public function create(Business $business): Response

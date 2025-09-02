@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Traits\HasDataTableFilters;
 use App\Http\Requests\UserUpdateRequest;
-
 class UserController extends Controller
 {
     use HasDataTableFilters;

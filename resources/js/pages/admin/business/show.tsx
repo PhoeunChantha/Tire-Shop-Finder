@@ -18,8 +18,10 @@ import {
     Edit,
     Trash2,
     Settings,
-    Plus
+    Plus,
+    ImageIcon
 } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageHelper';
 
 export default function BusinessShow({ auth, business }: BusinessShowProps) {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -44,6 +46,12 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                 setDeleting(false);
             },
         });
+    };
+    const getBusinessImageUrl = (business: any) => {
+        if (business.image) {
+            return getImageUrl(business.image, 'businesses');
+        }
+        return null;
     };
 
     return (
@@ -72,7 +80,7 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                             </Link>
 
                             {!business.is_vierify ? (
-                                <Button 
+                                <Button
                                     className="bg-green-600 hover:bg-green-700"
                                     onClick={() => router.patch(route('businesses.verify', business.id))}
                                 >
@@ -80,7 +88,7 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                     Verify Business
                                 </Button>
                             ) : (
-                                <Button 
+                                <Button
                                     variant="destructive"
                                     onClick={() => router.patch(route('businesses.reject', business.id))}
                                 >
@@ -173,11 +181,17 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                         <CardTitle>Business Image</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <img
-                                            src={business.image}
-                                            alt={business.name}
-                                            className="w-full max-w-md rounded-lg shadow-sm"
-                                        />
+                                            {getBusinessImageUrl(business) ? (
+                                            <img
+                                                src={getBusinessImageUrl(business)!}
+                                                alt={business.name}
+                                                className="w-full max-w-md rounded-lg shadow-sm"
+                                            />
+                                        ) : (
+                                            <div className="w-35 h-35 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                                                <ImageIcon className="w-8 h-8 text-gray-400" />
+                                            </div>
+                                        )}
                                     </CardContent>
                                 </Card>
                             )}
@@ -220,8 +234,8 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                                                 <Edit className="w-3 h-3" />
                                                             </Button>
                                                         </Link>
-                                                        <Button 
-                                                            size="sm" 
+                                                        <Button
+                                                            size="sm"
                                                             variant="destructive"
                                                             onClick={() => {
                                                                 if (confirm('Are you sure you want to delete this service?')) {

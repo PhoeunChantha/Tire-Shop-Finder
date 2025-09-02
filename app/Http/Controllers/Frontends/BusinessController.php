@@ -13,7 +13,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-
 class BusinessController extends Controller
 {
     public function create(): Response

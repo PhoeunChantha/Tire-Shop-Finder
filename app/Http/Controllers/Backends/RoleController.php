@@ -19,6 +19,8 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        // Check if user can view roles
+        $this->authorize('viewAny', Role::class);
         $filterConfig = [
             'search' => [
                 'type' => 'search',
@@ -40,7 +42,11 @@ class RoleController extends Controller
         return Inertia::render('admin/role/index', [
             'roles' => $roles,
             'filters' => $filters,
-            'permissions' => Permission::all()
+            'permissions' => Permission::all(),
+            'can' => [
+                'create' => auth()->user()->can('create', Role::class),
+                'manage_permissions' => auth()->user()->can('assignPermissions', new Role()),
+            ]
         ]);
     }
 
@@ -49,6 +55,8 @@ class RoleController extends Controller
      */
     public function create()
     {
+        // Check if user can create roles
+        $this->authorize('create', Role::class);
         return Inertia::render('admin/role/create', [
             'permissions' => Permission::all()
         ]);
@@ -59,6 +67,8 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if user can create roles
+        $this->authorize('create', Role::class);
         try {
             $request->validate([
                 'name' => 'required|string|max:255|unique:roles,name',
@@ -69,6 +79,8 @@ class RoleController extends Controller
             $role = Role::create(['name' => $request->name]);
             
             if ($request->has('permissions')) {
+                // Check if user can assign permissions to this role
+                $this->authorize('assignPermissions', $role);
                 $role->syncPermissions($request->permissions);
             }
             return redirect()->route('roles.index')->with('success', 'Role created successfully.');
@@ -83,8 +95,15 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
+        // Check if user can view this role
+        $this->authorize('view', $role);
         return Inertia::render('admin/role/show', [
-            'role' => $role->load('permissions')
+            'role' => $role->load('permissions'),
+            'can' => [
+                'update' => auth()->user()->can('update', $role),
+                'delete' => auth()->user()->can('delete', $role),
+                'assign_permissions' => auth()->user()->can('assignPermissions', $role),
+            ]
         ]);
     }
 
@@ -93,9 +112,14 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        // Check if user can update this role
+        $this->authorize('update', $role);
         return Inertia::render('admin/role/edit', [
             'role' => $role->load('permissions'),
-            'permissions' => Permission::all()
+            'permissions' => Permission::all(),
+            'can' => [
+                'assign_permissions' => auth()->user()->can('assignPermissions', $role),
+            ]
         ]);
     }
 
@@ -104,6 +128,8 @@ class RoleController extends Controller
      */
    public function update(Request $request, Role $role)
     {
+        // Check if user can update this role
+        $this->authorize('update', $role);
         try {
             $request->validate([
                 'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
@@ -114,6 +140,8 @@ class RoleController extends Controller
             $role->update(['name' => $request->name]);
 
             if ($request->has('permissions')) {
+                // Check if user can assign permissions to this role
+                $this->authorize('assignPermissions', $role);
                 $role->syncPermissions($request->permissions);
             }
             return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
@@ -128,6 +156,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        // Check if user can delete this role
+        $this->authorize('delete', $role);
         try {
             // Prevent deletion of super-admin role
             if ($role->name === 'super-admin') {

@@ -17,7 +17,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Traits\HasDataTableFilters;
-
 class BusinessController extends Controller
 {
     use HasDataTableFilters;

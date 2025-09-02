@@ -75,7 +75,7 @@ export default function RoleForm({
       {Object.keys(groupedPermissions).length > 0 && (
         <div className="space-y-4">
           <Label>Permissions</Label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 items-center border rounded-lg p-4 max-h-64 overflow-y-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-4  border rounded-lg p-4 max-h-64 overflow-y-auto">
             {Object.entries(groupedPermissions).map(([module, perms]) => (
               <div key={module} className="space-y-2">
                 <h3 className="flex items-center gap-2 font-semibold text-sm text-gray-700 capitalize">
