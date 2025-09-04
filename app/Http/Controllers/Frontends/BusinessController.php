@@ -17,6 +17,8 @@ class BusinessController extends Controller
 {
     public function create(): Response
     {
+        $this->authorize('create', Business::class);
+
         $provinces = Province::all();
         
         return Inertia::render('frontend/business/create', [
@@ -26,9 +28,8 @@ class BusinessController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // Debug: Log the incoming request data
-        \Log::info('Business creation request data:', $request->all());
-        
+        $this->authorize('create', Business::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'descriptions' => 'nullable|string',
@@ -98,10 +99,7 @@ class BusinessController extends Controller
 
     public function edit(Business $business): Response
     {
-        // Ensure user can only edit their own business
-        if ($business->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('update', $business);
 
         $business->load(['province', 'district', 'commune', 'village']);
         
@@ -117,10 +115,7 @@ class BusinessController extends Controller
 
     public function update(Request $request, Business $business): RedirectResponse
     {
-        // Ensure user can only update their own business
-        if ($business->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorize('update', $business);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

@@ -20,6 +20,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
         $filterConfig = [
             'search' => [
                 'type' => 'search',
@@ -64,6 +65,7 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
         return Inertia::render('admin/user/create', [
             'roles' => Role::all(),
         ]);
@@ -74,6 +76,7 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
+        $this->authorize('create', User::class);
         $validated = $request->validated();
         
         try {
@@ -120,6 +123,7 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
+        $this->authorize('update', User::class);
         $user = User::with(['roles'])->findOrFail($id);
         
         return Inertia::render('admin/user/edit', [
@@ -133,6 +137,7 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
+        $this->authorize('update', User::class);
         $validated = $request->validated();
 
         try {
@@ -174,6 +179,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        $this->authorize('delete', User::class);
         try {
             $user = User::findOrFail($id);
             $user->delete();

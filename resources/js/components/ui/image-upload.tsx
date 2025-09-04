@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button } from './button';
 import { Input } from './input';
 import { Label } from './label';
-import { Upload, X, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
     label: string;
@@ -27,14 +27,11 @@ export function ImageUpload({
     placeholder = "Select an image or enter URL",
     error,
     className = "",
-    allowUrl = true,
+    allowUrl = false,
 }: ImageUploadProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [dragActive, setDragActive] = useState(false);
-    const [urlInput, setUrlInput] = useState(typeof value === 'string' ? value : '');
-    const [inputMode, setInputMode] = useState<'upload' | 'url'>(
-        typeof value === 'string' && value ? 'url' : 'upload'
-    );
+    // Removed URL-related state since allowUrl is now false by default
 
     const handleFileSelect = (file: File) => {
         if (file.size > maxSize * 1024 * 1024) {
@@ -43,8 +40,6 @@ export function ImageUpload({
         }
 
         onChange(file);
-        setInputMode('upload');
-        setUrlInput('');
     };
 
     const handleDrop = (e: React.DragEvent) => {
@@ -76,17 +71,8 @@ export function ImageUpload({
         }
     };
 
-    const handleUrlChange = (url: string) => {
-        setUrlInput(url);
-        if (url.trim()) {
-            onChange(null, url.trim());
-            setInputMode('url');
-        }
-    };
-
     const handleClear = () => {
         onChange(null);
-        setUrlInput('');
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -97,7 +83,18 @@ export function ImageUpload({
             return URL.createObjectURL(value);
         }
         if (typeof value === 'string' && value) {
-            return value;
+            // Handle different URL formats
+            if (value.startsWith('http://') || value.startsWith('https://')) {
+                return value; // Full URL
+            }
+            if (value.startsWith('/')) {
+                return value; // Already has leading slash
+            }
+            if (value.startsWith('uploads/')) {
+                return `/${value}`; // Add leading slash
+            }
+            // Default to storage path if it's just a filename
+            return `/storage/banners/${value}`;
         }
         return null;
     };
@@ -121,44 +118,7 @@ export function ImageUpload({
                 {label}
             </Label>
 
-            {allowUrl && (
-                <div className="flex gap-2 mb-3">
-                    <Button
-                        type="button"
-                        variant={inputMode === 'upload' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setInputMode('upload')}
-                    >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload
-                    </Button>
-                    <Button
-                        type="button"
-                        variant={inputMode === 'url' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setInputMode('url')}
-                    >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        URL
-                    </Button>
-                </div>
-            )}
-
-            {inputMode === 'url' && allowUrl ? (
-                <div className="space-y-2">
-                    <Input
-                        type="url"
-                        placeholder="https://example.com/image.jpg"
-                        value={urlInput}
-                        onChange={(e) => handleUrlChange(e.target.value)}
-                        className={error ? 'border-red-500' : ''}
-                    />
-                    <p className="text-sm text-muted-foreground">
-                        Enter a direct link to an image (jpg, png, gif, webp)
-                    </p>
-                </div>
-            ) : (
-                <div
+            <div
                     className={`
                         border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer
                         ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}
@@ -202,7 +162,6 @@ export function ImageUpload({
                         </div>
                     )}
                 </div>
-            )}
 
             {preview && previewUrl && (
                 <div className="relative">
@@ -211,8 +170,12 @@ export function ImageUpload({
                         alt="Preview"
                         className="w-full max-w-md h-32 object-cover rounded-lg border"
                         onError={(e) => {
-                            console.error('Image preview failed to load');
+                            console.error('Image preview failed to load:', previewUrl);
+                            console.error('Original value:', value);
                             e.currentTarget.style.display = 'none';
+                        }}
+                        onLoad={() => {
+                            console.log('Image preview loaded successfully:', previewUrl);
                         }}
                     />
                     <Button
@@ -226,7 +189,6 @@ export function ImageUpload({
                     </Button>
                 </div>
             )}
-
             {value && !preview && (
                 <Button
                     type="button"

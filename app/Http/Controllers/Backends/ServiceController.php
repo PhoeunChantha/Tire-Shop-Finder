@@ -15,6 +15,8 @@ class ServiceController extends Controller
 {
     public function create(Business $business): Response
     {
+        $this->authorize('create', Service::class);
+
         $business->load(['owner', 'province', 'district', 'commune', 'village']);
         
         return Inertia::render('admin/service/create', [
@@ -24,6 +26,8 @@ class ServiceController extends Controller
 
     public function store(Request $request, Business $business): RedirectResponse
     {
+        $this->authorize('create', Service::class);
+
         $validated = $request->validate([
             'services' => 'required|array|min:1',
             'services.*.name' => 'required|string|max:255',
@@ -83,6 +87,7 @@ class ServiceController extends Controller
 
     public function edit(Service $service): Response
     {
+        $this->authorize('update', $service);
         $service->load(['business.owner', 'business.province', 'business.district', 'business.commune', 'business.village']);
         
         // Get raw attributes from database (before accessors process them)
@@ -128,6 +133,8 @@ class ServiceController extends Controller
 
     public function update(Request $request, Service $service): RedirectResponse
     {
+        $this->authorize('update', $service);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -185,6 +192,8 @@ class ServiceController extends Controller
 
     public function destroy(Service $service): RedirectResponse
     {
+        $this->authorize('delete', $service);
+
         $businessName = $service->business->name;
         $serviceName = $service->name;
         

@@ -15,10 +15,7 @@ class ServiceController extends Controller
 {
     public function create(Business $business): Response
     {
-        // Ensure the business belongs to the authenticated user
-        if ($business->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('create', Service::class);
 
         return Inertia::render('frontend/service/create', [
             'business' => $business
@@ -27,14 +24,8 @@ class ServiceController extends Controller
 
     public function store(Request $request, Business $business): RedirectResponse
     {
-        // Ensure the business belongs to the authenticated user
-        if ($business->created_by !== Auth::id()) {
-            abort(403, 'Unauthorized');
-        }
-
-        // Debug: Log the incoming request data
-        \Log::info('Service creation request data:', $request->all());
-
+        $this->authorize('create', Service::class);
+        
         $validated = $request->validate([
             'services' => 'required|array|min:1',
             'services.*.name' => 'required|string|max:255',
@@ -69,10 +60,7 @@ class ServiceController extends Controller
 
     public function edit(Business $business, Service $service): Response
     {
-        // Ensure the business belongs to the authenticated user
-        if ($business->created_by !== Auth::id() || $service->bussiness_id !== $business->id) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('update', $service);
 
         // Load service with translation data
         $serviceWithTranslations = $service->toArray();
@@ -98,10 +86,7 @@ class ServiceController extends Controller
 
     public function update(Request $request, Business $business, Service $service): RedirectResponse
     {
-        // Ensure the business belongs to the authenticated user
-        if ($business->created_by !== Auth::id() || $service->bussiness_id !== $business->id) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('update', $service);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -133,10 +118,7 @@ class ServiceController extends Controller
 
     public function destroy(Business $business, Service $service): RedirectResponse
     {
-        // Ensure the business belongs to the authenticated user
-        if ($business->created_by !== Auth::id() || $service->bussiness_id !== $business->id) {
-            abort(403, 'Unauthorized');
-        }
+        $this->authorize('delete', $service);
 
         $service->delete();
 

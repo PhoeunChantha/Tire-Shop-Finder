@@ -17,6 +17,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Traits\HasDataTableFilters;
+use Illuminate\Support\Facades\Bus;
+
 class BusinessController extends Controller
 {
     use HasDataTableFilters;
@@ -27,6 +29,7 @@ class BusinessController extends Controller
 
     public function index(Request $request): Response
     {
+        $this->authorize('viewAny', Business::class);
         $query = Business::with(['owner', 'province', 'district', 'commune', 'village'])
             ->orderBy('created_at', 'desc');
 
@@ -66,7 +69,8 @@ class BusinessController extends Controller
     }
 
     public function create(): Response
-    {
+    {   
+         $this->authorize('create', Business::class);
         return Inertia::render('admin/business/create', [
             'provinces' => Province::all(),
             'users' => User::select('id', 'name', 'email')->get(),
@@ -75,6 +79,8 @@ class BusinessController extends Controller
 
     public function store(BusinessStoreRequest $request): RedirectResponse
     {
+        $this->authorize('create', Business::class);
+
         $validated = $request->validated();
 
         $business = $this->businessService->createBusiness($validated);
@@ -110,6 +116,8 @@ class BusinessController extends Controller
 
     public function edit(Business $business): Response
     {
+        $this->authorize('update', $business);
+
         $business->load(['owner', 'province', 'district', 'commune', 'village', 'services']);
         
         // Get raw business data and add translation arrays for form editing
@@ -124,6 +132,8 @@ class BusinessController extends Controller
 
     public function update(BusinessUpdateRequest $request, Business $business): RedirectResponse
     {
+        $this->authorize('update', $business);
+
         $validated = $request->validated();
 
         $this->businessService->updateBusiness($business, $validated);
@@ -134,6 +144,8 @@ class BusinessController extends Controller
 
     public function destroy(Business $business): RedirectResponse
     {
+        $this->authorize('delete', $business);
+
         $business->delete();
         
         return redirect()->route('businesses.index')
@@ -142,6 +154,7 @@ class BusinessController extends Controller
 
     public function verify(Business $business): RedirectResponse
     {
+        $this->authorize('verify', $business);
         $this->businessService->verifyBusiness($business);
 
         return back()->with('success', 'Business verified successfully!');
@@ -149,6 +162,7 @@ class BusinessController extends Controller
 
     public function reject(Business $business): RedirectResponse
     {
+        $this->authorize('reject', $business);
         $this->businessService->rejectBusiness($business);
 
         return back()->with('success', 'Business rejected successfully!');

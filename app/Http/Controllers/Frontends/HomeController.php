@@ -4,12 +4,28 @@ namespace App\Http\Controllers\Frontends;
 
 use Inertia\Inertia;
 use App\Models\Business;
+use App\Models\Banner;
 use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        // Get active banners for carousel
+        $banners = Banner::active()
+            ->ordered()
+            ->get()
+            ->map(function ($banner) {
+                return [
+                    'id' => $banner->id,
+                    'title' => $banner->title,
+                    'descriptions' => $banner->descriptions,
+                    'image' => $banner->image ? asset('storage/' . $banner->image) : null,
+                    'url' => $banner->url,
+                    'sort_order' => $banner->sort_order,
+                ];
+            });
+
         $featuredBusinesses = Business::with(['province', 'district', 'services', 'owner'])
             ->where('is_vierify', 1)
             ->where('status', 1)
@@ -34,6 +50,7 @@ class HomeController extends Controller
             });
 
         return Inertia::render('frontend/welcome', [
+            'banners' => $banners,
             'featuredBusinesses' => $featuredBusinesses
         ]);
     }

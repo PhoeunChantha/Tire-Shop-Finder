@@ -4,16 +4,14 @@ import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { BannerCarousel } from '@/components/BannerCarousel';
 import { 
   Search, 
   MapPin, 
-  Clock, 
   Star, 
   Phone,
-  Navigation,
   Shield,
   Users,
-  CheckCircle,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -31,7 +29,17 @@ interface Business {
   phone: string | null;
 }
 
+interface Banner {
+  id: number;
+  title: string;
+  descriptions: string;
+  image: string | null;
+  url: string | null;
+  sort_order: number;
+}
+
 interface PageProps extends Record<string, any> {
+  banners: Banner[];
   featuredBusinesses: Business[];
 }
 
@@ -186,7 +194,7 @@ function BusinessCarousel({ businesses }: { businesses: Business[] }) {
 }
 
 export default function Welcome() {
-  const { featuredBusinesses } = usePage<PageProps>().props;
+  const { banners, featuredBusinesses } = usePage<PageProps>().props;
   
   return (
     <WebsiteLayout>
@@ -227,6 +235,15 @@ export default function Welcome() {
           </div>
         </div>
       </section>
+
+      {/* Banner Carousel */}
+      {banners && banners.length > 0 && (
+        <section className="py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <BannerCarousel banners={banners} />
+          </div>
+        </section>
+      )}
 
       {/* Featured Businesses Carousel */}
       <section className="py-16 bg-gray-50">

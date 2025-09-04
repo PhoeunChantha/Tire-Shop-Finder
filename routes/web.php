@@ -9,6 +9,7 @@ use App\Http\Controllers\Backends\BusinessController as AdminBusinessController;
 use App\Http\Controllers\Backends\ServiceController as AdminServiceController;
 use App\Http\Controllers\Backends\BusinessSettingController;
 use App\Http\Controllers\Backends\SeoController;
+use App\Http\Controllers\Backends\BannerController;
 use App\Http\Controllers\Frontends\BusinessController;
 use App\Http\Controllers\Frontends\HomeController;
 use App\Http\Controllers\Frontends\ServiceController;
@@ -140,6 +141,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(functio
 
     // SEO Settings routes
     Route::resource('seo', SeoController::class)->only(['index', 'store', 'update']);
+
+    // Banner CRUD routes
+    Route::resource('banners', BannerController::class);
+    Route::patch('banners/{banner}/toggle-status', [BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
 });
 
 require __DIR__ . '/settings.php';

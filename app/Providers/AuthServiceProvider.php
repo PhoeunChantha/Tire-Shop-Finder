@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Banner;
 use App\Models\Business;
 use App\Models\Service;
 use App\Models\User;
+use App\Policies\BannerPolicy;
 use App\Policies\BusinessPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\RolePolicy;
@@ -28,6 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         Permission::class => PermissionPolicy::class,
         Business::class => BusinessPolicy::class,
         Service::class => ServicePolicy::class,
+        Banner::class => BannerPolicy::class,
     ];
 
     /**
