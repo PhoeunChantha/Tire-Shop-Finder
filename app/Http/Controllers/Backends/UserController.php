@@ -102,7 +102,7 @@ class UserController extends Controller
                 $user->assignRole($request->role);
             }
 
-            return redirect()->route('users.index')
+            return to_route('users.index')
                 ->with('success', 'User created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -166,10 +166,10 @@ class UserController extends Controller
 
             cache()->forget('users');
 
-            return redirect()->route('users.index')
+            return to_route('users.index')
                 ->with('success', 'User updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('users.index')
+            return to_route('users.index')
                 ->with('error', 'Failed to update user.');
         }
     }
@@ -183,10 +183,10 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
             $user->delete();
-            return redirect()->route('users.index')
+            return to_route('users.index')
                 ->with('success', 'User deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('users.index')
+            return to_route('users.index')
                 ->with('error', 'Failed to delete user.');
         }
     }

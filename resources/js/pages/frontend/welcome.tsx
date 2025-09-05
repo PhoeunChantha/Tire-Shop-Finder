@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageHelper';
 
 interface Business {
   id: number;
@@ -47,13 +48,13 @@ function BusinessCard({ business }: { business: Business }) {
   const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop";
   
   return (
-    <Card className="overflow-hidden p-0 hover:shadow-lg transition-shadow duration-300">
-      <div className="aspect-video relative">
-        <img 
-          src={business.image || defaultImage} 
-          alt={business.name}
-          className="w-full h-full object-cover"
-        />
+    <Card className="overflow-hidden p-0 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+      <div className="aspect-video overflow-hidden relative flex-shrink-0">
+          <img 
+            src={getImageUrl(business.image, 'businesses') || defaultImage} 
+            alt={business.name}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          />
         {business.average_rating > 0 && (
           <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -62,7 +63,7 @@ function BusinessCard({ business }: { business: Business }) {
         )}
       </div>
       
-      <CardContent className="p-4">
+      <CardContent className="p-4 flex-1 flex flex-col">
         <h3 className="font-bold text-lg text-gray-900 mb-2">{business.name}</h3>
         
         <div className="flex items-center gap-1 text-gray-600 mb-2">
@@ -91,7 +92,7 @@ function BusinessCard({ business }: { business: Business }) {
           )}
         </div>
         
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto">
           {business.phone && (
             <div className="flex items-center gap-1 text-gray-600">
               <Phone className="w-4 h-4" />
@@ -147,7 +148,7 @@ function BusinessCarousel({ businesses }: { businesses: Business[] }) {
           }}
         >
           {businesses.map((business) => (
-            <div key={business.id} className="flex-none w-full md:w-1/3">
+            <div key={business.id} className="flex-none w-full md:w-1/3 h-full">
               <BusinessCard business={business} />
             </div>
           ))}
@@ -198,20 +199,31 @@ export default function Welcome() {
   
   return (
     <WebsiteLayout>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      {/* Hero Section with Banner Background */}
+      <section className="relative text-white overflow-hidden">
+        {/* Banner Background */}
+        {banners && banners.length > 0 ? (
+          <div className="absolute inset-0">
+            <BannerCarousel banners={banners} className="h-full" backgroundOnly={true} />
+            {/* <div className="absolute inset-0 bg-black bg-opacity-50" /> */}
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800" />
+        )}
+        
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-shadow-lg">
               Find the Best <span className="text-yellow-400">Tire Shops</span> in Cambodia
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 text-white opacity-90 max-w-3xl mx-auto text-shadow">
               Connect with trusted tire dealers, service providers, and find exactly what you need for your vehicle across Cambodia.
             </p>
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg shadow-lg">
+              <div className="flex flex-col sm:flex-row gap-4 bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-xl">
                 <div className="flex-1">
                   <Input 
                     placeholder="Search for tire shops, services..." 
@@ -225,7 +237,7 @@ export default function Welcome() {
                   />
                 </div>
                 <Link href="/tire-shops">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto shadow-lg">
                     <Search className="w-5 h-5 mr-2" />
                     Search
                   </Button>
@@ -235,15 +247,6 @@ export default function Welcome() {
           </div>
         </div>
       </section>
-
-      {/* Banner Carousel */}
-      {banners && banners.length > 0 && (
-        <section className="py-8 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <BannerCarousel banners={banners} />
-          </div>
-        </section>
-      )}
 
       {/* Featured Businesses Carousel */}
       <section className="py-16 bg-gray-50">
@@ -339,7 +342,7 @@ export default function Welcome() {
               </Button>
             </Link>
             <Link href="/about">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-blue-600">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-black hover:bg-white">
                 Learn More
               </Button>
             </Link>

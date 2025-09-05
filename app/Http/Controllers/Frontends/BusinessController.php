@@ -93,7 +93,7 @@ class BusinessController extends Controller
             $user->assignRole('business');
         }
 
-        return redirect()->route('services.create', $business->id)
+        return to_route('services.create', $business->id)
             ->with('success', 'Business created successfully! Now add your services.');
     }
 
@@ -171,7 +171,7 @@ class BusinessController extends Controller
             'seo_keywords' => $validated['seo_keywords'],
         ]);
 
-        return redirect()->route('user.dashboard')
+        return to_route('user.dashboard')
             ->with('success', 'Business updated successfully!');
     }
 

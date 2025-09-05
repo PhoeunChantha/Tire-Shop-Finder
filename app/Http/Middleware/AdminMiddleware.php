@@ -18,18 +18,18 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+            return to_route('login');
         }
 
         $user = Auth::user();
 
         if (!$user->hasRole('admin')) {
             if ($user->hasRole('customer')) {
-                return redirect()->route('home')->with('error', 'Access denied. Admin privileges required.');
+                return to_route('home')->with('error', 'Access denied. Admin privileges required.');
             } elseif ($user->hasRole('business')) {
-                return redirect()->route('user.dashboard')->with('error', 'Access denied. Admin privileges required.');
+                return to_route('user.dashboard')->with('error', 'Access denied. Admin privileges required.');
             } else {
-                return redirect()->route('home')->with('error', 'Access denied. Admin privileges required.');
+                return to_route('home')->with('error', 'Access denied. Admin privileges required.');
             }
         }
 

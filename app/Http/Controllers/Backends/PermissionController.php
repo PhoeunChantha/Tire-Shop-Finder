@@ -64,10 +64,10 @@ class PermissionController extends Controller
             foreach ($request->name as $index => $name) {
                 Permission::create(['name' => $name]);
             }
-            return redirect()->route('permissions.index')
+            return to_route('permissions.index')
                 ->with('success', 'Permission created successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('permissions.index')
+            return to_route('permissions.index')
                 ->with('error', 'Failed to create permission.');
         }
     }
@@ -109,10 +109,10 @@ class PermissionController extends Controller
             $permission = Permission::findOrFail($id);
             $permission->update(['name' => $request->name]);
 
-            return redirect()->route('permissions.index')
+            return to_route('permissions.index')
                 ->with('success', 'Permission updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('permissions.index')
+            return to_route('permissions.index')
                 ->with('error', 'Failed to update permission.');
         }
     }
@@ -128,16 +128,16 @@ class PermissionController extends Controller
 
             // Prevent deletion of critical permissions
             if ($permission->name === 'super-admin') {
-                return redirect()->route('permissions.index')
+                return to_route('permissions.index')
                     ->with('error', 'Cannot delete the super-admin permission.');
             }
 
             $permission->delete();
 
-            return redirect()->route('permissions.index')
+            return to_route('permissions.index')
                 ->with('success', 'Permission deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('permissions.index')
+            return to_route('permissions.index')
                 ->with('error', 'Failed to delete permission.');
         }
     }

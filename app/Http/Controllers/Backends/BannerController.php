@@ -99,7 +99,7 @@ class BannerController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        return redirect()->route('banners.index')
+        return to_route('banners.index')
             ->with('success', 'Banner created successfully!');
     }
 
@@ -174,7 +174,7 @@ class BannerController extends Controller
             'sort_order' => $validated['sort_order'] ?? 0,
         ]);
 
-        return redirect()->route('banners.index')
+        return to_route('banners.index')
             ->with('success', 'Banner updated successfully!');
     }
 
@@ -189,7 +189,7 @@ class BannerController extends Controller
 
         $banner->delete();
         
-        return redirect()->route('banners.index')
+        return to_route('banners.index')
             ->with('success', 'Banner deleted successfully!');
     }
 

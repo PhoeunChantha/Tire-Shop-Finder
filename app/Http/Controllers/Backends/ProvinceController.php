@@ -59,10 +59,10 @@ class ProvinceController extends Controller
                 'type' => 'required|string|max:255',
             ]);
             Province::create($request->all());
-            return redirect()->route('provinces.index')
+            return to_route('provinces.index')
                 ->with('success', 'Province created successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('provinces.index')
+            return to_route('provinces.index')
                 ->with('error', 'Failed to create province.');
         }
     }
@@ -98,10 +98,10 @@ class ProvinceController extends Controller
                 'type' => 'required|string|max:255',
             ]);
             $province->update($request->all());
-            return redirect()->route('provinces.index')
+            return to_route('provinces.index')
                 ->with('success', 'Province updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('provinces.index')
+            return to_route('provinces.index')
                 ->with('error', 'Failed to update province.');
         }
     }
@@ -113,10 +113,10 @@ class ProvinceController extends Controller
     {
         try {
             $province->delete();
-            return redirect()->route('provinces.index')
+            return to_route('provinces.index')
                 ->with('success', 'Province deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('provinces.index')
+            return to_route('provinces.index')
                 ->with('error', 'Failed to delete province.');
         }
     }

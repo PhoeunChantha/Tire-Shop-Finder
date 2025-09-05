@@ -21,7 +21,7 @@ class SocialController extends Controller
         try {
             return Socialite::driver($provider)->redirect();
         } catch (Exception $e) {
-            return redirect()->route('login')->with('error', 'Unable to login with ' . $provider . '. Please try again.');
+            return to_route('login')->with('error', 'Unable to login with ' . $provider . '. Please try again.');
         }
     }
 
@@ -87,13 +87,13 @@ class SocialController extends Controller
 
             // Redirect based on user role
             // if ($user->hasRole('admin')) {
-            //     return redirect()->route('admin.dashboard')->with('success', 'Successfully logged in with ' . ucfirst($provider));
+            //     return to_route('admin.dashboard')->with('success', 'Successfully logged in with ' . ucfirst($provider));
             // } elseif ($user->hasRole('business')) {
-            //     return redirect()->route('user.dashboard')->with('success', 'Successfully logged in with ' . ucfirst($provider));
+            //     return to_route('user.dashboard')->with('success', 'Successfully logged in with ' . ucfirst($provider));
             // }
-            return redirect()->route('home')->with('success', 'Successfully logged in with ' . ucfirst($provider));
+            return to_route('home')->with('success', 'Successfully logged in with ' . ucfirst($provider));
         } catch (Exception $e) {
-            return redirect()->route('login')->with('error', 'Unable to login with ' . $provider . '. Please try again.');
+            return to_route('login')->with('error', 'Unable to login with ' . $provider . '. Please try again.');
         }
     }
 }

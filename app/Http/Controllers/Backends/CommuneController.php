@@ -66,10 +66,10 @@ class CommuneController extends Controller
                 'district_id'   => 'required|exists:districts,id',
             ]);
             Commune::create($request->all());
-            return redirect()->route('communes.index')
+            return to_route('communes.index')
                 ->with('success', 'Commune created successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('communes.index')
+            return to_route('communes.index')
                 ->with('error', 'Failed to create commune.');
         }
     }
@@ -109,10 +109,10 @@ class CommuneController extends Controller
                 'district_id'   => 'required|exists:districts,id',
             ]);
             $commune->update($request->all());
-            return redirect()->route('communes.index')
+            return to_route('communes.index')
                 ->with('success', 'Commune updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('communes.index')
+            return to_route('communes.index')
                 ->with('error', 'Failed to update commune.');
         }
     }
@@ -124,10 +124,10 @@ class CommuneController extends Controller
     {
         try {
             $commune->delete();
-            return redirect()->route('communes.index')
+            return to_route('communes.index')
                 ->with('success', 'Commune deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('communes.index')
+            return to_route('communes.index')
                 ->with('error', 'Failed to delete commune.');
         }
     }

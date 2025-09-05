@@ -83,9 +83,9 @@ class RoleController extends Controller
                 $this->authorize('assignPermissions', $role);
                 $role->syncPermissions($request->permissions);
             }
-            return redirect()->route('roles.index')->with('success', 'Role created successfully.');
+            return to_route('roles.index')->with('success', 'Role created successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('roles.index')->with('error', 'Failed to create role.');
+            return to_route('roles.index')->with('error', 'Failed to create role.');
         }
 
     }
@@ -144,9 +144,9 @@ class RoleController extends Controller
                 $this->authorize('assignPermissions', $role);
                 $role->syncPermissions($request->permissions);
             }
-            return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
+            return to_route('roles.index')->with('success', 'Role updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('roles.index')->with('error', 'Failed to update role.');
+            return to_route('roles.index')->with('error', 'Failed to update role.');
         }
 
     }
@@ -161,16 +161,16 @@ class RoleController extends Controller
         try {
             // Prevent deletion of super-admin role
             if ($role->name === 'super-admin') {
-                return redirect()->route('roles.index')
+                return to_route('roles.index')
                     ->with('error', 'Cannot delete the super-admin role.');
             }
 
             $role->delete();
 
-            return redirect()->route('roles.index')
+            return to_route('roles.index')
                 ->with('success', 'Role deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('roles.index')
+            return to_route('roles.index')
                 ->with('error', 'Failed to delete role.');
         }
     }

@@ -81,7 +81,7 @@ class ServiceController extends Controller
             Service::create($createData);
         }
 
-        return redirect()->route('businesses.index')
+        return to_route('businesses.index')
             ->with('success', 'Services added successfully to ' . $business->name . '!');
     }
 
@@ -186,7 +186,7 @@ class ServiceController extends Controller
 
         $service->update($updateData);
 
-        return redirect()->route('businesses.show', $service->business->id)
+        return to_route('businesses.show', $service->business->id)
             ->with('success', 'Service updated successfully!');
     }
 

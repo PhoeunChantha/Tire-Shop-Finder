@@ -20,7 +20,7 @@ class HomeController extends Controller
                     'id' => $banner->id,
                     'title' => $banner->title,
                     'descriptions' => $banner->descriptions,
-                    'image' => $banner->image ? asset('storage/' . $banner->image) : null,
+                    'image' => $banner->image,
                     'url' => $banner->url,
                     'sort_order' => $banner->sort_order,
                 ];
@@ -40,7 +40,7 @@ class HomeController extends Controller
                     'name' => $business->name,
                     'location' => ($business->province ? $business->province->name : '') .
                         ($business->district ? ', ' . $business->district->name : ''),
-                    'image' => $business->image ? asset('storage/' . $business->image) : null,
+                    'image' => $business->image,
                     'average_rating' => round($business->average_rating, 1),
                     'review_count' => $business->review_count,
                     'services' => $business->services->take(3)->pluck('name'),

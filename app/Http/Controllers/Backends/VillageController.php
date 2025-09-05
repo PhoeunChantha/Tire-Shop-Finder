@@ -81,7 +81,7 @@ class VillageController extends Controller
             'commune_id' => $request->commune_id,
         ]);
 
-        return redirect()->route('villages.index')
+        return to_route('villages.index')
             ->with('success', 'Village created successfully.');
     }
 
@@ -135,7 +135,7 @@ class VillageController extends Controller
             'commune_id' => $request->commune_id,
         ]);
 
-        return redirect()->route('villages.index')
+        return to_route('villages.index')
             ->with('success', 'Village updated successfully.');
     }
 
@@ -146,7 +146,7 @@ class VillageController extends Controller
     {
         $village->delete();
 
-        return redirect()->route('villages.index')
+        return to_route('villages.index')
             ->with('success', 'Village deleted successfully.');
     }
 

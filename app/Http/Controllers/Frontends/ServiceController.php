@@ -54,7 +54,7 @@ class ServiceController extends Controller
             ]);
         }
 
-        return redirect()->route('user.dashboard')
+        return to_route('user.dashboard')
             ->with('success', 'Services created successfully!');
     }
 
@@ -112,7 +112,7 @@ class ServiceController extends Controller
             'status' => $validated['status'] ?? true,
         ]);
 
-        return redirect()->route('user.dashboard')
+        return to_route('user.dashboard')
             ->with('success', 'Service updated successfully!');
     }
 

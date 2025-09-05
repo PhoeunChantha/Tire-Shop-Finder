@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageHelper';
 
 interface Banner {
   id: number;
@@ -16,13 +17,15 @@ interface BannerCarouselProps {
   autoPlay?: boolean;
   autoPlayInterval?: number;
   className?: string;
+  backgroundOnly?: boolean;
 }
 
 export function BannerCarousel({ 
   banners, 
   autoPlay = true, 
-  autoPlayInterval = 5000,
-  className = ""
+  autoPlayInterval = 10000,
+  className = "",
+  backgroundOnly = false
 }: BannerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -55,9 +58,13 @@ export function BannerCarousel({
     }
   };
 
+  const isBackground = className.includes('h-full') || backgroundOnly;
+
   return (
     <div className={`relative w-full ${className}`}>
-      <div className="relative overflow-hidden rounded-lg bg-gray-100 aspect-[3/1] md:aspect-[4/1]">
+      <div className={`relative overflow-hidden bg-gray-100 ${
+        isBackground ? 'h-full' : 'rounded-lg aspect-[3/1] md:aspect-[4/1]'
+      }`}>
         {banners.map((banner, index) => (
           <div
             key={banner.id}
@@ -68,17 +75,47 @@ export function BannerCarousel({
             {banner.image ? (
               <div 
                 className={`relative w-full h-full ${
-                  banner.url ? 'cursor-pointer' : ''
+                  banner.url && !backgroundOnly ? 'cursor-pointer' : ''
                 }`}
-                onClick={() => handleBannerClick(banner)}
+                onClick={() => !backgroundOnly && handleBannerClick(banner)}
               >
                 <img
-                  src={banner.image}
+                  src={getImageUrl(banner.image, 'banners')}
                   alt={banner.title}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.error('Failed to load banner image:', banner.image);
+                    (e.target as HTMLImageElement).src = getImageUrl(null, 'banners');
+                  }}
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-40" />
-                <div className="absolute inset-0 flex items-center justify-center">
+                {/* Only show overlay and content if not used as background */}
+                {!backgroundOnly && !isBackground && (
+                  <>
+                    <div className="absolute inset-0 bg-black bg-opacity-40" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center text-white px-4 max-w-4xl">
+                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">
+                          {banner.title}
+                        </h2>
+                        {banner.descriptions && (
+                          <p className="text-sm md:text-lg lg:text-xl mb-4 opacity-90">
+                            {banner.descriptions}
+                          </p>
+                        )}
+                        {banner.url && (
+                          <div className="inline-flex items-center gap-2 text-sm md:text-base bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                            <ExternalLink className="w-4 h-4" />
+                            <span>Click to learn more</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="w-full h-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
+                {!isBackground && (
                   <div className="text-center text-white px-4 max-w-4xl">
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">
                       {banner.title}
@@ -89,44 +126,25 @@ export function BannerCarousel({
                       </p>
                     )}
                     {banner.url && (
-                      <div className="inline-flex items-center gap-2 text-sm md:text-base bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                        <ExternalLink className="w-4 h-4" />
-                        <span>Click to learn more</span>
-                      </div>
+                      <Button 
+                        variant="secondary" 
+                        className="mt-4"
+                        onClick={() => handleBannerClick(banner)}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Learn More
+                      </Button>
                     )}
                   </div>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full h-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center">
-                <div className="text-center text-white px-4 max-w-4xl">
-                  <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">
-                    {banner.title}
-                  </h2>
-                  {banner.descriptions && (
-                    <p className="text-sm md:text-lg lg:text-xl mb-4 opacity-90">
-                      {banner.descriptions}
-                    </p>
-                  )}
-                  {banner.url && (
-                    <Button 
-                      variant="secondary" 
-                      className="mt-4"
-                      onClick={() => handleBannerClick(banner)}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Learn More
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             )}
           </div>
         ))}
       </div>
 
-      {/* Navigation Buttons */}
-      {banners.length > 1 && (
+      {/* Navigation Buttons - Only show when not used as background */}
+      {banners.length > 1 && !backgroundOnly && !isBackground && (
         <>
           <Button
             variant="outline"

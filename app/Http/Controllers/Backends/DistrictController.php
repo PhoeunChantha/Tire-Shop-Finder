@@ -63,10 +63,10 @@ class DistrictController extends Controller
                 'province_id'   => 'required|exists:provinces,id',
             ]);
             District::create($request->all());
-            return redirect()->route('districts.index')
+            return to_route('districts.index')
                 ->with('success', 'District created successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('districts.index')
+            return to_route('districts.index')
                 ->with('error', 'Failed to create district.');
         }
     }
@@ -104,10 +104,10 @@ class DistrictController extends Controller
                 'province_id'   => 'required|exists:provinces,id',
             ]);
             $district->update($request->all());
-            return redirect()->route('districts.index')
+            return to_route('districts.index')
                 ->with('success', 'District updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('districts.index')
+            return to_route('districts.index')
                 ->with('error', 'Failed to update district.');
         }
     }
@@ -119,10 +119,10 @@ class DistrictController extends Controller
     {
         try {
             $district->delete();
-            return redirect()->route('districts.index')
+            return to_route('districts.index')
                 ->with('success', 'District deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('districts.index')
+            return to_route('districts.index')
                 ->with('error', 'Failed to delete district.');
         }
     }

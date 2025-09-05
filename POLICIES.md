@@ -74,7 +74,7 @@ class BusinessController extends Controller
         $this->authorize('delete', $business);
         
         $business->delete();
-        return redirect()->route('businesses.index');
+        return to_route('businesses.index');
     }
 
     public function verify(Business $business)

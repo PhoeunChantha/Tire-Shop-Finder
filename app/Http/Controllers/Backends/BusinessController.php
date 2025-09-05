@@ -85,7 +85,7 @@ class BusinessController extends Controller
 
         $business = $this->businessService->createBusiness($validated);
 
-        return redirect()->route('admin.services.create', $business->id)
+        return to_route('admin.services.create', $business->id)
             ->with('success', 'Business created successfully! Now add services for this business.');
     }
 
@@ -138,7 +138,7 @@ class BusinessController extends Controller
 
         $this->businessService->updateBusiness($business, $validated);
 
-        return redirect()->route('businesses.index')
+        return to_route('businesses.index')
             ->with('success', 'Business updated successfully!');
     }
 
@@ -148,7 +148,7 @@ class BusinessController extends Controller
 
         $business->delete();
         
-        return redirect()->route('businesses.index')
+        return to_route('businesses.index')
             ->with('success', 'Business deleted successfully!');
     }
 
