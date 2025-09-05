@@ -1,36 +1,42 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import UserProfileDropdown from '@/components/user-profile-dropdown';
 import UserProfileDropdownMobile from '@/components/user-profile-dropdown-mobile';
-import { 
-  Search, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Facebook, 
-  Twitter, 
+import {
+  Search,
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
   Instagram,
   Menu,
   X
 } from 'lucide-react';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/ui/language-switcher';
+import useBusinessSettings, { BusinessSettings } from '@/hooks/use-business-settings';
+import { getImageUrl } from '@/lib/imageHelper';
+import { useTranslation as useLaravelTranslation } from '@/hooks/useTranslation';
+
 
 interface WebsiteLayoutProps {
   children: React.ReactNode;
   title?: string;
+  businessSettings?: BusinessSettings;
+  className?: string;
+  showName?: boolean;
 }
 
-export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
+
+export default function WebsiteLayout({ children, title, businessSettings }: WebsiteLayoutProps) {
   const { auth } = usePage().props as any;
   const { url } = usePage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
-
-  // Debug: log auth state
-  console.log('Auth state in WebsiteLayout:', auth);
+  const { locale } = useLaravelTranslation();
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -38,11 +44,48 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
     }
     return url.startsWith(path);
   };
+  const [imageError, setImageError] = useState(false);
+  const { businessData, getBusinessName } = useBusinessSettings(businessSettings);
+  
+  // Get business name in current language
+  const displayName = getBusinessName(locale);
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
+  // Handle image load success (reset error state)
+  const handleImageLoad = useCallback(() => {
+    setImageError(false);
+  }, []);
+  const systemLogoUrl = businessData.systemLogo && !imageError
+    ? getImageUrl(businessData.systemLogo, 'business-settings')
+    : null;
+
+  const renderLogo = () => {
+    if (systemLogoUrl) {
+      return (
+        <img
+          src={systemLogoUrl}
+          alt={`${displayName} Logo`}
+          className={`w-8 h-8 rounded-full object-cover bg-white dark:bg-black`}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
+          loading="lazy"
+        />
+      );
+    }
+
+    return (
+      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+        <Search className="w-5 h-5 text-white" />
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Head title={title ? `${title} - Tire Shop Finder Cambodia` : 'Tire Shop Finder Cambodia'} />
-      
+
       {/* Navigation */}
       <nav className="bg-white shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,53 +93,47 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
             <div className="flex items-center">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <Search className="w-5 h-5 text-white" />
-                </div>
+                {renderLogo()}
                 <span className="text-xl font-bold text-gray-900">
-                  Tire Shop Finder
+                  {displayName}
                 </span>
               </Link>
 
               {/* Desktop Navigation */}
               <div className="hidden md:ml-10 md:flex md:space-x-8">
-                <Link 
-                  href="/" 
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/') 
-                      ? 'text-blue-600 border-b-2 border-blue-600' 
-                      : 'text-gray-500 hover:text-blue-600'
-                  }`}
+                <Link
+                  href="/"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${isActive('/')
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-blue-600'
+                    }`}
                 >
                   {t('home')}
                 </Link>
-                <Link 
-                  href="/tire-shops" 
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/tire-shops') 
-                      ? 'text-blue-600 border-b-2 border-blue-600' 
-                      : 'text-gray-500 hover:text-blue-600'
-                  }`}
+                <Link
+                  href="/tire-shops"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${isActive('/tire-shops')
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-blue-600'
+                    }`}
                 >
                   {t('find_tire_shops')}
                 </Link>
-                <Link 
-                  href="/about" 
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/about') 
-                      ? 'text-blue-600 border-b-2 border-blue-600' 
-                      : 'text-gray-500 hover:text-blue-600'
-                  }`}
+                <Link
+                  href="/about"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${isActive('/about')
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-blue-600'
+                    }`}
                 >
                   {t('about')}
                 </Link>
-                <Link 
-                  href="/contact" 
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/contact') 
-                      ? 'text-blue-600 border-b-2 border-blue-600' 
-                      : 'text-gray-500 hover:text-blue-600'
-                  }`}
+                <Link
+                  href="/contact"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${isActive('/contact')
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-blue-600'
+                    }`}
                 >
                   {t('contact')}
                 </Link>
@@ -110,13 +147,13 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
                 <UserProfileDropdown user={auth.user} />
               ) : (
                 <>
-                  <Link 
+                  <Link
                     href="/login"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
                   >
                     {t('login')}
                   </Link>
-                  <Link 
+                  <Link
                     href="/register"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
                   >
@@ -146,64 +183,60 @@ export default function WebsiteLayout({ children, title }: WebsiteLayoutProps) {
           {mobileMenuOpen && (
             <div className="md:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
-                <Link 
-                  href="/" 
-                  className={`block px-3 py-2 text-base font-medium ${
-                    isActive('/') 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+                <Link
+                  href="/"
+                  className={`block px-3 py-2 text-base font-medium ${isActive('/')
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
                 >
                   {t('home')}
                 </Link>
-                <Link 
-                  href="/tire-shops" 
-                  className={`block px-3 py-2 text-base font-medium ${
-                    isActive('/tire-shops') 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+                <Link
+                  href="/tire-shops"
+                  className={`block px-3 py-2 text-base font-medium ${isActive('/tire-shops')
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
                 >
                   {t('find_tire_shops')}
                 </Link>
-                <Link 
-                  href="/about" 
-                  className={`block px-3 py-2 text-base font-medium ${
-                    isActive('/about') 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+                <Link
+                  href="/about"
+                  className={`block px-3 py-2 text-base font-medium ${isActive('/about')
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
                 >
                   {t('about')}
                 </Link>
-                <Link 
-                  href="/contact" 
-                  className={`block px-3 py-2 text-base font-medium ${
-                    isActive('/contact') 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+                <Link
+                  href="/contact"
+                  className={`block px-3 py-2 text-base font-medium ${isActive('/contact')
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
                 >
                   {t('contact')}
                 </Link>
-                
+
                 {/* Mobile Auth */}
                 {auth?.user ? (
-                  <UserProfileDropdownMobile 
-                    user={auth.user} 
+                  <UserProfileDropdownMobile
+                    user={auth.user}
                     onLinkClick={() => setMobileMenuOpen(false)}
                   />
                 ) : (
                   <div className="pt-4 pb-3 border-t border-gray-200">
                     <div className="space-y-2">
-                      <Link 
+                      <Link
                         href="/login"
                         className="block px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-600"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('login')}
                       </Link>
-                      <Link 
+                      <Link
                         href="/register"
                         className="block px-3 py-2 text-base font-medium text-blue-600 hover:text-blue-700"
                         onClick={() => setMobileMenuOpen(false)}

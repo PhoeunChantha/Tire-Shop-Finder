@@ -48,7 +48,7 @@ function BusinessCard({ business }: { business: Business }) {
   const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop";
   
   return (
-    <Card className="overflow-hidden p-0 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+    <Card className="overflow-hidden p-0 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col ">
       <div className="aspect-video overflow-hidden relative flex-shrink-0">
           <img 
             src={getImageUrl(business.image, 'businesses') || defaultImage} 
@@ -326,7 +326,7 @@ export default function Welcome() {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-16 bg-blue-600 text-white">
+      <section className="py-16 bg-[#909095] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Own a Tire Shop?

@@ -8,6 +8,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { AlertTriangle } from "lucide-react"
 
+interface DeleteModalProps {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    onConfirm: () => void;
+    title?: string;
+    description?: string;
+    itemName?: string;
+    confirmText?: string;
+    processing?: boolean;
+}
+
 export default function DeleteModal({ 
     open, 
     setOpen, 
@@ -17,7 +28,7 @@ export default function DeleteModal({
     itemName = "",
     confirmText = "Delete",
     processing = false 
-}) {
+}: DeleteModalProps) {
     const handleConfirm = () => {
         if (onConfirm) {
             onConfirm()

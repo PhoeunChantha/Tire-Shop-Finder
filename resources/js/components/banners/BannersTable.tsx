@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import DataTableFilter from '@/components/DefaultDataTableFilter';
 import PaginationWrapper from '@/components/PaginationWrapper';
 import ActionButtons from '@/components/action-button';
+import DeleteModal from '@/components/DeleteModal';
 import { Plus, ImageIcon, ToggleLeft, ToggleRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageHelper';
 
@@ -42,13 +43,35 @@ interface BannersTableProps {
 }
 
 export default function BannersTable({ banners, filters }: BannersTableProps) {
-    const handleDelete = (bannerId: number, bannerTitle: string) => {
-        if (confirm(`Are you sure you want to delete "${bannerTitle}"? This action cannot be undone.`)) {
-            router.delete(route('banners.destroy', bannerId), {
-                preserveState: true,
-                preserveScroll: true,
-            });
-        }
+    const [deleteModal, setDeleteModal] = useState({
+        open: false,
+        banner: null as Banner | null,
+        processing: false
+    });
+
+    const handleDeleteClick = (banner: Banner) => {
+        setDeleteModal({
+            open: true,
+            banner,
+            processing: false
+        });
+    };
+
+    const handleDeleteConfirm = () => {
+        if (!deleteModal.banner) return;
+        
+        setDeleteModal(prev => ({ ...prev, processing: true }));
+        
+        router.delete(route('banners.destroy', deleteModal.banner.id), {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteModal({ open: false, banner: null, processing: false });
+            },
+            onError: () => {
+                setDeleteModal(prev => ({ ...prev, processing: false }));
+            }
+        });
     };
 
     const getBannerActions = (banner: Banner) => [
@@ -71,7 +94,7 @@ export default function BannersTable({ banners, filters }: BannersTableProps) {
         {
             key: 'delete',
             label: 'Delete',
-            onClick: () => handleDelete(banner.id, banner.title),
+            onClick: () => handleDeleteClick(banner),
             className: 'text-red-600'
         }
     ];
@@ -276,6 +299,17 @@ export default function BannersTable({ banners, filters }: BannersTableProps) {
                     )}
                 </CardContent>
             </Card>
+
+            <DeleteModal
+                open={deleteModal.open}
+                setOpen={(open) => setDeleteModal(prev => ({ ...prev, open }))}
+                onConfirm={handleDeleteConfirm}
+                title="Delete Banner"
+                description="Are you sure you want to delete this banner? This action cannot be undone and will remove the banner from your website."
+                itemName={deleteModal.banner?.title || ""}
+                confirmText="Delete Banner"
+                processing={deleteModal.processing}
+            />
         </>
     );
 }

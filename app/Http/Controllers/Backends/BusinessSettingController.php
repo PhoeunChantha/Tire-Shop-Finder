@@ -42,7 +42,7 @@ class BusinessSettingController extends Controller
             
             $this->businessSettingService->updateSettings($validated);
 
-            return to_route('business-settings.index')
+            return redirect()->route('business-settings.index')
                 ->with('success', 'Business settings saved successfully.');
 
         } catch (\Exception $e) {

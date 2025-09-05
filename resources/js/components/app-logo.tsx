@@ -3,6 +3,7 @@ import AppLogoIcon from './app-logo-icon';
 import { getImageUrl } from '@/lib/imageHelper';
 import withErrorBoundary from './with-error-boundary';
 import useBusinessSettings, { BusinessSettings } from '@/hooks/use-business-settings';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Types
 interface AppLogoProps {
@@ -29,8 +30,12 @@ const AppLogo: React.FC<AppLogoProps> = ({
 }) => {
     const [imageError, setImageError] = useState(false);
     
-    // Use custom hook for business settings
-    const { businessData } = useBusinessSettings(businessSettings);
+    // Use custom hook for business settings and language
+    const { businessData, getBusinessName } = useBusinessSettings(businessSettings);
+    const { locale } = useTranslation();
+    
+    // Get business name in current language
+    const displayName = getBusinessName(locale);
     
     // Get system logo URL with error handling
     const systemLogoUrl = businessData.systemLogo && !imageError 
@@ -53,7 +58,7 @@ const AppLogo: React.FC<AppLogoProps> = ({
             return (
                 <img 
                     src={systemLogoUrl}
-                    alt={`${businessData.businessName} Logo`}
+                    alt={`${displayName} Logo`}
                     className={`${LOGO_SIZE_CLASS} rounded object-cover bg-white dark:bg-black`}
                     onError={handleImageError}
                     onLoad={handleImageLoad}
@@ -84,9 +89,9 @@ const AppLogo: React.FC<AppLogoProps> = ({
                 <div className="grid flex-1 text-left text-sm">
                     <span 
                         className="mb-0.5 truncate leading-tight font-semibold"
-                        title={businessData.businessName} // Tooltip for truncated text
+                        title={displayName} 
                     >
-                        {businessData.businessName}
+                        {displayName}
                     </span>
                 </div>
             )}

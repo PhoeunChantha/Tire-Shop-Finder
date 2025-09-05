@@ -8,8 +8,9 @@ export interface BusinessSettings {
 
 export interface BusinessData {
     businessName: string;
+    nameTranslations: { en?: string; km?: string } | null;
     systemLogo: string | null;
-    [key: string]: string | null;
+    [key: string]: string | null | { en?: string; km?: string };
 }
 
 interface PageProps {
@@ -41,8 +42,31 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
 
     // Extract commonly used business data
     const businessData: BusinessData = useMemo(() => {
+        // Parse name translations
+        let nameTranslations: { en?: string; km?: string } | null = null;
+        if (mergedSettings?.name_translations) {
+            try {
+                nameTranslations = typeof mergedSettings.name_translations === 'string' 
+                    ? JSON.parse(mergedSettings.name_translations) 
+                    : mergedSettings.name_translations;
+            } catch (e) {
+                nameTranslations = null;
+            }
+        }
+
+        // Handle business name with fallback from different field names
+        let businessName = DEFAULT_BUSINESS_NAME;
+        if (mergedSettings?.business_name) {
+            businessName = mergedSettings.business_name;
+        } else if (mergedSettings?.name) {
+            businessName = mergedSettings.name;
+        } else if (nameTranslations) {
+            businessName = nameTranslations.en || nameTranslations.km || DEFAULT_BUSINESS_NAME;
+        }
+
         return {
-            businessName: mergedSettings?.business_name || DEFAULT_BUSINESS_NAME,
+            businessName,
+            nameTranslations,
             systemLogo: mergedSettings?.system_logo || null,
             // Add other commonly used settings here
             businessEmail: mergedSettings?.business_email || null,
@@ -67,6 +91,15 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
         return mergedSettings || {};
     };
 
+    // Helper function to get business name by locale
+    const getBusinessName = (locale?: string) => {
+        if (!locale || !businessData.nameTranslations) {
+            return businessData.businessName;
+        }
+        
+        return businessData.nameTranslations[locale as 'en' | 'km'] || businessData.businessName;
+    };
+
     return {
         // Data
         businessData,
@@ -76,6 +109,7 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
         getSetting,
         hasSetting,
         getAllSettings,
+        getBusinessName,
         
         // Commonly used individual values
         businessName: businessData.businessName,
