@@ -283,6 +283,10 @@ export interface Business {
     formatted_hours?: string;
     services?: Service[];
     reviews?: Review[];
+    reviews_count?: number;
+    reviews_avg_rate?: number;
+    phone?: string;
+    website?: string;
     created_at: string;
     updated_at: string;
     owner?: User;

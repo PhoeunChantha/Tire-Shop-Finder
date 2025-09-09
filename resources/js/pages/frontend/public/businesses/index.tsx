@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Business, Province, District, Commune, Village, PaginatedData } from '@/types';
 import { parseGoogleMapsUrl, validateCambodiaCoordinates, formatCoordinates } from '@/lib/maps-utils';
+import { toast } from '@/lib/toast';
 import { 
     Search, 
     MapPin, 
@@ -21,7 +22,13 @@ import {
     ChevronRight,
     Navigation,
     MapPin as LocationIcon,
-    Link as LinkIcon
+    Link as LinkIcon,
+    X,
+    Loader2,
+    Phone,
+    Globe,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react';
 
 interface BusinessIndexProps {
@@ -71,6 +78,7 @@ export default function PublicBusinessIndex({
     const [mapsUrl, setMapsUrl] = useState('');
     const [parsingUrl, setParsingUrl] = useState(false);
     const [urlError, setUrlError] = useState('');
+    const [searchLoading, setSearchLoading] = useState(false);
 
     // Load districts when province changes
     useEffect(() => {
@@ -368,6 +376,7 @@ export default function PublicBusinessIndex({
 
     const searchWithLocation = (lat?: number, lng?: number) => {
         const coords = { lat: lat || userCoords?.lat, lng: lng || userCoords?.lng };
+        setSearchLoading(true);
         
         router.get('/tire-shops', {
             search: searchTerm,
@@ -380,13 +389,15 @@ export default function PublicBusinessIndex({
             user_lng: coords.lng,
         }, {
             preserveState: true,
-            replace: true
+            replace: true,
+            onFinish: () => setSearchLoading(false)
         });
     };
 
     const handleSearch = () => {
         // Close mobile filters after search
         setShowFilters(false);
+        setSearchLoading(true);
         
         // Use location-based search if coordinates are available
         if (userCoords) {
@@ -401,7 +412,8 @@ export default function PublicBusinessIndex({
                 service: serviceFilter,
             }, {
                 preserveState: true,
-                replace: true
+                replace: true,
+                onFinish: () => setSearchLoading(false)
             });
         }
     };
@@ -523,33 +535,98 @@ export default function PublicBusinessIndex({
             />
             
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iNyIgY3k9IjciIHI9IjEuNSIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+                
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                     <div className="text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                            {t('find_tire_shops')}
+                        {/* Animated Badge */}
+                        <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6 animate-pulse">
+                            <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                            Cambodia's #1 Tire Shop Directory
+                        </div>
+                        
+                        <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-indigo-100 bg-clip-text text-transparent leading-tight">
+                            Find Tire Shops
+                            <span className="block text-4xl md:text-5xl mt-2 text-white/90">
+                                Near You
+                            </span>
                         </h1>
-                        <p className="text-xl text-blue-100 mb-8">
-                            Quick, reliable tire services when you need them most
+                        <p className="text-xl md:text-2xl text-blue-100/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+                            Discover verified tire professionals across Cambodia. Quick service, competitive prices, trusted quality.
                         </p>
                         
-                        {/* Quick Search */}
-                        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-                            <div className="flex items-center gap-4">
-                                <div className="relative flex-1">
-                                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder={t('search_tire_shops')}
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10 text-gray-900"
-                                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                                    />
+                        {/* Enhanced Search Bar */}
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-2">
+                                <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                                    <div className="relative flex-1">
+                                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                        <Input
+                                            placeholder="Search tire shops, services, or brands..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-12 pr-4 py-4 text-gray-900 bg-transparent border-0 focus:ring-0 text-lg placeholder:text-gray-500 font-medium"
+                                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                        />
+                                        {searchTerm && (
+                                            <button
+                                                onClick={() => setSearchTerm('')}
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                            >
+                                                <X className="w-5 h-5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={getCurrentLocation}
+                                            disabled={gettingLocation}
+                                            className="px-6 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
+                                        >
+                                            {gettingLocation ? (
+                                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                            ) : (
+                                                <LocationIcon className="w-5 h-5 mr-2" />
+                                            )}
+                                            Near Me
+                                        </Button>
+                                        <Button
+                                            onClick={handleSearch}
+                                            disabled={searchLoading}
+                                            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                                        >
+                                            {searchLoading ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                                    Searching...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Search className="w-5 h-5 mr-2" />
+                                                    Search
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
                                 </div>
-                                <Button onClick={handleSearch} size="lg" className="px-8 shrink-0">
-                                    <Search className="w-4 h-4 mr-2" />
-                                    {t('search')}
-                                </Button>
+                            </div>
+                            
+                            {/* Quick Stats */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-white mb-2">{businesses.total}+</div>
+                                    <div className="text-blue-200 text-sm font-medium">Verified Shops</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-white mb-2">24/7</div>
+                                    <div className="text-blue-200 text-sm font-medium">Emergency Service</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-white mb-2">⭐ 4.8</div>
+                                    <div className="text-blue-200 text-sm font-medium">Average Rating</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -561,66 +638,101 @@ export default function PublicBusinessIndex({
                 <div className="flex flex-col lg:flex-row gap-6">
                     {/* Mobile Filter Toggle */}
                     <div className="lg:hidden">
-                        <Button
-                            onClick={() => setShowFilters(!showFilters)}
-                            variant="outline"
-                            className="w-full mb-4"
-                        >
-                            <Filter className="w-4 h-4 mr-2" />
-                            {showFilters ? 'Hide Filters' : 'Show Filters'}
-                        </Button>
+                        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200 -mx-4 px-4 py-4 mb-6">
+                            <Button
+                                onClick={() => setShowFilters(!showFilters)}
+                                variant={showFilters ? "default" : "outline"}
+                                className="w-full transition-all duration-300 transform active:scale-95"
+                            >
+                                <Filter className="w-4 h-4 mr-2" />
+                                <span className="flex-1 text-left">
+                                    {showFilters ? 'Hide Filters' : 'Show Filters & Search Options'}
+                                </span>
+                                {showFilters ? (
+                                    <ChevronUp className="w-4 h-4 ml-2" />
+                                ) : (
+                                    <ChevronDown className="w-4 h-4 ml-2" />
+                                )}
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Sidebar Filters */}
-                    <div className={`w-full lg:w-80 lg:shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-                        <div className="bg-white rounded-lg shadow-sm border p-6 lg:sticky lg:top-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter Results</h3>
+                    <div className={`w-full lg:w-80 lg:shrink-0 transition-all duration-300 ease-in-out ${
+                        showFilters 
+                            ? 'block opacity-100 translate-y-0' 
+                            : 'hidden lg:block lg:opacity-100 lg:translate-y-0'
+                    }`}>
+                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 lg:sticky lg:top-6 backdrop-blur-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                                    <Filter className="w-5 h-5 mr-2 text-blue-600" />
+                                    Filters
+                                </h3>
+                                {showFilters && (
+                                    <button
+                                        onClick={() => setShowFilters(false)}
+                                        className="lg:hidden text-gray-500 hover:text-gray-700 transition-colors"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                )}
+                            </div>
                             
                             {/* Location Button */}
                             <div className="mb-6">
-                                <Button 
-                                    onClick={getCurrentLocation} 
-                                    variant={userCoords ? "default" : "outline"}
-                                    disabled={gettingLocation}
-                                    className={`w-full transition-all duration-200 ${
-                                        userCoords ? 'bg-green-600 hover:bg-green-700 text-white' : 
-                                        gettingLocation ? 'text-blue-600 border-blue-400' : 'text-gray-900'
-                                    }`}
-                                >
-                                    {gettingLocation ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
-                                            Getting precise location...
-                                        </>
-                                    ) : userCoords ? (
-                                        <>
-                                            <LocationIcon className="w-4 h-4 mr-2" />
-                                            Location Found ✓
-                                        </>
-                                    ) : (
-                                        <>
-                                            <LocationIcon className="w-4 h-4 mr-2" />
-                                            {t('use_my_location')}
-                                        </>
-                                    )}
-                                </Button>
-                                {userCoords && (
-                                    <div className="mt-2 text-center">
-                                        <p className="text-sm text-green-600">
-                                            📍 Showing results near your location
-                                        </p>
-                                        {userCoords.accuracy && (
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                GPS accuracy: {userCoords.accuracy < 10 ? 'Very precise' : 
-                                                             userCoords.accuracy < 100 ? 'Good' : 
-                                                             userCoords.accuracy < 1000 ? 'Fair' : 'Poor'} 
-                                                ({userCoords.accuracy > 1000 ? 
-                                                  `${(userCoords.accuracy/1000).toFixed(1)}km` : 
-                                                  `${userCoords.accuracy.toFixed(0)}m`})
-                                            </p>
-                                        )}
+                                <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <LocationIcon className="w-5 h-5 text-green-600" />
+                                        <span className="font-semibold text-green-900">Location Services</span>
                                     </div>
-                                )}
+                                    <Button 
+                                        onClick={getCurrentLocation} 
+                                        disabled={gettingLocation}
+                                        className={`w-full transition-all duration-300 transform hover:scale-105 ${
+                                            userCoords 
+                                                ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' 
+                                                : gettingLocation 
+                                                ? 'bg-blue-500 text-white' 
+                                                : 'bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white'
+                                        }`}
+                                    >
+                                        {gettingLocation ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Locating...
+                                            </>
+                                        ) : userCoords ? (
+                                            <>
+                                                <LocationIcon className="w-4 h-4 mr-2" />
+                                                Location Active ✓
+                                            </>
+                                        ) : (
+                                            <>
+                                                <LocationIcon className="w-4 h-4 mr-2" />
+                                                Use My Location
+                                            </>
+                                        )}
+                                    </Button>
+                                    {userCoords && (
+                                        <div className="mt-3 p-3 bg-white/80 rounded-lg border border-green-200">
+                                            <p className="text-sm text-green-700 font-medium flex items-center">
+                                                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                                                GPS location active
+                                            </p>
+                                            {userCoords.accuracy && (
+                                                <p className="text-xs text-gray-600 mt-1">
+                                                    Accuracy: {userCoords.accuracy < 10 ? '🎯 Very precise' : 
+                                                               userCoords.accuracy < 100 ? '✅ Good' : 
+                                                               userCoords.accuracy < 1000 ? '⚠️ Fair' : '❌ Poor'} 
+                                                    ({userCoords.accuracy > 1000 ? 
+                                                      `${(userCoords.accuracy/1000).toFixed(1)}km` : 
+                                                      `${userCoords.accuracy.toFixed(0)}m`})
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Google Maps URL Input */}
@@ -780,13 +892,31 @@ export default function PublicBusinessIndex({
 
                             {/* Action Buttons */}
                             <div className="space-y-3">
-                                <Button onClick={handleSearch} className="w-full">
-                                    <Search className="w-4 h-4 mr-2" />
-                                    Apply Filters
+                                <Button 
+                                    onClick={handleSearch} 
+                                    disabled={searchLoading}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                                >
+                                    {searchLoading ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            Searching...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Search className="w-4 h-4 mr-2" />
+                                            Apply Filters
+                                        </>
+                                    )}
                                 </Button>
                                 
-                                {(searchTerm || selectedProvince || selectedDistrict || selectedCommune || selectedVillage || serviceFilter) && (
-                                    <Button variant="outline" onClick={clearFilters} className="w-full">
+                                {(searchTerm || selectedProvince || selectedDistrict || selectedCommune || selectedVillage || serviceFilter || userCoords) && (
+                                    <Button 
+                                        variant="outline" 
+                                        onClick={clearFilters} 
+                                        className="w-full border-2 border-gray-300 hover:border-red-400 hover:text-red-600 hover:bg-red-50 font-semibold py-3 transition-all duration-200 transform hover:scale-105 active:scale-95"
+                                    >
+                                        <X className="w-4 h-4 mr-2" />
                                         Clear All Filters
                                     </Button>
                                 )}
@@ -797,128 +927,206 @@ export default function PublicBusinessIndex({
                     {/* Main Results */}
                     <div className="flex-1">
                         {/* Results Header */}
-                        <div className="flex items-center justify-between mb-6">
-                            <div>
-                                <h2 className="text-2xl font-bold text-gray-900">
-                                    {userCoords ? 'Nearest Tire Shops' : 'Available Tire Shops'}
-                                </h2>
-                                <p className="text-gray-600">
-                                    {userCoords ? 
-                                        `Found ${businesses.total} tire shops sorted by distance` :
-                                        `Found ${businesses.total} tire shops ready to help`
-                                    }
-                                </p>
-                                {userCoords && (
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <MapPin className="w-4 h-4 text-green-600" />
-                                        <span className="text-sm text-green-600 font-medium">
-                                            Showing results near your location
-                                        </span>
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div className="mb-4 sm:mb-0">
+                                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                                        {userCoords ? (
+                                            <span className="flex items-center">
+                                                <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                                                Nearest Tire Shops
+                                            </span>
+                                        ) : (
+                                            'Available Tire Shops'
+                                        )}
+                                    </h2>
+                                    <p className="text-gray-600 text-lg">
+                                        {searchLoading ? (
+                                            <span className="flex items-center">
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                Searching tire shops...
+                                            </span>
+                                        ) : userCoords ? (
+                                            `Found ${businesses.total} tire shops sorted by distance`
+                                        ) : (
+                                            `${businesses.total} professional tire shops ready to help`
+                                        )}
+                                    </p>
+                                    {userCoords && !searchLoading && (
+                                        <div className="flex items-center gap-2 mt-3 p-2 bg-green-50 rounded-lg border border-green-200">
+                                            <MapPin className="w-4 h-4 text-green-600" />
+                                            <span className="text-sm text-green-700 font-medium">
+                                                GPS location active - showing nearest shops first
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {!searchLoading && businesses.total > 0 && (
+                                    <div className="text-center sm:text-right">
+                                        <div className="text-3xl font-bold text-blue-600">{businesses.total}</div>
+                                        <div className="text-sm text-gray-500">shops found</div>
                                     </div>
                                 )}
                             </div>
                         </div>
 
+                {/* Loading Skeleton */}
+                {searchLoading && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
+                                <div className="h-56 bg-gray-200"></div>
+                                <div className="p-6">
+                                    <div className="h-6 bg-gray-200 rounded mb-3"></div>
+                                    <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+                                    <div className="h-4 bg-gray-200 rounded mb-4 w-1/2"></div>
+                                    <div className="h-16 bg-gray-200 rounded mb-4"></div>
+                                    <div className="flex gap-2 mb-4">
+                                        <div className="h-6 bg-gray-200 rounded-full px-3 py-1 w-16"></div>
+                                        <div className="h-6 bg-gray-200 rounded-full px-3 py-1 w-20"></div>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="h-4 bg-gray-200 rounded w-24"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                
                 {/* Business Grid */}
-                {businesses.data.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {!searchLoading && businesses.data.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                         {businesses.data.map((business, index) => (
-                            <Card key={`business-${business.id || index}`} className="hover:shadow-lg transition-shadow py-0 cursor-pointer overflow-hidden">
-                                <Link href={`/tire-shops/${String(business.slug)}`}>
+                            <Card key={`business-${business.id || index}`} className="group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden border-0 shadow-lg bg-white py-0">
+                                <Link href={`/tire-shops/${String(business.slug)}`} className="block">
                                     {/* Business Image */}
-                                    <div className="relative h-48 bg-gray-200 overflow-hidden">
+                                    <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                                         {business.image ? (
                                             <img 
                                                 src={String(business.image)} 
                                                 alt={String(business.name)}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 onError={(e) => {
                                                     const img = e.target as HTMLImageElement;
                                                     img.style.display = 'none';
                                                     const parent = img.parentElement;
                                                     if (parent) {
-                                                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gray-100"><div class="text-center"><div class="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-lg flex items-center justify-center"><svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div><p class="text-sm text-gray-500">No image</p></div></div>';
+                                                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100"><div class="text-center p-4"><div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg"><svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div><p class="text-base font-medium text-gray-700">Tire Shop</p><p class="text-sm text-gray-500">Professional Service</p></div></div>';
                                                     }
                                                 }}
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                                <div className="text-center">
-                                                    <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 rounded-lg flex items-center justify-center">
-                                                        <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+                                                <div className="text-center p-4">
+                                                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                                         </svg>
                                                     </div>
-                                                    <p className="text-sm text-gray-500">No image</p>
+                                                    <p className="text-base font-medium text-gray-700">Tire Shop</p>
+                                                    <p className="text-sm text-gray-500">Professional Service</p>
                                                 </div>
                                             </div>
                                         )}
-                                        {/* Distance Badge overlay */}
+                                        
+                                        {/* Enhanced Overlays */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        
+                                        {/* Distance Badge */}
                                         {business.distance !== undefined && userCoords && (
-                                            <div className="absolute top-3 left-3">
-                                                <Badge className="bg-green-600 text-white shadow-lg">
+                                            <div className="absolute top-4 left-4">
+                                                <Badge className="bg-green-500/90 hover:bg-green-600 text-white shadow-xl backdrop-blur-sm border-0 px-3 py-1.5 text-sm font-semibold">
+                                                    <Navigation className="w-3 h-3 mr-1" />
                                                     {(() => {
                                                         const distance = parseFloat(String(business.distance));
                                                         if (distance < 1) {
-                                                            return `${(distance * 1000).toFixed(0)}m away`;
+                                                            return `${(distance * 1000).toFixed(0)}m`;
                                                         } else {
-                                                            return `${distance.toFixed(1)}km away`;
+                                                            return `${distance.toFixed(1)}km`;
                                                         }
                                                     })()}
                                                 </Badge>
                                             </div>
                                         )}
-                                        {/* Verified Badge overlay */}
-                                        <div className="absolute top-3 right-3">
-                                            <Badge className="bg-green-100 text-green-800 shadow-lg">
+                                        
+                                        {/* Verified Badge */}
+                                        <div className="absolute top-4 right-4">
+                                            <Badge className="bg-emerald-500/90 hover:bg-emerald-600 text-white shadow-xl backdrop-blur-sm border-0 px-3 py-1.5 text-sm font-semibold">
+                                                <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
                                                 Verified
                                             </Badge>
                                         </div>
+                                        
+                                        {/* Quick Action Buttons - Show on Hover */}
+                                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                            <div className="flex gap-2">
+                                                {business.phone && (
+                                                    <button className="w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110">
+                                                        <Phone className="w-4 h-4 text-green-600" />
+                                                    </button>
+                                                )}
+                                                {business.website && (
+                                                    <button className="w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-all duration-200 hover:scale-110">
+                                                        <Globe className="w-4 h-4 text-blue-600" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                     
-                                    <CardContent className="p-6">
-                                        <div className="mb-4">
-                                            <div className="flex-1">
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                                    {String(business.name)}
-                                                </h3>
-                                                <div className="flex items-center text-sm text-gray-600 mb-2">
-                                                    <MapPin className="w-4 h-4 mr-1" />
-                                                    {getDistanceText(business)}
+                                    <CardContent className="p-6 bg-white">
+                                        {/* Header Section */}
+                                        <div className="mb-5">
+                                            <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">
+                                                {String(business.name)}
+                                            </h3>
+                                            
+                                            {/* Location & Hours */}
+                                            <div className="space-y-2">
+                                                <div className="flex items-center text-gray-600">
+                                                    <MapPin className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
+                                                    <span className="text-sm font-medium line-clamp-1">{getDistanceText(business)}</span>
                                                 </div>
                                                 {business.formatted_hours && (
-                                                    <div className="flex items-center text-sm text-gray-600 mb-3">
-                                                        <Clock className="w-4 h-4 mr-1" />
-                                                        {String(business.formatted_hours)}
+                                                    <div className="flex items-center text-gray-600">
+                                                        <Clock className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+                                                        <span className="text-sm font-medium">{String(business.formatted_hours)}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
+                                        {/* Description */}
                                         {business.descriptions && (
-                                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                                            <p className="text-gray-600 text-sm mb-2 line-clamp-2 leading-relaxed">
                                                 {String(business.descriptions)}
                                             </p>
                                         )}
 
+                                        {/* Services */}
                                         {business.services && business.services.length > 0 && (
-                                            <div className="mb-4">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <Wrench className="w-4 h-4 text-orange-600" />
-                                                    <span className="text-sm font-medium">Services:</span>
+                                            <div className="mb-5">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <Wrench className="w-4 h-4 text-orange-500" />
+                                                    <span className="text-sm font-semibold text-gray-700">Services Available</span>
                                                 </div>
-                                                <div className="flex flex-wrap gap-1">
+                                                <div className="flex flex-wrap gap-2">
                                                     {business.services.slice(0, 3).map((service) => (
                                                         <Badge 
                                                             key={service.id} 
                                                             variant="outline" 
-                                                            className="text-xs"
+                                                            className="text-xs border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors font-medium px-2 py-1"
                                                         >
                                                             {service.name}
                                                         </Badge>
                                                     ))}
                                                     {business.services.length > 3 && (
-                                                        <Badge variant="outline" className="text-xs">
+                                                        <Badge variant="outline" className="text-xs border-gray-300 text-gray-600 bg-gray-50 font-medium px-2 py-1">
                                                             +{business.services.length - 3} more
                                                         </Badge>
                                                     )}
@@ -926,66 +1134,138 @@ export default function PublicBusinessIndex({
                                             </div>
                                         )}
 
-                                        <div className="flex items-center justify-between">
+                                        {/* Rating & CTA */}
+                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                             <div className="flex items-center">
                                                 {business.reviews_count && business.reviews_count > 0 ? (
                                                     <>
-                                                        <div className="flex items-center">
+                                                        <div className="flex items-center mr-2">
                                                             {renderStars(Math.round(business.reviews_avg_rate || 0))}
                                                         </div>
-                                                        <span className="text-gray-600 text-sm ml-1">
-                                                            ({business.reviews_count} review{business.reviews_count !== 1 ? 's' : ''})
+                                                        <span className="text-gray-600 text-sm font-medium">
+                                                            {business.reviews_avg_rate?.toFixed(1)} ({business.reviews_count})
                                                         </span>
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <div className="flex items-center text-gray-300">
+                                                        <div className="flex items-center text-gray-300 mr-2">
                                                             {renderStars(0)}
                                                         </div>
-                                                        <span className="text-gray-600 text-sm ml-1">
-                                                            (No reviews yet)
+                                                        <span className="text-gray-400 text-sm">
+                                                            New listing
                                                         </span>
                                                     </>
                                                 )}
                                             </div>
-                                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                                            
+                                            <div className="flex items-center text-blue-600 group-hover:text-blue-800 transition-colors font-semibold">
+                                                <span className="text-sm mr-1">View Details</span>
+                                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Link>
                             </Card>
                         ))}
                     </div>
-                ) : (
-                    <div className="text-center py-12">
-                        <Navigation className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            No tire shops found
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                            Try adjusting your search criteria or location filters.
-                        </p>
-                        <Button onClick={clearFilters}>
-                            Clear Filters
-                        </Button>
+                ) : !searchLoading ? (
+                    <div className="text-center py-20">
+                        <div className="max-w-md mx-auto">
+                            {/* Empty State Illustration */}
+                            <div className="relative mb-8">
+                                <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center shadow-lg">
+                                    <Navigation className="w-16 h-16 text-blue-500" />
+                                </div>
+                                <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                                    <Search className="w-6 h-6 text-white" />
+                                </div>
+                            </div>
+                            
+                            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                No tire shops found
+                            </h3>
+                            <p className="text-gray-600 mb-8 leading-relaxed">
+                                We couldn't find any tire shops matching your criteria. Try expanding your search area or adjusting your filters.
+                            </p>
+                            
+                            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                                <Button onClick={clearFilters} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+                                    <X className="w-4 h-4 mr-2" />
+                                    Clear All Filters
+                                </Button>
+                                <Button 
+                                    onClick={getCurrentLocation} 
+                                    variant="outline" 
+                                    disabled={gettingLocation}
+                                    className="px-6 py-3 border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
+                                >
+                                    {gettingLocation ? (
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                        <LocationIcon className="w-4 h-4 mr-2" />
+                                    )}
+                                    Try Near Me
+                                </Button>
+                            </div>
+                            
+                            {/* Helpful Tips */}
+                            <div className="mt-10 p-6 bg-gray-50 rounded-xl text-left">
+                                <h4 className="font-semibold text-gray-900 mb-3">Search Tips:</h4>
+                                <ul className="text-sm text-gray-600 space-y-2">
+                                    <li className="flex items-start">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                        Try searching for broader terms like "tire" or "mechanic"
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                        Use your current location to find nearby shops
+                                    </li>
+                                    <li className="flex items-start">
+                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                        Select a larger area (province instead of village)
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                )}
+                ) : null}
 
                         {/* Pagination */}
-                        {businesses.last_page > 1 && (
-                            <div className="mt-12 flex justify-center">
-                                <div className="flex items-center space-x-2">
-                                    {businesses.links.map((link, index) => (
-                                        <Link
-                                            key={index}
-                                            href={link.url || '#'}
-                                            className={`px-3 py-2 text-sm rounded-md ${
-                                                link.active
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-white text-gray-700 border hover:bg-gray-50'
-                                            }`}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ))}
+                        {!searchLoading && businesses.last_page > 1 && (
+                            <div className="mt-16">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <p className="text-sm text-gray-600">
+                                            Showing page {businesses.current_page} of {businesses.last_page}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            {businesses.from}-{businesses.to} of {businesses.total} shops
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-wrap justify-center gap-2">
+                                        {businesses.links.map((link, index) => {
+                                            const isActive = link.active;
+                                            const isDisabled = !link.url;
+                                            const isPrevNext = link.label.includes('Previous') || link.label.includes('Next');
+                                            
+                                            return (
+                                                <Link
+                                                    key={index}
+                                                    href={link.url || '#'}
+                                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                                                        isActive
+                                                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform scale-105'
+                                                            : isDisabled
+                                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transform hover:scale-105'
+                                                    } ${
+                                                        isPrevNext ? 'px-6' : ''
+                                                    }`}
+                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                                />
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         )}
