@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,6 @@ import {
     MapPin,
     Clock,
     Phone,
-    Mail,
     Star,
     Wrench,
     DollarSign,
@@ -30,6 +30,7 @@ interface BusinessShowProps {
 }
 
 export default function PublicBusinessShow({ business, nearbyBusinesses }: BusinessShowProps) {
+    const { t } = useTranslation();
     const [showReviewForm, setShowReviewForm] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const { props } = usePage();
@@ -167,7 +168,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                             <Link href="/tire-shops">
                                 <Button variant="outline" size="sm" className="hover:bg-gray-50 transition-colors duration-200">
                                     <ArrowLeft className="w-4 h-4 mr-2" />
-                                    Back to Directory
+                                    {t('back_to_directory')}
                                 </Button>
                             </Link>
                         </div>
@@ -181,7 +182,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     <div className="flex items-center gap-2">
                                         <Badge className="bg-emerald-100 text-emerald-800 px-3 py-1.5 text-sm font-medium">
                                             <CheckCircle className="w-4 h-4 mr-1.5" />
-                                            Verified Business
+                                            {t('verified')}
                                         </Badge>
                                     </div>
                                 </div>
@@ -208,7 +209,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             {(business.reviews_avg_rate || 0).toFixed(1)}
                                         </span>
                                         <span className="text-gray-600">
-                                            ({business.reviews_count} review{business.reviews_count !== 1 ? 's' : ''})
+                                            ({business.reviews_count} {business.reviews_count === 1 ? t('review') : t('reviews')})
                                         </span>
                                     </div>
                                 )}
@@ -221,7 +222,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     size="lg"
                                 >
                                     <Phone className="w-5 h-5 mr-3" />
-                                    Call Business
+                                    {t('call_now')}
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -230,7 +231,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     size="lg"
                                 >
                                     <Navigation className="w-5 h-5 mr-3" />
-                                    Get Directions
+                                    {t('get_directions')}
                                 </Button>
                             </div>
                         </div>
@@ -300,7 +301,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                     <CardContent className="p-6">
                                         <div className="space-y-4">
                                             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                                                {business.services.map((service, index) => (
+                                                {business.services.map((service) => (
                                                     <div
                                                         key={service.id}
                                                         className="group flex items-center justify-between p-5 bg-white border border-gray-200 rounded-xl hover:border-blue-200 hover:shadow-md transition-all duration-200"

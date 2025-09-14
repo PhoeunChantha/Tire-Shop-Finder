@@ -1,8 +1,8 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import WebsiteLayout from '@/layouts/website-layout';
 import { SEOHead } from '@/components/seo-head';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
     MapPin, 
@@ -24,11 +24,13 @@ import {
 } from 'lucide-react';
 
 export default function About() {
+    const { t } = useTranslation();
+    
     return (
         <WebsiteLayout>
             <SEOHead
-                title="About Us - Cambodia's Leading Tire Shop Directory"
-                description="Learn about Tire Shop Finder Cambodia - Your trusted platform for finding verified tire repair services across all 25 provinces. GPS-powered search for emergency tire assistance."
+                title={t('about_us') + ' - ' + t('cambodia_leading_directory')}
+                description={t('about_description')}
                 keywords={['about tire shop finder', 'Cambodia tire directory', 'tire repair services', 'emergency tire assistance', 'verified tire shops']}
                 type="website"
                 url={typeof window !== 'undefined' ? window.location.href : undefined}
@@ -50,34 +52,34 @@ export default function About() {
                             {/* Animated Badge */}
                             <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-8 animate-pulse">
                                 <Award className="w-4 h-4 mr-2 text-yellow-400" />
-                                Cambodia's Most Trusted Tire Directory
+                                {t('cambodia_most_trusted_directory')}
                             </div>
                             
                             <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
                                 <span className="bg-gradient-to-r from-white via-blue-50 to-indigo-100 bg-clip-text text-transparent">
-                                    About Our
+                                    {t('about_us')}
                                 </span>
                                 <br />
                                 <span className="text-white">
-                                    Mission
+                                    {t('our_mission')}
                                 </span>
                             </h1>
                             
                             <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed mb-12">
-                                We revolutionize how Cambodian drivers find tire help during emergencies. 
-                                <span className="text-yellow-300 font-semibold">No more panic</span>, 
-                                <span className="text-green-300 font-semibold"> just instant solutions</span> when you need them most.
+                                {t('we_revolutionize')} 
+                                <span className="text-yellow-300 font-semibold">{t('no_more_panic')}</span>, 
+                                <span className="text-green-300 font-semibold"> {t('just_instant_solutions')}</span> {t('when_you_need_them_most')}
                             </p>
                             
                             {/* Action Buttons */}
                             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                                 <Button className="px-8 py-4 bg-white text-blue-700 hover:bg-blue-50 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
                                     <Search className="w-5 h-5 mr-2" />
-                                    Find Tire Shops
+                                    {t('find_tire_shops')}
                                 </Button>
                                 <Button variant="outline" className="px-8 py-4 border-2 border-white/30 text-white hover:bg-white/10 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
                                     <Heart className="w-5 h-5 mr-2" />
-                                    Our Story
+                                    {t('our_story')}
                                 </Button>
                             </div>
                             
@@ -85,19 +87,19 @@ export default function About() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
                                 <div className="text-center">
                                     <div className="text-4xl font-bold text-yellow-300 mb-2">500+</div>
-                                    <div className="text-blue-200 text-sm font-medium">Verified Shops</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('verified_shops')}</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-4xl font-bold text-green-300 mb-2">25</div>
-                                    <div className="text-blue-200 text-sm font-medium">Provinces</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('provinces')}</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-4xl font-bold text-orange-300 mb-2">24/7</div>
-                                    <div className="text-blue-200 text-sm font-medium">Support</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('support')}</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-4xl font-bold text-purple-300 mb-2">⭐ 4.9</div>
-                                    <div className="text-blue-200 text-sm font-medium">User Rating</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('user_rating')}</div>
                                 </div>
                             </div>
                         </div>
@@ -112,13 +114,13 @@ export default function About() {
                             <div className="text-center mb-16">
                                 <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6">
                                     <Zap className="w-4 h-4 mr-2" />
-                                    Why We Exist
+                                    {t('why_we_exist')}
                                 </div>
-                                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Core Mission</h2>
+                                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{t('our_core_mission')}</h2>
                                 <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                                    Transforming tire emergencies from stressful nightmares into 
-                                    <span className="text-blue-600 font-semibold"> quick, simple solutions</span>. 
-                                    Because every driver deserves peace of mind on Cambodia's roads.
+                                    {t('transforming_tire_emergencies')} 
+                                    <span className="text-blue-600 font-semibold"> {t('quick_simple_solutions')}</span>. 
+                                    {t('every_driver_deserves')}
                                 </p>
                             </div>
 
@@ -133,8 +135,8 @@ export default function About() {
                                                 <CheckCircle className="w-3 h-3 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">GPS-Powered Search</h3>
-                                        <p className="text-gray-600 leading-relaxed">Instantly locate tire shops within meters of your exact position using advanced GPS technology</p>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">{t('gps_powered_search')}</h3>
+                                        <p className="text-gray-600 leading-relaxed">{t('instantly_locate_shops')}</p>
                                     </CardContent>
                                 </Card>
 
@@ -148,8 +150,8 @@ export default function About() {
                                                 <Star className="w-3 h-3 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">100% Verified</h3>
-                                        <p className="text-gray-600 leading-relaxed">Every shop undergoes rigorous verification for quality, reliability, and professional service standards</p>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">{t('hundred_percent_verified')}</h3>
+                                        <p className="text-gray-600 leading-relaxed">{t('every_shop_verified')}</p>
                                     </CardContent>
                                 </Card>
 
@@ -163,8 +165,8 @@ export default function About() {
                                                 <Clock className="w-3 h-3 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">Complete Services</h3>
-                                        <p className="text-gray-600 leading-relaxed">From emergency repairs to full replacements, find comprehensive automotive tire services</p>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">{t('complete_services')}</h3>
+                                        <p className="text-gray-600 leading-relaxed">{t('emergency_repairs_replacements')}</p>
                                     </CardContent>
                                 </Card>
 
@@ -178,8 +180,8 @@ export default function About() {
                                                 <Heart className="w-3 h-3 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">Driver Community</h3>
-                                        <p className="text-gray-600 leading-relaxed">Built by real drivers who understand the challenges of Cambodia's roads and traffic</p>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">{t('driver_community')}</h3>
+                                        <p className="text-gray-600 leading-relaxed">{t('built_by_real_drivers')}</p>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -194,34 +196,34 @@ export default function About() {
                             <div className="order-2 lg:order-1">
                                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 rounded-full text-sm font-medium mb-6">
                                     <Heart className="w-4 h-4 mr-2" />
-                                    Our Journey
+                                    {t('our_journey')}
                                 </div>
                                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                                    Born from 
+                                    {t('born_from_real_frustration').split(' ').slice(0, 2).join(' ')} 
                                     <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> 
-                                        Real Frustration
+                                        {t('born_from_real_frustration').split(' ').slice(2).join(' ')}
                                     </span>
                                 </h2>
                                 <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
                                     <p className="border-l-4 border-blue-500 pl-6 bg-blue-50 py-4 rounded-r-lg">
-                                        <span className="font-semibold text-gray-900">The Problem:</span> Picture this – flat tire at night, unfamiliar area, no idea where to get help. We've all been there, and it's terrifying.
+                                        <span className="font-semibold text-gray-900">{t('the_problem')}</span> {t('picture_flat_tire')}
                                     </p>
                                     <p className="border-l-4 border-green-500 pl-6 bg-green-50 py-4 rounded-r-lg">
-                                        <span className="font-semibold text-gray-900">The Solution:</span> One simple platform that instantly connects you to verified tire shops across all 25 provinces of Cambodia.
+                                        <span className="font-semibold text-gray-900">{t('the_solution')}</span> {t('one_simple_platform')}
                                     </p>
                                     <p className="border-l-4 border-purple-500 pl-6 bg-purple-50 py-4 rounded-r-lg">
-                                        <span className="font-semibold text-gray-900">The Result:</span> No more panic, no more wandering. Just peace of mind knowing help is always one click away.
+                                        <span className="font-semibold text-gray-900">{t('the_result')}</span> {t('no_more_panic_wandering')}
                                     </p>
                                 </div>
                                 
                                 <div className="mt-10 flex flex-col sm:flex-row gap-4">
                                     <Button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
                                         <TrendingUp className="w-5 h-5 mr-2" />
-                                        See Our Impact
+                                        {t('see_our_impact')}
                                     </Button>
                                     <Button variant="outline" className="px-6 py-3 border-2 border-gray-300 hover:border-blue-400 hover:text-blue-600 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
                                         <Phone className="w-5 h-5 mr-2" />
-                                        Contact Us
+                                        {t('contact_us')}
                                     </Button>
                                 </div>
                             </div>
@@ -231,8 +233,8 @@ export default function About() {
                                     <div className="bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 p-1 rounded-3xl shadow-2xl">
                                         <div className="bg-white p-8 rounded-2xl">
                                             <div className="text-center mb-8">
-                                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Our Growing Impact</h3>
-                                                <p className="text-gray-600">Real numbers from real users</p>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('our_growing_impact')}</h3>
+                                                <p className="text-gray-600">{t('real_numbers_users')}</p>
                                             </div>
                                             <div className="grid grid-cols-2 gap-6">
                                                 <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
@@ -240,32 +242,32 @@ export default function About() {
                                                         <TrendingUp className="w-6 h-6 mr-1" />
                                                         500+
                                                     </div>
-                                                    <div className="text-sm font-medium text-gray-700">Verified Shops</div>
-                                                    <div className="text-xs text-gray-500 mt-1">Growing daily</div>
+                                                    <div className="text-sm font-medium text-gray-700">{t('verified_shops')}</div>
+                                                    <div className="text-xs text-gray-500 mt-1">{t('growing_daily')}</div>
                                                 </div>
                                                 <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl">
                                                     <div className="text-3xl font-bold text-green-600 mb-2 flex items-center justify-center">
                                                         <MapPin className="w-6 h-6 mr-1" />
                                                         25
                                                     </div>
-                                                    <div className="text-sm font-medium text-gray-700">Provinces</div>
-                                                    <div className="text-xs text-gray-500 mt-1">100% coverage</div>
+                                                    <div className="text-sm font-medium text-gray-700">{t('provinces')}</div>
+                                                    <div className="text-xs text-gray-500 mt-1">{t('hundred_percent_coverage')}</div>
                                                 </div>
                                                 <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-red-100 rounded-2xl">
                                                     <div className="text-3xl font-bold text-orange-600 mb-2 flex items-center justify-center">
                                                         <Clock className="w-6 h-6 mr-1" />
                                                         24/7
                                                     </div>
-                                                    <div className="text-sm font-medium text-gray-700">Support</div>
-                                                    <div className="text-xs text-gray-500 mt-1">Always online</div>
+                                                    <div className="text-sm font-medium text-gray-700">{t('support')}</div>
+                                                    <div className="text-xs text-gray-500 mt-1">{t('always_online')}</div>
                                                 </div>
                                                 <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl">
                                                     <div className="text-3xl font-bold text-purple-600 mb-2 flex items-center justify-center">
                                                         <Star className="w-6 h-6 mr-1" />
                                                         4.9
                                                     </div>
-                                                    <div className="text-sm font-medium text-gray-700">User Rating</div>
-                                                    <div className="text-xs text-gray-500 mt-1">Highly trusted</div>
+                                                    <div className="text-sm font-medium text-gray-700">{t('user_rating')}</div>
+                                                    <div className="text-xs text-gray-500 mt-1">{t('highly_trusted')}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -290,14 +292,14 @@ export default function About() {
                         <div className="text-center mb-16">
                             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 rounded-full text-sm font-medium mb-6">
                                 <Zap className="w-4 h-4 mr-2" />
-                                Simple Process
+                                {t('simple_process')}
                             </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                                How It Works
+                                {t('how_it_works')}
                             </h2>
                             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                                From panic to problem solved in 
-                                <span className="text-blue-600 font-bold"> under 60 seconds</span>
+                                {t('from_panic_to_solved')} 
+                                <span className="text-blue-600 font-bold"> {t('under_60_seconds')}</span>
                             </p>
                         </div>
 
@@ -317,12 +319,12 @@ export default function About() {
                                     </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">Emergency Strikes? 🚨</h3>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">{t('emergency_strikes')}</h3>
                                     <p className="text-gray-600 leading-relaxed mb-4">
-                                        Flat tire? Open our website instantly. Allow location access and we'll pinpoint your exact position.
+                                        {t('flat_tire_open_website')}
                                     </p>
                                     <div className="text-sm text-blue-600 font-semibold">
-                                        ⏱️ Takes 5 seconds
+                                        {t('takes_5_seconds')}
                                     </div>
                                 </div>
                             </div>
@@ -338,12 +340,12 @@ export default function About() {
                                     </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">Pick Your Hero! 🏆</h3>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">{t('pick_your_hero')}</h3>
                                     <p className="text-gray-600 leading-relaxed mb-4">
-                                        See verified shops sorted by distance. View ratings, services, and contact details instantly.
+                                        {t('see_verified_shops')}
                                     </p>
                                     <div className="text-sm text-green-600 font-semibold">
-                                        ⏱️ Takes 30 seconds
+                                        {t('takes_30_seconds')}
                                     </div>
                                 </div>
                             </div>
@@ -359,12 +361,12 @@ export default function About() {
                                     </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-lg group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">You're Rescued! 🎉</h3>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">{t('youre_rescued')}</h3>
                                     <p className="text-gray-600 leading-relaxed mb-4">
-                                        Tap for GPS directions, call directly, or share your location. Help is on the way!
+                                        {t('tap_gps_directions')}
                                     </p>
                                     <div className="text-sm text-orange-600 font-semibold">
-                                        ⏱️ Takes 15 seconds
+                                        {t('takes_15_seconds')}
                                     </div>
                                 </div>
                             </div>
@@ -374,14 +376,14 @@ export default function About() {
                         <div className="text-center mt-16">
                             <div className="bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
                                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                                    Ready to Never Worry About Flat Tires Again?
+                                    {t('ready_never_worry')}
                                 </h3>
                                 <p className="text-gray-600 mb-6">
-                                    Join thousands of drivers who trust us for emergency tire assistance
+                                    {t('join_thousands_drivers')}
                                 </p>
                                 <Button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
                                     <Search className="w-5 h-5 mr-2" />
-                                    Try It Now - Find Shops
+                                    {t('try_it_now')}
                                 </Button>
                             </div>
                         </div>
@@ -394,16 +396,16 @@ export default function About() {
                         <div className="text-center mb-16">
                             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-blue-100 text-green-800 rounded-full text-sm font-medium mb-6">
                                 <Mail className="w-4 h-4 mr-2" />
-                                Let's Connect
+                                {t('lets_connect')}
                             </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                                Ready to 
+                                {t('ready_to_get_started').split(' ').slice(0, 2).join(' ')} 
                                 <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                                    Get Started?
+                                    {t('ready_to_get_started').split(' ').slice(2).join(' ')}
                                 </span>
                             </h2>
                             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                                Whether you're a driver seeking peace of mind or a business owner ready to serve more customers, we're here to help.
+                                {t('whether_driver_business')}
                             </p>
                         </div>
                         
@@ -416,37 +418,37 @@ export default function About() {
                                             <Users className="w-8 h-8 text-white" />
                                         </div>
                                         <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                                            For Drivers
+                                            {t('for_drivers')}
                                         </h3>
                                     </div>
                                     
                                     <div className="space-y-4 mb-8">
                                         <div className="flex items-start space-x-3">
                                             <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">Need help finding tire shops near you?</p>
+                                            <p className="text-gray-700">{t('need_help_finding')}</p>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">Have feedback about our service?</p>
+                                            <p className="text-gray-700">{t('have_feedback_service')}</p>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">Want to report a business issue?</p>
+                                            <p className="text-gray-700">{t('want_report_business')}</p>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">Looking for emergency assistance?</p>
+                                            <p className="text-gray-700">{t('looking_emergency_assistance')}</p>
                                         </div>
                                     </div>
                                     
                                     <div className="flex flex-col sm:flex-row gap-3">
                                         <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold py-3 transition-all duration-200 transform hover:scale-105">
                                             <Phone className="w-4 h-4 mr-2" />
-                                            Contact Support
+                                            {t('contact_support')}
                                         </Button>
                                         <Button variant="outline" className="flex-1 border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl font-semibold py-3 transition-all duration-200 transform hover:scale-105">
                                             <Mail className="w-4 h-4 mr-2" />
-                                            Send Email
+                                            {t('send_email')}
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -460,37 +462,37 @@ export default function About() {
                                             <Shield className="w-8 h-8 text-white" />
                                         </div>
                                         <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
-                                            For Businesses
+                                            {t('for_businesses')}
                                         </h3>
                                     </div>
                                     
                                     <div className="space-y-4 mb-8">
                                         <div className="flex items-start space-x-3">
                                             <Star className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">List your tire shop in our directory</p>
+                                            <p className="text-gray-700">{t('list_your_tire_shop')}</p>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <Star className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">Reach more customers across Cambodia</p>
+                                            <p className="text-gray-700">{t('reach_more_customers')}</p>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <Star className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">Get verified business status</p>
+                                            <p className="text-gray-700">{t('get_verified_status')}</p>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <Star className="w-5 h-5 text-yellow-500 mt-1 flex-shrink-0" />
-                                            <p className="text-gray-700">24/7 emergency referrals</p>
+                                            <p className="text-gray-700">{t('emergency_referrals')}</p>
                                         </div>
                                     </div>
                                     
                                     <div className="flex flex-col sm:flex-row gap-3">
                                         <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold py-3 transition-all duration-200 transform hover:scale-105">
                                             <ArrowRight className="w-4 h-4 mr-2" />
-                                            Join Network
+                                            {t('join_network')}
                                         </Button>
                                         <Button variant="outline" className="flex-1 border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white rounded-xl font-semibold py-3 transition-all duration-200 transform hover:scale-105">
                                             <Phone className="w-4 h-4 mr-2" />
-                                            Call Us
+                                            {t('call_us')}
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -501,14 +503,14 @@ export default function About() {
                         <div className="text-center mt-16">
                             <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
                                 <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                                    Ready to Transform Tire Emergencies?
+                                    {t('ready_transform_emergencies')}
                                 </h3>
                                 <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                                    Join the thousands who've discovered peace of mind on Cambodia's roads
+                                    {t('join_thousands_discovered')}
                                 </p>
                                 <Button className="px-8 py-4 bg-white text-blue-600 hover:bg-blue-50 rounded-xl font-bold transition-all duration-200 transform hover:scale-105 shadow-lg">
                                     <Search className="w-5 h-5 mr-2" />
-                                    Start Using Our Service
+                                    {t('start_using_service')}
                                 </Button>
                             </div>
                         </div>

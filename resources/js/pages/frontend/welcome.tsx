@@ -4,6 +4,7 @@ import WebsiteLayout from '@/layouts/website-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 import { BannerCarousel } from '@/components/BannerCarousel';
 import { 
   Search, 
@@ -51,6 +52,7 @@ interface PageProps extends Record<string, unknown> {
 }
 
 function BusinessCard({ business }: { business: Business }) {
+  const { t } = useTranslation();
   const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop";
   
   return (
@@ -88,7 +90,7 @@ function BusinessCard({ business }: { business: Business }) {
         
         <div className="flex items-center gap-2 text-gray-600 mb-4">
           <Users className="w-4 h-4 text-green-500" />
-          <span className="text-sm font-medium">{business.review_count} customer reviews</span>
+          <span className="text-sm font-medium">{business.review_count} {t('customer_reviews')}</span>
         </div>
         
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -102,7 +104,7 @@ function BusinessCard({ business }: { business: Business }) {
           ))}
           {business.services.length > 2 && (
             <span className="px-3 py-1.5 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-              +{business.services.length - 2} more
+              +{business.services.length - 2} {t('more_services')}
             </span>
           )}
         </div>
@@ -118,7 +120,7 @@ function BusinessCard({ business }: { business: Business }) {
           )}
           <Link href={`/tire-shops/${business.slug || business.id}`}>
             <Button size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200">
-              <span className="text-sm font-medium">View Details</span>
+              <span className="text-sm font-medium">{t('view_details')}</span>
               <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </Link>
@@ -233,6 +235,7 @@ function BusinessCarousel({ businesses }: { businesses: Business[] }) {
 
 export default function Welcome() {
   const { banners, featuredBusinesses } = usePage<PageProps>().props;
+  const { t } = useTranslation();
   
   return (
     <WebsiteLayout>
@@ -260,20 +263,20 @@ export default function Welcome() {
             <div className="mb-6 mt-3">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 text-sm font-medium mb-8">
                 <Sparkles className="w-4 h-4 text-yellow-400" />
-                <span>Cambodia's Premier Tire Shop Directory</span>
+                <span>{t('premier_directory')}</span>
               </div>
             </div>
             
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-8 text-shadow-lg leading-tight">
-              Find the Best 
+              {t('find_best_tire_shops')} 
               <span className="block bg-gradient-to-r from-yellow-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-                Tire Shops
+                {t('tire_shops')}
               </span>
-              <span className="text-3xl sm:text-4xl md:text-5xl block mt-2">in Cambodia</span>
+              <span className="text-3xl sm:text-4xl md:text-5xl block mt-2">{t('in_cambodia')}</span>
             </h1>
             
             <p className="text-xl sm:text-2xl md:text-3xl mb-8 sm:mb-12 text-white/90 max-w-4xl mx-auto leading-relaxed px-4 font-light">
-              Connect with <span className="font-semibold text-yellow-400">verified</span> tire dealers, service providers, and find exactly what you need for your vehicle across Cambodia.
+              {t('connect_verified')}
             </p>
             
             {/* Enhanced Search Bar */}
@@ -283,7 +286,7 @@ export default function Welcome() {
                   <div className="relative">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input 
-                      placeholder="Search tire shops, brands, services..." 
+                      placeholder={t('search_placeholder')} 
                       className="pl-12 border-0 bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 text-base h-14 rounded-xl"
                     />
                   </div>
@@ -292,7 +295,7 @@ export default function Welcome() {
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input 
-                      placeholder="Province, District, or Current Location" 
+                      placeholder={t('location_placeholder')} 
                       className="pl-12 border-0 bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 text-base h-14 rounded-xl"
                     />
                   </div>
@@ -300,7 +303,7 @@ export default function Welcome() {
                 <Link href="/tire-shops">
                   <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 w-full sm:w-auto shadow-lg text-base h-14 px-8 rounded-xl font-semibold transition-all duration-300 hover:shadow-xl hover:scale-105">
                     <Search className="w-5 h-5 mr-2" />
-                    Search Now
+                    {t('search_now')}
                   </Button>
                 </Link>
               </div>
@@ -315,19 +318,19 @@ export default function Welcome() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="space-y-2">
               <div className="text-3xl font-bold text-blue-600">1000+</div>
-              <div className="text-gray-600 text-sm">Verified Tire Shops</div>
+              <div className="text-gray-600 text-sm">{t('verified_tire_shops')}</div>
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-green-600">50K+</div>
-              <div className="text-gray-600 text-sm">Happy Customers</div>
+              <div className="text-gray-600 text-sm">{t('happy_customers')}</div>
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-purple-600">25</div>
-              <div className="text-gray-600 text-sm">Provinces Covered</div>
+              <div className="text-gray-600 text-sm">{t('provinces_covered')}</div>
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-orange-600">4.8★</div>
-              <div className="text-gray-600 text-sm">Average Rating</div>
+              <div className="text-gray-600 text-sm">{t('average_rating')}</div>
             </div>
           </div>
         </div>
@@ -339,13 +342,13 @@ export default function Welcome() {
           <div className="text-center mb-12 sm:mb-16">
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-semibold mb-6">
               <Award className="w-4 h-4" />
-              <span>Premium Partners</span>
+              <span>{t('premium_partners')}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-              Featured <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Tire Shops</span>
+              {t('featured_tire_shops')}
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Discover Cambodia's most trusted and highly-rated tire shops with exceptional service and verified quality
+              {t('discover_trusted')}
             </p>
           </div>
           
@@ -355,7 +358,7 @@ export default function Welcome() {
             <Link href="/tire-shops">
               <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <Search className="w-5 h-5 mr-2" />
-                Explore All Tire Shops
+                {t('explore_all')}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
@@ -374,10 +377,10 @@ export default function Welcome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
-              Why Choose <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Our Platform</span>?
+              {t('why_choose')}?
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Experience the future of tire shopping with our comprehensive platform designed for modern consumers
+              {t('experience_future')}
             </p>
           </div>
 
@@ -387,12 +390,12 @@ export default function Welcome() {
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <MapPin className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Smart Location Search</h3>
+                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{t('smart_location_search')}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  Advanced GPS-based search to find the nearest tire shops with real-time distance calculations across all Cambodia provinces
+                  {t('smart_location_desc')}
                 </p>
                 <div className="inline-flex items-center text-blue-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>Learn more</span>
+                  <span>{t('learn_more')}</span>
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:ml-0 transition-all" />
                 </div>
               </CardContent>
@@ -403,12 +406,12 @@ export default function Welcome() {
                 <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Shield className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">100% Verified Partners</h3>
+                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">{t('verified_partners')}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  Every tire shop undergoes rigorous verification process ensuring quality service, authentic products, and reliable business practices
+                  {t('verified_partners_desc')}
                 </p>
                 <div className="inline-flex items-center text-green-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>Learn more</span>
+                  <span>{t('learn_more')}</span>
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:ml-0 transition-all" />
                 </div>
               </CardContent>
@@ -419,12 +422,12 @@ export default function Welcome() {
                 <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">Trusted Reviews</h3>
+                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">{t('trusted_reviews')}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed">
-                  Read authentic reviews from real customers and make informed decisions based on genuine experiences and ratings
+                  {t('trusted_reviews_desc')}
                 </p>
                 <div className="inline-flex items-center text-purple-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>Learn more</span>
+                  <span>{t('learn_more')}</span>
                   <ArrowRight className="w-4 h-4 ml-1 group-hover:ml-0 transition-all" />
                 </div>
               </CardContent>
@@ -435,20 +438,20 @@ export default function Welcome() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
             <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
               <Clock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-              <h4 className="font-bold text-gray-900 mb-2">24/7 Support</h4>
-              <p className="text-sm text-gray-600">Round-the-clock customer assistance</p>
+              <h4 className="font-bold text-gray-900 mb-2">{t('support_247')}</h4>
+              <p className="text-sm text-gray-600">{t('support_247_desc')}</p>
             </div>
             
             <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
               <TrendingUp className="w-12 h-12 text-green-600 mx-auto mb-4" />
-              <h4 className="font-bold text-gray-900 mb-2">Price Comparison</h4>
-              <p className="text-sm text-gray-600">Compare prices across multiple shops</p>
+              <h4 className="font-bold text-gray-900 mb-2">{t('price_comparison')}</h4>
+              <p className="text-sm text-gray-600">{t('price_comparison_desc')}</p>
             </div>
             
             <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
               <Award className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-              <h4 className="font-bold text-gray-900 mb-2">Quality Guarantee</h4>
-              <p className="text-sm text-gray-600">All partners meet our quality standards</p>
+              <h4 className="font-bold text-gray-900 mb-2">{t('quality_guarantee')}</h4>
+              <p className="text-sm text-gray-600">{t('quality_guarantee_desc')}</p>
             </div>
             
             {/* <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
@@ -479,35 +482,35 @@ export default function Welcome() {
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-semibold mb-8 border border-white/20">
               <Sparkles className="w-4 h-4 text-yellow-400" />
-              <span>Join Our Growing Network</span>
+              <span>{t('join_network')}</span>
             </div>
             
             <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 sm:mb-8 leading-tight">
-              Own a <span className="bg-gradient-to-r from-yellow-300 to-yellow-400 bg-clip-text text-transparent">Tire Shop</span>?
+              {t('own_tire_shop')}?
             </h2>
             
             <p className="text-xl sm:text-2xl mb-8 sm:mb-12 text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Join Cambodia's leading tire shop directory and connect with <span className="font-bold text-yellow-300">thousands</span> of customers actively searching for tire services
+              {t('join_directory')}
             </p>
             
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
                 <TrendingUp className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-                <h3 className="font-bold text-lg mb-2">Increase Visibility</h3>
-                <p className="text-sm text-white/80">Reach more customers across Cambodia</p>
+                <h3 className="font-bold text-lg mb-2">{t('increase_visibility')}</h3>
+                <p className="text-sm text-white/80">{t('increase_visibility_desc')}</p>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
                 <Users className="w-8 h-8 text-green-400 mx-auto mb-3" />
-                <h3 className="font-bold text-lg mb-2">Build Trust</h3>
-                <p className="text-sm text-white/80">Get verified status and customer reviews</p>
+                <h3 className="font-bold text-lg mb-2">{t('build_trust')}</h3>
+                <p className="text-sm text-white/80">{t('build_trust_desc')}</p>
               </div>
               
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
                 <Award className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-                <h3 className="font-bold text-lg mb-2">Premium Features</h3>
-                <p className="text-sm text-white/80">Access advanced business tools</p>
+                <h3 className="font-bold text-lg mb-2">{t('premium_features')}</h3>
+                <p className="text-sm text-white/80">{t('premium_features_desc')}</p>
               </div>
             </div>
             
@@ -515,14 +518,14 @@ export default function Welcome() {
               <Link href="/register">
                 <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-50 font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 w-full sm:w-auto">
                   <Users className="w-5 h-5 mr-2" />
-                  Register Your Business Free
+                  {t('register_free')}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               
               <Link href="/about">
                 <Button size="lg" variant="outline" className="border-2 border-white/50 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-8 py-4 text-lg rounded-xl transition-all duration-300 w-full sm:w-auto">
-                  Learn How It Works
+                  {t('learn_how_works')}
                 </Button>
               </Link>
             </div>
@@ -530,11 +533,11 @@ export default function Welcome() {
             <div className="mt-8 flex items-center justify-center gap-8 text-sm text-white/70">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Free to Join</span>
+                <span>{t('free_to_join')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Easy Setup</span>
+                <span>{t('easy_setup')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-400" />

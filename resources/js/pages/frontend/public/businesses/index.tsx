@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { SEOHead } from '@/components/seo-head';
@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Business, Province, District, Commune, Village, PaginatedData } from '@/types';
-import { parseGoogleMapsUrl, validateCambodiaCoordinates, formatCoordinates } from '@/lib/maps-utils';
+import { parseGoogleMapsUrl, formatCoordinates } from '@/lib/maps-utils';
 import { toast } from '@/lib/toast';
 import { 
     Search, 
@@ -440,9 +440,9 @@ export default function PublicBusinessIndex({
         if (business.distance !== undefined && userCoords) {
             const distance = parseFloat(String(business.distance));
             if (distance < 1) {
-                return `${(distance * 1000).toFixed(0)}m away`;
+                return t('distance_away', { distance: `${(distance * 1000).toFixed(0)}m` });
             } else {
-                return `${distance.toFixed(1)}km away`;
+                return t('distance_away', { distance: `${distance.toFixed(1)}km` });
             }
         }
         
@@ -450,7 +450,7 @@ export default function PublicBusinessIndex({
         if (business.province?.name && business.district?.name) {
             return `${business.district.name}, ${business.province.name}`;
         }
-        return 'Location not specified';
+        return t('location_not_specified');
     };
 
     const getLocationName = () => {
@@ -545,17 +545,14 @@ export default function PublicBusinessIndex({
                         {/* Animated Badge */}
                         <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6 animate-pulse">
                             <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                            Cambodia's #1 Tire Shop Directory
+                            {t('cambodia_tire_directory')}
                         </div>
                         
                         <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-indigo-100 bg-clip-text text-transparent leading-tight">
-                            Find Tire Shops
-                            <span className="block text-4xl md:text-5xl mt-2 text-white/90">
-                                Near You
-                            </span>
+                            {t('find_tire_shops_near_you')}
                         </h1>
                         <p className="text-xl md:text-2xl text-blue-100/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-                            Discover verified tire professionals across Cambodia. Quick service, competitive prices, trusted quality.
+                            {t('discover_verified_professionals')}
                         </p>
                         
                         {/* Enhanced Search Bar */}
@@ -565,7 +562,7 @@ export default function PublicBusinessIndex({
                                     <div className="relative flex-1">
                                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                         <Input
-                                            placeholder="Search tire shops, services, or brands..."
+                                            placeholder={t('search_placeholder_detailed')}
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             className="pl-12 pr-4 py-4 text-gray-900 bg-transparent border-0 focus:ring-0 text-lg placeholder:text-gray-500 font-medium"
@@ -591,7 +588,7 @@ export default function PublicBusinessIndex({
                                             ) : (
                                                 <LocationIcon className="w-5 h-5 mr-2" />
                                             )}
-                                            Near Me
+                                            {t('near_me')}
                                         </Button>
                                         <Button
                                             onClick={handleSearch}
@@ -601,12 +598,12 @@ export default function PublicBusinessIndex({
                                             {searchLoading ? (
                                                 <>
                                                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                                    Searching...
+                                                    {t('searching')}
                                                 </>
                                             ) : (
                                                 <>
                                                     <Search className="w-5 h-5 mr-2" />
-                                                    Search
+                                                    {t('search')}
                                                 </>
                                             )}
                                         </Button>
@@ -618,15 +615,15 @@ export default function PublicBusinessIndex({
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-white mb-2">{businesses.total}+</div>
-                                    <div className="text-blue-200 text-sm font-medium">Verified Shops</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('verified_shops')}</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-white mb-2">24/7</div>
-                                    <div className="text-blue-200 text-sm font-medium">Emergency Service</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('emergency_service')}</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-3xl font-bold text-white mb-2">⭐ 4.8</div>
-                                    <div className="text-blue-200 text-sm font-medium">Average Rating</div>
+                                    <div className="text-blue-200 text-sm font-medium">{t('average_rating')}</div>
                                 </div>
                             </div>
                         </div>
@@ -647,7 +644,7 @@ export default function PublicBusinessIndex({
                             >
                                 <Filter className="w-4 h-4 mr-2" />
                                 <span className="flex-1 text-left">
-                                    {showFilters ? 'Hide Filters' : 'Show Filters & Search Options'}
+                                    {showFilters ? t('hide_filters') : t('show_filters')}
                                 </span>
                                 {showFilters ? (
                                     <ChevronUp className="w-4 h-4 ml-2" />
@@ -685,7 +682,7 @@ export default function PublicBusinessIndex({
                                 <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
                                     <div className="flex items-center gap-2 mb-3">
                                         <LocationIcon className="w-5 h-5 text-green-600" />
-                                        <span className="font-semibold text-green-900">Location Services</span>
+                                        <span className="font-semibold text-green-900">{t('location_services')}</span>
                                     </div>
                                     <Button 
                                         onClick={getCurrentLocation} 
@@ -701,17 +698,17 @@ export default function PublicBusinessIndex({
                                         {gettingLocation ? (
                                             <>
                                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                Locating...
+                                                {t('locating')}
                                             </>
                                         ) : userCoords ? (
                                             <>
                                                 <LocationIcon className="w-4 h-4 mr-2" />
-                                                Location Active ✓
+                                                {t('location_active')}
                                             </>
                                         ) : (
                                             <>
                                                 <LocationIcon className="w-4 h-4 mr-2" />
-                                                Use My Location
+                                                {t('use_my_location')}
                                             </>
                                         )}
                                     </Button>
@@ -719,13 +716,13 @@ export default function PublicBusinessIndex({
                                         <div className="mt-3 p-3 bg-white/80 rounded-lg border border-green-200">
                                             <p className="text-sm text-green-700 font-medium flex items-center">
                                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                                                GPS location active
+                                                {t('gps_location_active')}
                                             </p>
                                             {userCoords.accuracy && (
                                                 <p className="text-xs text-gray-600 mt-1">
-                                                    Accuracy: {userCoords.accuracy < 10 ? '🎯 Very precise' : 
-                                                               userCoords.accuracy < 100 ? '✅ Good' : 
-                                                               userCoords.accuracy < 1000 ? '⚠️ Fair' : '❌ Poor'} 
+                                                    {t('accuracy')}: {userCoords.accuracy < 10 ? t('accuracy_very_precise') : 
+                                                               userCoords.accuracy < 100 ? t('accuracy_good') : 
+                                                               userCoords.accuracy < 1000 ? t('accuracy_fair') : t('accuracy_poor')} 
                                                     ({userCoords.accuracy > 1000 ? 
                                                       `${(userCoords.accuracy/1000).toFixed(1)}km` : 
                                                       `${userCoords.accuracy.toFixed(0)}m`})
@@ -741,15 +738,15 @@ export default function PublicBusinessIndex({
                                 <div className="flex items-center gap-2 mb-3">
                                     <LinkIcon className="w-4 h-4 text-blue-600" />
                                     <label className="text-sm font-medium text-blue-900">
-                                        Share Google Maps Location
+                                        {t('share_google_maps_location')}
                                     </label>
                                 </div>
                                 <p className="text-xs text-blue-700 mb-3">
-                                    Paste a Google Maps link to find tire shops near that location
+                                    {t('paste_google_maps_link')}
                                 </p>
                                 <div className="space-y-2">
                                     <Input
-                                        placeholder="https://maps.app.goo.gl/..."
+                                        placeholder={t('google_maps_placeholder')}
                                         value={mapsUrl}
                                         onChange={(e) => {
                                             setMapsUrl(e.target.value);
@@ -772,12 +769,12 @@ export default function PublicBusinessIndex({
                                         {parsingUrl ? (
                                             <>
                                                 <div className="animate-spin rounded-full h-3 w-3 border-2 border-current border-t-transparent mr-2"></div>
-                                                Processing link...
+                                                {t('processing_link')}
                                             </>
                                         ) : (
                                             <>
                                                 <LinkIcon className="w-3 h-3 mr-2" />
-                                                Use This Location
+                                                {t('use_this_location')}
                                             </>
                                         )}
                                     </Button>
@@ -787,10 +784,10 @@ export default function PublicBusinessIndex({
                             {/* Location Dropdowns */}
                             <div className="space-y-4 mb-6">
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Province</label>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">{t('province')}</label>
                                     <SearchableSelect
                                         options={[
-                                            { value: '', label: 'All Provinces' },
+                                            { value: '', label: t('all_provinces') },
                                             ...provinces.map(province => ({
                                                 value: province.id.toString(),
                                                 label: province.name
@@ -804,16 +801,16 @@ export default function PublicBusinessIndex({
                                             setSelectedCommune('');
                                             setSelectedVillage('');
                                         }}
-                                        placeholder="Select Province"
+                                        placeholder={t('select_province')}
                                         className="text-gray-900"
                                     />
                                 </div>
                                 
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 mb-2 block">District</label>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">{t('district')}</label>
                                     <SearchableSelect
                                         options={[
-                                            { value: '', label: 'All Districts' },
+                                            { value: '', label: t('all_districts') },
                                             ...districts.map(district => ({
                                                 value: district.id.toString(),
                                                 label: district.name
@@ -826,7 +823,7 @@ export default function PublicBusinessIndex({
                                             setSelectedCommune('');
                                             setSelectedVillage('');
                                         }}
-                                        placeholder={loadingDistricts ? "Loading districts..." : "Select District"}
+                                        placeholder={loadingDistricts ? t('loading_districts') : t('select_district')}
                                         loading={loadingDistricts}
                                         disabled={loadingDistricts || !selectedProvince}
                                         className="text-gray-900"
@@ -834,10 +831,10 @@ export default function PublicBusinessIndex({
                                 </div>
                                 
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Commune</label>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">{t('commune')}</label>
                                     <SearchableSelect
                                         options={[
-                                            { value: '', label: 'All Communes' },
+                                            { value: '', label: t('all_communes') },
                                             ...communes.map(commune => ({
                                                 value: commune.id.toString(),
                                                 label: commune.name
@@ -849,7 +846,7 @@ export default function PublicBusinessIndex({
                                             setSelectedCommune(value);
                                             setSelectedVillage('');
                                         }}
-                                        placeholder={loadingCommunes ? "Loading communes..." : "Select Commune"}
+                                        placeholder={loadingCommunes ? t('loading_communes') : t('select_commune')}
                                         loading={loadingCommunes}
                                         disabled={loadingCommunes || !selectedDistrict}
                                         className="text-gray-900"
@@ -857,10 +854,10 @@ export default function PublicBusinessIndex({
                                 </div>
                                 
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 mb-2 block">Village</label>
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">{t('village')}</label>
                                     <SearchableSelect
                                         options={[
-                                            { value: '', label: 'All Villages' },
+                                            { value: '', label: t('all_villages') },
                                             ...villages.map(village => ({
                                                 value: village.id.toString(),
                                                 label: village.name
@@ -871,7 +868,7 @@ export default function PublicBusinessIndex({
                                             console.log('Village selected:', value);
                                             setSelectedVillage(value);
                                         }}
-                                        placeholder={loadingVillages ? "Loading villages..." : "Select Village"}
+                                        placeholder={loadingVillages ? t('loading_villages') : t('select_village')}
                                         loading={loadingVillages}
                                         disabled={loadingVillages || !selectedCommune}
                                         className="text-gray-900"
@@ -881,9 +878,9 @@ export default function PublicBusinessIndex({
 
                             {/* Advanced Filters */}
                             <div className="mb-6">
-                                <label className="text-sm font-medium text-gray-700 mb-2 block">Service Type</label>
+                                <label className="text-sm font-medium text-gray-700 mb-2 block">{t('service_type')}</label>
                                 <Input
-                                    placeholder="e.g., emergency, installation..."
+                                    placeholder={t('service_placeholder')}
                                     value={serviceFilter}
                                     onChange={(e) => setServiceFilter(e.target.value)}
                                     className="text-gray-900"
@@ -901,12 +898,12 @@ export default function PublicBusinessIndex({
                                     {searchLoading ? (
                                         <>
                                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            Searching...
+                                            {t('searching')}
                                         </>
                                     ) : (
                                         <>
                                             <Search className="w-4 h-4 mr-2" />
-                                            Apply Filters
+                                            {t('apply_filters')}
                                         </>
                                     )}
                                 </Button>
@@ -918,7 +915,7 @@ export default function PublicBusinessIndex({
                                         className="w-full border-2 border-gray-300 hover:border-red-400 hover:text-red-600 hover:bg-red-50 font-semibold py-3 transition-all duration-200 transform hover:scale-105 active:scale-95"
                                     >
                                         <X className="w-4 h-4 mr-2" />
-                                        Clear All Filters
+                                        {t('clear_all_filters')}
                                     </Button>
                                 )}
                             </div>
@@ -935,29 +932,29 @@ export default function PublicBusinessIndex({
                                         {userCoords ? (
                                             <span className="flex items-center">
                                                 <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                                                Nearest Tire Shops
+                                                {t('nearest_tire_shops')}
                                             </span>
                                         ) : (
-                                            'Available Tire Shops'
+                                            t('available_tire_shops')
                                         )}
                                     </h2>
                                     <p className="text-gray-600 text-lg">
                                         {searchLoading ? (
                                             <span className="flex items-center">
                                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                Searching tire shops...
+                                                {t('searching_tire_shops')}
                                             </span>
                                         ) : userCoords ? (
-                                            `Found ${businesses.total} tire shops sorted by distance`
+                                            t('found_shops_by_distance', { count: businesses.total })
                                         ) : (
-                                            `${businesses.total} professional tire shops ready to help`
+                                            t('professional_shops_ready', { count: businesses.total })
                                         )}
                                     </p>
                                     {userCoords && !searchLoading && (
                                         <div className="flex items-center gap-2 mt-3 p-2 bg-green-50 rounded-lg border border-green-200">
                                             <MapPin className="w-4 h-4 text-green-600" />
                                             <span className="text-sm text-green-700 font-medium">
-                                                GPS location active - showing nearest shops first
+                                                {t('gps_active_showing_nearest')}
                                             </span>
                                         </div>
                                     )}
@@ -966,7 +963,7 @@ export default function PublicBusinessIndex({
                                 {!searchLoading && businesses.total > 0 && (
                                     <div className="text-center sm:text-right">
                                         <div className="text-3xl font-bold text-blue-600">{businesses.total}</div>
-                                        <div className="text-sm text-gray-500">shops found</div>
+                                        <div className="text-sm text-gray-500">{t('shops_found')}</div>
                                     </div>
                                 )}
                             </div>
@@ -1027,8 +1024,8 @@ export default function PublicBusinessIndex({
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                                         </svg>
                                                     </div>
-                                                    <p className="text-base font-medium text-gray-700">Tire Shop</p>
-                                                    <p className="text-sm text-gray-500">Professional Service</p>
+                                                    <p className="text-base font-medium text-gray-700">{t('tire_shop')}</p>
+                                                    <p className="text-sm text-gray-500">{t('professional_service')}</p>
                                                 </div>
                                             </div>
                                         )}
@@ -1114,7 +1111,7 @@ export default function PublicBusinessIndex({
                                             <div className="mb-5">
                                                 <div className="flex items-center gap-2 mb-3">
                                                     <Wrench className="w-4 h-4 text-orange-500" />
-                                                    <span className="text-sm font-semibold text-gray-700">Services Available</span>
+                                                    <span className="text-sm font-semibold text-gray-700">{t('services_available')}</span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
                                                     {business.services.slice(0, 3).map((service) => (
@@ -1153,14 +1150,14 @@ export default function PublicBusinessIndex({
                                                             {renderStars(0)}
                                                         </div>
                                                         <span className="text-gray-400 text-sm">
-                                                            New listing
+                                                            {t('new_listing')}
                                                         </span>
                                                     </>
                                                 )}
                                             </div>
                                             
                                             <div className="flex items-center text-blue-600 group-hover:text-blue-800 transition-colors font-semibold">
-                                                <span className="text-sm mr-1">View Details</span>
+                                                <span className="text-sm mr-1">{t('view_details')}</span>
                                                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
                                             </div>
                                         </div>
@@ -1183,16 +1180,16 @@ export default function PublicBusinessIndex({
                             </div>
                             
                             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                                No tire shops found
+                                {t('no_tire_shops_found')}
                             </h3>
                             <p className="text-gray-600 mb-8 leading-relaxed">
-                                We couldn't find any tire shops matching your criteria. Try expanding your search area or adjusting your filters.
+                                {t('no_shops_description')}
                             </p>
                             
                             <div className="flex flex-col sm:flex-row gap-3 justify-center">
                                 <Button onClick={clearFilters} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
                                     <X className="w-4 h-4 mr-2" />
-                                    Clear All Filters
+                                    {t('clear_all_filters')}
                                 </Button>
                                 <Button 
                                     onClick={getCurrentLocation} 
@@ -1205,25 +1202,25 @@ export default function PublicBusinessIndex({
                                     ) : (
                                         <LocationIcon className="w-4 h-4 mr-2" />
                                     )}
-                                    Try Near Me
+                                    {t('try_near_me')}
                                 </Button>
                             </div>
                             
                             {/* Helpful Tips */}
                             <div className="mt-10 p-6 bg-gray-50 rounded-xl text-left">
-                                <h4 className="font-semibold text-gray-900 mb-3">Search Tips:</h4>
+                                <h4 className="font-semibold text-gray-900 mb-3">{t('search_tips')}</h4>
                                 <ul className="text-sm text-gray-600 space-y-2">
                                     <li className="flex items-start">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                        Try searching for broader terms like "tire" or "mechanic"
+                                        {t('search_tip_1')}
                                     </li>
                                     <li className="flex items-start">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                        Use your current location to find nearby shops
+                                        {t('search_tip_2')}
                                     </li>
                                     <li className="flex items-start">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                        Select a larger area (province instead of village)
+                                        {t('search_tip_3')}
                                     </li>
                                 </ul>
                             </div>
@@ -1237,10 +1234,10 @@ export default function PublicBusinessIndex({
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                                     <div className="flex items-center justify-between mb-4">
                                         <p className="text-sm text-gray-600">
-                                            Showing page {businesses.current_page} of {businesses.last_page}
+                                            {t('showing_page', { current: businesses.current_page, last: businesses.last_page })}
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            {businesses.from}-{businesses.to} of {businesses.total} shops
+                                            {t('showing_range', { from: businesses.from, to: businesses.to, total: businesses.total })}
                                         </p>
                                     </div>
                                     <div className="flex flex-wrap justify-center gap-2">

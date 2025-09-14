@@ -117,7 +117,7 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Head title={title ? `${title} - Tire Shop Finder Cambodia` : 'Tire Shop Finder Cambodia'} />
+      <Head title={title ? `${title}` : 'Tire Shop Finder Cambodia'} />
 
       {/* Navigation */}
       <nav className="bg-white shadow-lg sticky top-0 z-50">

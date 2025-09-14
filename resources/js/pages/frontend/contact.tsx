@@ -1,30 +1,15 @@
 import React, { useState } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import WebsiteLayout from '@/layouts/website-layout';
+import { SEOHead } from '@/components/seo-head';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { MapPin, Phone, Mail, HelpCircle, ChevronDown, CheckCircle, AlertCircle, Loader2, Send, Users, Building, Headphones } from 'lucide-react';
 
-const faqData = [
-    {
-        question: "How do I find tire shops?",
-        answer: "Visit our \"Find Tire Shops\" page, allow location access, and see nearest shops with directions."
-    },
-    {
-        question: "How to list my tire shop?",
-        answer: "Register, create your business listing, and we'll verify it within 24-48 hours."
-    },
-    {
-        question: "Is it free to use?",
-        answer: "Yes! Finding tire shops is free. Business listings are also free."
-    },
-    {
-        question: "Coverage area?",
-        answer: "All 25 provinces of Cambodia, from Phnom Penh to rural areas."
-    }
-];
+// FAQ data will be handled via translations now
 
 function AccordionItem({ question, answer, isOpen, onToggle }: {
     question: string;
@@ -73,8 +58,28 @@ function AccordionItem({ question, answer, isOpen, onToggle }: {
 }
 
 export default function Contact() {
+    const { t } = useTranslation();
     const [openItem, setOpenItem] = useState<number | null>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    
+    const faqData = [
+        {
+            question: t('faq_find_shops'),
+            answer: t('faq_find_shops_answer')
+        },
+        {
+            question: t('faq_list_shop'),
+            answer: t('faq_list_shop_answer')
+        },
+        {
+            question: t('faq_free'),
+            answer: t('faq_free_answer')
+        },
+        {
+            question: t('faq_coverage'),
+            answer: t('faq_coverage_answer')
+        }
+    ];
     
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
         name: '',
@@ -112,7 +117,13 @@ export default function Contact() {
 
     return (
         <WebsiteLayout>
-            <Head title="Contact Us - Tire Shop Finder Cambodia" />
+            <SEOHead
+                title={t('contact_us') + ' - Tire Shop Finder Cambodia'}
+                description={t('contact_description')}
+                keywords={['contact tire shop finder', 'Cambodia tire directory support', 'tire shop help', 'list tire business']}
+                type="website"
+                url={typeof window !== 'undefined' ? window.location.href : undefined}
+            />
             
             <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
                 {/* Hero Section */}
@@ -123,11 +134,10 @@ export default function Contact() {
                                 <Headphones className="w-8 h-8 text-white" />
                             </div>
                             <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-                                Get in Touch
+                                {t('get_in_touch')}
                             </h1>
                             <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                                Need help finding tire shops or want to list your business? 
-                                <span className="block mt-2 text-blue-600 font-medium">We're here to help you succeed!</span>
+                                {t('contact_description')}
                             </p>
                         </div>
                     </div>
@@ -141,7 +151,7 @@ export default function Contact() {
                             <Alert className="bg-green-50 border-green-200 text-green-800">
                                 <CheckCircle className="h-4 w-4" />
                                 <AlertDescription className="font-medium">
-                                    Thank you! Your message has been sent successfully. We'll get back to you within 24 hours.
+                                    {t('success_message_sent')}
                                 </AlertDescription>
                             </Alert>
                         </div>
@@ -164,20 +174,20 @@ export default function Contact() {
                                         <div className="w-20 h-20 mx-auto mb-8 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                                             <Send className="w-10 h-10 text-white" />
                                         </div>
-                                        <h3 className="text-3xl font-bold">Let's Connect</h3>
+                                        <h3 className="text-3xl font-bold">{t('lets_connect')}</h3>
                                         <p className="text-blue-100 text-lg max-w-sm leading-relaxed">
-                                            Have questions about tire shops or want to grow your business with us? We'd love to hear from you.
+                                            {t('have_questions_tire_shops')}
                                         </p>
                                         
                                         {/* Quick Stats */}
                                         <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-white/20">
                                             <div className="text-center">
                                                 <div className="text-2xl font-bold text-white">24h</div>
-                                                <div className="text-blue-100 text-sm">Response Time</div>
+                                                <div className="text-blue-100 text-sm">{t('response_time')}</div>
                                             </div>
                                             <div className="text-center">
                                                 <div className="text-2xl font-bold text-white">100%</div>
-                                                <div className="text-blue-100 text-sm">Support Coverage</div>
+                                                <div className="text-blue-100 text-sm">{t('support_coverage')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -186,15 +196,15 @@ export default function Contact() {
                                 {/* Form Section */}
                                 <div className="p-8 lg:p-12">
                                     <div className="mb-8">
-                                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Send us a message</h3>
-                                        <p className="text-gray-600">Fill out the form below and we'll get back to you soon.</p>
+                                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('send_us_message')}</h3>
+                                        <p className="text-gray-600">{t('fill_form_get_back')}</p>
                                     </div>
                                     
                                     <form onSubmit={handleSubmit} className="space-y-6">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             <div>
                                                 <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
-                                                    Full Name
+                                                    {t('full_name')}
                                                 </label>
                                                 <input
                                                     type="text"
@@ -207,7 +217,7 @@ export default function Contact() {
                                                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                                                             : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
                                                     }`}
-                                                    placeholder="Your full name"
+                                                    placeholder={t('your_full_name')}
                                                     disabled={processing}
                                                 />
                                                 {errors.name && (
@@ -220,7 +230,7 @@ export default function Contact() {
 
                                             <div>
                                                 <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                                                    Email Address
+                                                    {t('email_address')}
                                                 </label>
                                                 <input
                                                     type="email"
@@ -233,7 +243,7 @@ export default function Contact() {
                                                             ? 'border-red-300 focus:border-red-500 bg-red-50' 
                                                             : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
                                                     }`}
-                                                    placeholder="your.email@example.com"
+                                                    placeholder={t('your_email_placeholder')}
                                                     disabled={processing}
                                                 />
                                                 {errors.email && (
@@ -247,7 +257,7 @@ export default function Contact() {
 
                                         <div>
                                             <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
-                                                Subject
+                                                {t('subject')}
                                             </label>
                                             <select
                                                 id="subject"
@@ -261,12 +271,12 @@ export default function Contact() {
                                                 }`}
                                                 disabled={processing}
                                             >
-                                                <option value="">Choose a subject...</option>
-                                                <option value="general">General Question</option>
-                                                <option value="list-business">List My Tire Shop</option>
-                                                <option value="technical">Technical Support</option>
-                                                <option value="partnership">Partnership Inquiry</option>
-                                                <option value="feedback">Feedback</option>
+                                                <option value="">{t('choose_subject')}</option>
+                                                <option value="general">{t('general_question')}</option>
+                                                <option value="list-business">{t('list_my_tire_shop')}</option>
+                                                <option value="technical">{t('technical_support')}</option>
+                                                <option value="partnership">{t('partnership_inquiry')}</option>
+                                                <option value="feedback">{t('feedback')}</option>
                                             </select>
                                             {errors.subject && (
                                                 <div className="flex items-center gap-1 mt-2 text-red-600 text-sm">
@@ -278,7 +288,7 @@ export default function Contact() {
 
                                         <div>
                                             <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
-                                                Message
+                                                {t('message')}
                                             </label>
                                             <textarea
                                                 id="message"
@@ -291,7 +301,7 @@ export default function Contact() {
                                                         ? 'border-red-300 focus:border-red-500 bg-red-50' 
                                                         : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
                                                 }`}
-                                                placeholder="Tell us how we can help you..."
+                                                placeholder={t('tell_us_how_help')}
                                                 disabled={processing}
                                             ></textarea>
                                             {errors.message && (
@@ -310,12 +320,12 @@ export default function Contact() {
                                             {processing ? (
                                                 <div className="flex items-center gap-2">
                                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                                    Sending Message...
+                                                    {t('sending_message')}
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-2">
                                                     <Send className="w-5 h-5" />
-                                                    Send Message
+                                                    {t('send_message')}
                                                 </div>
                                             )}
                                         </Button>
@@ -329,10 +339,10 @@ export default function Contact() {
                     <div className="mb-16 sm:mb-20">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
-                                More Ways to Reach Us
+                                {t('more_ways_reach_us')}
                             </h2>
                             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                                Choose your preferred method of communication - we're here to help however works best for you.
+                                {t('choose_preferred_method')}
                             </p>
                         </div>
 
@@ -343,13 +353,13 @@ export default function Contact() {
                                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                         <Phone className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Call Us</h3>
-                                    <p className="text-gray-600 text-sm mb-3">Quick support call</p>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('call_us')}</h3>
+                                    <p className="text-gray-600 text-sm mb-3">{t('quick_support_call')}</p>
                                     <a href="tel:+85512345678" className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">
                                         +855 12 345 678
                                     </a>
                                     <div className="mt-3 text-xs text-gray-500">
-                                        Mon-Fri: 8AM-6PM
+                                        {t('mon_fri_8am_6pm')}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -360,13 +370,13 @@ export default function Contact() {
                                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                         <Mail className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Email Us</h3>
-                                    <p className="text-gray-600 text-sm mb-3">Detailed inquiries</p>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('email_us')}</h3>
+                                    <p className="text-gray-600 text-sm mb-3">{t('detailed_inquiries')}</p>
                                     <a href="mailto:info@tireshopfinder.kh" className="text-green-600 font-semibold hover:text-green-700 transition-colors text-sm">
                                         info@tireshopfinder.kh
                                     </a>
                                     <div className="mt-3 text-xs text-gray-500">
-                                        24h response time
+                                        {t('response_time_24h')}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -377,16 +387,16 @@ export default function Contact() {
                                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                         <MapPin className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Visit Us</h3>
-                                    <p className="text-gray-600 text-sm mb-3">In-person meetings</p>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('visit_us')}</h3>
+                                    <p className="text-gray-600 text-sm mb-3">{t('in_person_meetings')}</p>
                                     <div className="text-purple-600 font-semibold">
-                                        Phnom Penh
+                                        {t('phnom_penh')}
                                     </div>
                                     <div className="mt-1 text-sm text-purple-600">
-                                        Cambodia
+                                        {t('cambodia')}
                                     </div>
                                     <div className="mt-3 text-xs text-gray-500">
-                                        By appointment
+                                        {t('by_appointment')}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -397,13 +407,13 @@ export default function Contact() {
                                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                         <Building className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">List Business</h3>
-                                    <p className="text-gray-600 text-sm mb-3">Grow your tire shop</p>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('list_business')}</h3>
+                                    <p className="text-gray-600 text-sm mb-3">{t('grow_tire_shop')}</p>
                                     <div className="text-orange-600 font-semibold text-sm">
-                                        Free Listings
+                                        {t('free_listings')}
                                     </div>
                                     <div className="mt-3 text-xs text-gray-500">
-                                        24-48h verification
+                                        {t('verification_24_48h')}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -417,10 +427,10 @@ export default function Contact() {
                                 <HelpCircle className="w-6 h-6 text-white" />
                             </div>
                             <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
-                                Frequently Asked Questions
+                                {t('frequently_asked_questions')}
                             </h2>
                             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                                Find quick answers to common questions about our tire shop directory and services.
+                                {t('faq_quick_answers')}
                             </p>
                         </div>
 
@@ -447,24 +457,24 @@ export default function Contact() {
                                     <div className="max-w-3xl mx-auto">
                                         <Users className="w-12 h-12 mx-auto mb-6 text-white/80" />
                                         <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-                                            Still have questions?
+                                            {t('still_have_questions')}
                                         </h3>
                                         <p className="text-lg text-blue-100 mb-8 leading-relaxed">
-                                            Our support team is here to help you find the perfect tire shop or get your business listed on our platform.
+                                            {t('support_team_help')}
                                         </p>
                                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                             <Button 
                                                 onClick={() => document.getElementById('name')?.focus()}
                                                 className="bg-white text-blue-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-xl"
                                             >
-                                                Send a Message
+                                                {t('send_a_message')}
                                             </Button>
                                             <Button 
                                                 asChild
                                                 variant="outline"
                                                 className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3 rounded-xl"
                                             >
-                                                <a href="tel:+85512345678">Call Us Now</a>
+                                                <a href="tel:+85512345678">{t('call_us_now')}</a>
                                             </Button>
                                         </div>
                                     </div>
