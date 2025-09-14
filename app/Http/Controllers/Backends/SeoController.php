@@ -38,13 +38,13 @@ class SeoController extends Controller
         try {
             $validated = $request->validate([
                 'type' => 'required|array',
-                'type.meta_title' => 'nullable|string|max:60',
-                'type.meta_description' => 'nullable|string|max:160',
-                'type.meta_keywords' => 'nullable|string|max:255',
+                'type.meta_title' => 'nullable|string',
+                'type.meta_description' => 'nullable|string',
+                'type.meta_keywords' => 'nullable|string',
                 'type.google_analytics_id' => 'nullable|string|max:50',
                 'type.facebook_pixel_id' => 'nullable|string|max:50',
                 'type.google_site_verification' => 'nullable|string|max:100',
-                'type.robots_txt' => 'nullable|string|max:2000',
+                'type.robots_txt' => 'nullable|string',
             ]);
 
             foreach ($validated['type'] as $key => $value) {

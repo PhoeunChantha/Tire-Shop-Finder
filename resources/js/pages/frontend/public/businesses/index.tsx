@@ -30,6 +30,7 @@ import {
     ChevronDown,
     ChevronUp
 } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageHelper';
 
 interface BusinessIndexProps {
     businesses: PaginatedData<Business>;
@@ -1006,7 +1007,7 @@ export default function PublicBusinessIndex({
                                     <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                                         {business.image ? (
                                             <img 
-                                                src={String(business.image)} 
+                                                src={getImageUrl(business.image, 'businesses')} 
                                                 alt={String(business.name)}
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 onError={(e) => {
@@ -1053,14 +1054,14 @@ export default function PublicBusinessIndex({
                                         )}
                                         
                                         {/* Verified Badge */}
-                                        <div className="absolute top-4 right-4">
+                                        {/* <div className="absolute top-4 right-4">
                                             <Badge className="bg-emerald-500/90 hover:bg-emerald-600 text-white shadow-xl backdrop-blur-sm border-0 px-3 py-1.5 text-sm font-semibold">
                                                 <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                 </svg>
                                                 Verified
                                             </Badge>
-                                        </div>
+                                        </div> */}
                                         
                                         {/* Quick Action Buttons - Show on Hover */}
                                         <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">

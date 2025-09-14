@@ -21,6 +21,19 @@ export interface BusinessSettingFormData {
       en: string;
       km: string;
     };
+    website_description?: string;
+    website_description_translations?: {
+      en: string;
+      km: string;
+    };
+    // Contact Information
+    contact_address?: string;
+    contact_phone?: string;
+    contact_email?: string;
+    // Social Media
+    social_facebook?: string;
+    social_telegram?: string;
+    social_messenger?: string;
     login_bg_image?: File | null;
     system_logo?: File | null;
     system_fav_icon?: File | null;
@@ -47,6 +60,15 @@ export interface BusinessSettingErrors {
   'name_translations.km'?: string;
   'descriptions_translations.en'?: string;
   'descriptions_translations.km'?: string;
+  website_description?: string;
+  'website_description_translations.en'?: string;
+  'website_description_translations.km'?: string;
+  contact_address?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  social_facebook?: string;
+  social_telegram?: string;
+  social_messenger?: string;
   login_bg_image?: string;
   system_logo?: string;
   system_fav_icon?: string;

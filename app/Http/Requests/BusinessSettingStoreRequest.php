@@ -22,7 +22,7 @@ class BusinessSettingStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'type' => 'required|array',
             'type.name' => 'required|string|max:255',
             'type.descriptions' => 'nullable|string|max:1000',
@@ -33,6 +33,19 @@ class BusinessSettingStoreRequest extends FormRequest
             'type.descriptions_translations' => 'nullable|array',
             'type.descriptions_translations.en' => 'nullable|string|max:1000',
             'type.descriptions_translations.km' => 'nullable|string|max:1000',
+            // Website description fields
+            'type.website_description' => 'nullable|string|max:1000',
+            'type.website_description_translations' => 'nullable|array',
+            'type.website_description_translations.en' => 'nullable|string|max:1000',
+            'type.website_description_translations.km' => 'nullable|string|max:1000',
+            // Contact information fields
+            'type.contact_address' => 'nullable|string|max:500',
+            'type.contact_phone' => 'nullable|string|max:50',
+            'type.contact_email' => 'nullable|email|max:255',
+            // Social media fields
+            'type.social_facebook' => 'nullable|url|max:255',
+            'type.social_telegram' => 'nullable|url|max:255',
+            'type.social_messenger' => 'nullable|url|max:255',
             'type.login_bg_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
             'type.system_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB
             'type.system_fav_icon' => 'nullable|file|mimes:jpeg,png,jpg,gif,ico|max:2048', // 2MB for favicon
@@ -46,6 +59,20 @@ class BusinessSettingStoreRequest extends FormRequest
             'type.facebook_client_secret' => 'nullable|string|max:255',
             'type.facebook_redirect_uri' => 'nullable|url|max:255',
         ];
+
+        // Add dynamic validation for custom social media fields
+        if ($this->has('type')) {
+            $typeData = $this->input('type', []);
+            foreach ($typeData as $key => $value) {
+                if (preg_match('/^social_custom_\w+$/', $key)) {
+                    $rules["type.{$key}"] = 'nullable|url|max:255';
+                } elseif (preg_match('/^social_custom_\w+_name$/', $key)) {
+                    $rules["type.{$key}"] = 'nullable|string|max:100';
+                }
+            }
+        }
+
+        return $rules;
     }
 
     public function messages(): array

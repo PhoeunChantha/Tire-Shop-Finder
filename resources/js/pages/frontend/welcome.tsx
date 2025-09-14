@@ -352,7 +352,7 @@ export default function Welcome() {
           <BusinessCarousel businesses={featuredBusinesses} />
           
           <div className="text-center mt-10 sm:mt-12">
-            <Link href="/businesses">
+            <Link href="/tire-shops">
               <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <Search className="w-5 h-5 mr-2" />
                 Explore All Tire Shops

@@ -22,6 +22,7 @@ import {
     Navigation,
     ExternalLink
 } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageHelper';
 
 interface BusinessShowProps {
     business: Business;
@@ -34,7 +35,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
     const { props } = usePage();
     const auth = props.auth as { user: any };
     const url = props.ziggy?.location || window.location.pathname;
-    
+
     const safeString = (value: unknown): string => {
         if (value == null || typeof value === 'symbol') {
             return '';
@@ -44,17 +45,16 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
     const renderStars = (rating: number) => {
         return [1, 2, 3, 4, 5].map((star) => (
-            <Star 
-                key={star} 
-                className={`w-4 h-4 ${
-                    star <= rating 
-                        ? 'text-yellow-500 fill-current' 
-                        : 'text-gray-300'
-                }`} 
+            <Star
+                key={star}
+                className={`w-4 h-4 ${star <= rating
+                    ? 'text-yellow-500 fill-current'
+                    : 'text-gray-300'
+                    }`}
             />
         ));
     };
-    
+
     const getLocationString = () => {
         const parts = [
             business.village?.name,
@@ -159,57 +159,78 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                 url={typeof window !== 'undefined' ? window.location.href : undefined}
             />
 
-            <div className="min-h-screen bg-gray-50">
-                {/* Header */}
-                <div className="bg-white shadow-sm border-b">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <div className="flex items-center gap-4 mb-4">
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+                {/* Enhanced Header */}
+                <div className="bg-white shadow-lg border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="flex items-center gap-4 mb-6">
                             <Link href="/tire-shops">
-                                <Button variant="outline" size="sm">
-                                    <ArrowLeft className="w-4 h-4 mr-1" />
+                                <Button variant="outline" size="sm" className="hover:bg-gray-50 transition-colors duration-200">
+                                    <ArrowLeft className="w-4 h-4 mr-2" />
                                     Back to Directory
                                 </Button>
                             </Link>
                         </div>
 
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h1 className="text-3xl font-bold text-gray-900">
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                            <div className="flex-1 space-y-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                    <h1 className="text-4xl font-bold text-gray-900 leading-tight">
                                         {String(business.name)}
                                     </h1>
-                                    <Badge className="bg-green-100 text-green-800">
-                                        <CheckCircle className="w-3 h-3 mr-1" />
-                                        Verified
-                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                        <Badge className="bg-emerald-100 text-emerald-800 px-3 py-1.5 text-sm font-medium">
+                                            <CheckCircle className="w-4 h-4 mr-1.5" />
+                                            Verified Business
+                                        </Badge>
+                                    </div>
                                 </div>
 
-                                <div className="flex flex-wrap items-center gap-4 text-gray-600">
-                                    <div className="flex items-center">
-                                        <MapPin className="w-4 h-4 mr-1" />
-                                        {getLocationString()}
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-6 text-gray-600">
+                                    <div className="flex items-center bg-gray-50 px-4 py-2 rounded-lg">
+                                        <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                                        <span className="font-medium">{getLocationString()}</span>
                                     </div>
                                     {business.formatted_hours && (
-                                        <div className="flex items-center">
-                                            <Clock className="w-4 h-4 mr-1" />
-                                            {String(business.formatted_hours)}
+                                        <div className="flex items-center bg-gray-50 px-4 py-2 rounded-lg">
+                                            <Clock className="w-5 h-5 mr-2 text-green-600" />
+                                            <span className="font-medium">{String(business.formatted_hours)}</span>
                                         </div>
                                     )}
                                 </div>
+
+                                {business.reviews_count > 0 && (
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex items-center">
+                                            {renderStars(Math.round(business.reviews_avg_rate || 0))}
+                                        </div>
+                                        <span className="text-lg font-semibold text-gray-900">
+                                            {(business.reviews_avg_rate || 0).toFixed(1)}
+                                        </span>
+                                        <span className="text-gray-600">
+                                            ({business.reviews_count} review{business.reviews_count !== 1 ? 's' : ''})
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="flex gap-3 mt-4 md:mt-0">
-                                <Button onClick={handleCallBusiness} className="flex-1 md:flex-none">
-                                    <Phone className="w-4 h-4 mr-2" />
-                                    Call Now
+                            <div className="flex flex-col sm:flex-row gap-3 lg:flex-col lg:w-64">
+                                <Button
+                                    onClick={handleCallBusiness}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 py-3 px-6"
+                                    size="lg"
+                                >
+                                    <Phone className="w-5 h-5 mr-3" />
+                                    Call Business
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={handleGetDirections}
-                                    className="flex-1 md:flex-none"
+                                    className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-md hover:shadow-lg transition-all duration-200 py-3 px-6"
+                                    size="lg"
                                 >
-                                    <Navigation className="w-4 h-4 mr-2" />
-                                    Directions
+                                    <Navigation className="w-5 h-5 mr-3" />
+                                    Get Directions
                                 </Button>
                             </div>
                         </div>
@@ -217,18 +238,48 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                 </div>
 
                 {/* Main Content */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                         {/* Main Details */}
                         <div className="lg:col-span-2 space-y-6">
+                            {/* Business Image */}
+                            {business.image && (
+                                <Card className="py-0 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                                    <div className="relative h-64 md:h-80 lg:h-96">
+                                        <img
+                                            src={getImageUrl(business.image, 'businesses')}
+                                            alt={`${business.name} - Business Photo`}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                                e.currentTarget.parentElement?.classList.add('hidden');
+                                            }}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                                        <div className="absolute bottom-4 left-4 right-4">
+                                            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3">
+                                                <h3 className="font-semibold text-gray-900 text-lg">
+                                                    {String(business.name)}
+                                                </h3>
+                                                <p className="text-gray-600 text-sm">
+                                                    Professional tire services in {business.district?.name}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            )}
+
                             {/* About */}
                             {business.descriptions && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>About {String(business.name)}</CardTitle>
+                                <Card className="py-0 shadow-md hover:shadow-lg transition-shadow duration-300">
+                                    <CardHeader className="p-2 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-100">
+                                        <CardTitle className="text-xl font-semibold text-gray-800">
+                                            About {String(business.name)}
+                                        </CardTitle>
                                     </CardHeader>
-                                    <CardContent>
-                                        <p className="text-gray-700 leading-relaxed">
+                                    <CardContent className="p-6">
+                                        <p className="text-gray-700 leading-relaxed text-base">
                                             {String(business.descriptions)}
                                         </p>
                                     </CardContent>
@@ -237,41 +288,46 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
                             {/* Services & Pricing */}
                             {business.services && business.services.length > 0 && (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Wrench className="w-5 h-5" />
-                                            Services & Pricing
+                                <Card className="py-0 shadow-md hover:shadow-lg transition-shadow duration-300">
+                                    <CardHeader className="p-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                                        <CardTitle className="flex items-center gap-3">
+                                            <div className="p-2 bg-blue-100 rounded-lg">
+                                                <Wrench className="w-5 h-5 text-blue-600" />
+                                            </div>
+                                            <span className="text-xl font-semibold text-gray-800">Services & Pricing</span>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {business.services.map((service) => (
-                                                <div
-                                                    key={service.id}
-                                                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                                                >
-                                                    <div className="flex-1">
-                                                        <h4 className="font-medium text-gray-900">
-                                                            {service.name}
-                                                        </h4>
-                                                        {service.descriptions && (
-                                                            <p className="text-sm text-gray-600 mt-1">
-                                                                {service.descriptions}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                    <div className="text-right ml-4">
-                                                        <div className="flex items-center text-lg font-semibold text-green-600">
-                                                            <DollarSign className="w-4 h-4" />
-                                                            {service.price}
+                                    <CardContent className="p-6">
+                                        <div className="space-y-4">
+                                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                                                {business.services.map((service, index) => (
+                                                    <div
+                                                        key={service.id}
+                                                        className="group flex items-center justify-between p-5 bg-white border border-gray-200 rounded-xl hover:border-blue-200 hover:shadow-md transition-all duration-200"
+                                                    >
+                                                        <div className="flex-1">
+                                                            <h4 className="font-semibold text-gray-900 text-lg mb-1">
+                                                                {service.name}
+                                                            </h4>
+                                                            {service.descriptions && (
+                                                                <p className="text-sm text-gray-600 leading-relaxed">
+                                                                    {service.descriptions}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                        <div className="ml-6 text-right">
+                                                            <div className="flex items-center text-xl font-bold text-emerald-600">
+                                                                <DollarSign className="w-5 h-5" />
+                                                                <span>{service.price}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
+
                             )}
 
                             {/* Reviews Section */}
@@ -286,7 +342,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             </span>
                                         )}
                                     </CardTitle>
-                                    <Button 
+                                    <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={handleWriteReview}
@@ -300,7 +356,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             {business.reviews.map((review) => (
                                                 <ReviewCard key={review.id} review={review} />
                                             ))}
-                                            
+
                                             {/* Show more reviews link if there are more */}
                                             {business.reviews_count > business.reviews.length && (
                                                 <div className="text-center pt-4 border-t">
@@ -322,7 +378,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             <p className="text-gray-600 mb-4">
                                                 Be the first to review {String(business.name)}
                                             </p>
-                                            <Button 
+                                            <Button
                                                 variant="outline"
                                                 onClick={handleWriteReview}
                                             >
@@ -336,42 +392,157 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
                         {/* Sidebar */}
                         <div className="space-y-6">
+                            {/* Enhanced Location Card */}
+                            {business.latitude && business.longitude && (
+                                <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-3">
+                                        <CardTitle className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="p-2 bg-blue-100 rounded-lg">
+                                                    <MapPin className="w-4 h-4 text-blue-600" />
+                                                </div>
+                                                <span className="text-gray-800">Location & Directions</span>
+                                            </div>
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="p-0">
+                                        {/* Interactive Map Preview */}
+                                        <div
+                                            className="relative w-full h-56 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 cursor-pointer group overflow-hidden"
+                                            onClick={() => {
+                                                const url = `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`;
+                                                window.open(url, '_blank');
+                                            }}
+                                        >
+                                            {/* Background Pattern */}
+                                            <div className="absolute inset-0 opacity-20">
+                                                <div className="absolute inset-0" style={{
+                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='53' cy='7' r='1'/%3E%3Ccircle cx='7' cy='53' r='1'/%3E%3Ccircle cx='53' cy='53' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                                                    backgroundSize: '30px 30px'
+                                                }} />
+                                            </div>
+
+                                            {/* Content */}
+                                            <div className="relative h-full flex flex-col items-center justify-center text-center p-6">
+                                                <div className="mb-4">
+                                                    <div className="p-4 bg-white rounded-full shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                                                        <MapPin className="w-8 h-8 text-blue-600" />
+                                                    </div>
+                                                </div>
+
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                                    View Interactive Map
+                                                </h3>
+
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-medium text-gray-600">
+                                                        📍 {parseFloat(business.latitude).toFixed(4)}°, {parseFloat(business.longitude).toFixed(4)}°
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        Click to open in Google Maps
+                                                    </p>
+                                                </div>
+
+                                                {/* Hover Effect */}
+                                                <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors duration-300" />
+                                            </div>
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="p-4 bg-gray-50/50">
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <Button
+                                                    onClick={handleGetDirections}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
+                                                    size="sm"
+                                                >
+                                                    <Navigation className="w-4 h-4 mr-2" />
+                                                    Navigate
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        const url = `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`;
+                                                        window.open(url, '_blank');
+                                                    }}
+                                                    className="border-blue-200 text-blue-700 hover:bg-blue-50 shadow-sm hover:shadow-md transition-all duration-200"
+                                                    size="sm"
+                                                >
+                                                    <ExternalLink className="w-4 h-4 mr-2" />
+                                                    Open Maps
+                                                </Button>
+                                            </div>
+
+                                            {/* Address Display */}
+                                            <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                                                <div className="flex items-start gap-2">
+                                                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                                    <div className="text-sm">
+                                                        <p className="font-medium text-gray-800 leading-relaxed">
+                                                            {getLocationString()}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                            GPS: {business.latitude}, {business.longitude}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+
                             {/* Contact Info */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Contact Information</CardTitle>
+                            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
+                                    <CardTitle className="flex items-center gap-3">
+                                        <div className="p-2 bg-green-100 rounded-lg">
+                                            <Phone className="w-5 h-5 text-green-600" />
+                                        </div>
+                                        <span className="text-xl font-semibold text-gray-800">Contact Information</span>
+                                    </CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div>
-                                        <h4 className="font-medium text-gray-900 mb-2">Address</h4>
-                                        <p className="text-gray-600">
-                                            {getLocationString()}
-                                        </p>
+                                <CardContent className="p-6 space-y-6">
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                                            <MapPin className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900 mb-1">Address</h4>
+                                                <p className="text-gray-700 leading-relaxed">
+                                                    {getLocationString()}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {business.formatted_hours && (
+                                            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+                                                <Clock className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900 mb-1">Business Hours</h4>
+                                                    <p className="text-gray-700 leading-relaxed">
+                                                        {String(business.formatted_hours)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {business.formatted_hours && (
-                                        <div>
-                                            <h4 className="font-medium text-gray-900 mb-2">Business Hours</h4>
-                                            <p className="text-gray-600">
-                                                {String(business.formatted_hours)}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div className="pt-4 space-y-2">
+                                    <div className="pt-4 border-t border-gray-200 space-y-3">
                                         <Button
                                             onClick={handleCallBusiness}
-                                            className="w-full"
+                                            className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200 py-3"
+                                            size="lg"
                                         >
-                                            <Phone className="w-4 h-4 mr-2" />
+                                            <Phone className="w-5 h-5 mr-2" />
                                             Call Business
                                         </Button>
                                         <Button
                                             variant="outline"
                                             onClick={handleGetDirections}
-                                            className="w-full"
+                                            className="w-full border-2 border-green-200 text-green-700 hover:bg-green-50 shadow-md hover:shadow-lg transition-all duration-200 py-3"
+                                            size="lg"
                                         >
-                                            <ExternalLink className="w-4 h-4 mr-2" />
+                                            <Navigation className="w-5 h-5 mr-2" />
                                             Get Directions
                                         </Button>
                                     </div>
@@ -379,39 +550,55 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                             </Card>
 
                             {/* Quick Stats */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Quick Stats</CardTitle>
+                            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+                                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
+                                    <CardTitle className="flex items-center gap-3">
+                                        <div className="p-2 bg-purple-100 rounded-lg">
+                                            <Star className="w-5 h-5 text-purple-600" />
+                                        </div>
+                                        <span className="text-xl font-semibold text-gray-800">Business Stats</span>
+                                    </CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Services Offered</span>
-                                        <span className="font-medium">
+                                <CardContent className="p-6 space-y-5">
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <Wrench className="w-5 h-5 text-blue-600" />
+                                            <span className="font-medium text-gray-700">Services Offered</span>
+                                        </div>
+                                        <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
                                             {business.services?.length || 0}
-                                        </span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Rating</span>
-                                        <div className="flex items-center">
+
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-orange-100 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <Star className="w-5 h-5 text-yellow-600" />
+                                            <span className="font-medium text-gray-700">Customer Rating</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
                                             {business.reviews_count && business.reviews_count > 0 ? (
                                                 <>
-                                                    <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
-                                                    <span className="font-medium">
-                                                        {(business.reviews_avg_rate || 0).toFixed(1)} ({business.reviews_count} review{business.reviews_count !== 1 ? 's' : ''})
-                                                    </span>
+                                                    <div className="flex items-center bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                                        <Star className="w-4 h-4 mr-1 fill-current" />
+                                                        {(business.reviews_avg_rate || 0).toFixed(1)}
+                                                    </div>
+                                                    <span className="text-sm text-gray-600">({business.reviews_count})</span>
                                                 </>
                                             ) : (
-                                                <>
-                                                    <Star className="w-4 h-4 text-gray-300 mr-1" />
-                                                    <span className="font-medium text-gray-500">No reviews yet</span>
-                                                </>
+                                                <span className="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                                    No reviews
+                                                </span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Verification Status</span>
-                                        <Badge className="bg-green-100 text-green-800">
-                                            Verified
+
+                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-green-100 rounded-lg">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                            <span className="font-medium text-gray-700">Verification Status</span>
+                                        </div>
+                                        <Badge className="bg-emerald-600 text-white px-4 py-2 text-sm font-semibold">
+                                            ✓ Verified Business
                                         </Badge>
                                     </div>
                                 </CardContent>

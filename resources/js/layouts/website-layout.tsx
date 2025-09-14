@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ import { LanguageSwitcher } from '@/components/ui/language-switcher';
 import useBusinessSettings, { BusinessSettings } from '@/hooks/use-business-settings';
 import { getImageUrl } from '@/lib/imageHelper';
 import { useTranslation as useLaravelTranslation } from '@/hooks/useTranslation';
+import ScrollToTopButton from '@/components/ui/scroll-to-top-button';
+import { Send, MessageCircle, ExternalLink } from 'lucide-react';
 
 
 interface WebsiteLayoutProps {
@@ -30,11 +32,18 @@ interface WebsiteLayoutProps {
   showName?: boolean;
 }
 
+interface Service {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 
 export default function WebsiteLayout({ children, title, businessSettings }: WebsiteLayoutProps) {
   const { auth } = usePage().props as any;
   const { url } = usePage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [services, setServices] = useState<Service[]>([]);
   const { t } = useTranslation();
   const { locale } = useLaravelTranslation();
 
@@ -45,10 +54,18 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
     return url.startsWith(path);
   };
   const [imageError, setImageError] = useState(false);
-  const { businessData, getBusinessName } = useBusinessSettings(businessSettings);
+  const { 
+    businessData, 
+    getBusinessName, 
+    getWebsiteDescription,
+    hasSocialMedia 
+  } = useBusinessSettings(businessSettings);
   
   // Get business name in current language
   const displayName = getBusinessName(locale);
+  
+  // Get dynamic website description
+  const websiteDescription = getWebsiteDescription(locale);
   const handleImageError = useCallback(() => {
     setImageError(true);
   }, []);
@@ -56,6 +73,22 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
   // Handle image load success (reset error state)
   const handleImageLoad = useCallback(() => {
     setImageError(false);
+  }, []);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch('/api/public/services');
+        if (response.ok) {
+          const data = await response.json();
+          setServices(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch services:', error);
+      }
+    };
+
+    fetchServices();
   }, []);
   const systemLogoUrl = businessData.systemLogo && !imageError
     ? getImageUrl(businessData.systemLogo, 'business-settings')
@@ -67,7 +100,7 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
         <img
           src={systemLogoUrl}
           alt={`${displayName} Logo`}
-          className={`w-8 h-8 rounded-full object-cover bg-white dark:bg-black`}
+          className={`w-10 h-10 rounded-full object-cover bg-white dark:bg-black`}
           onError={handleImageError}
           onLoad={handleImageLoad}
           loading="lazy"
@@ -264,24 +297,65 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
             {/* Company Info */}
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <Search className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                  {renderLogo()}
                 </div>
-                <span className="text-xl font-bold">Tire Shop Finder</span>
+                <span className="text-xl font-bold"> {displayName}</span>
               </div>
               <p className="text-gray-300 text-sm">
-                {t('website_description')}
+                {websiteDescription || t('website_description')}
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Instagram className="w-5 h-5" />
-                </a>
+                {hasSocialMedia('facebook') && (
+                  <a 
+                    href={businessData.socialFacebook!} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                )}
+                {hasSocialMedia('telegram') && (
+                  <a 
+                    href={businessData.socialTelegram!} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Telegram"
+                  >
+                    <Send className="w-5 h-5" />
+                  </a>
+                )}
+                {hasSocialMedia('messenger') && (
+                  <a 
+                    href={businessData.socialMessenger!} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Messenger"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
+                )}
+                
+                {/* Custom Social Media Links */}
+                {Object.entries(businessData.customSocialMedia || {}).map(([id, social]) => (
+                  social.url && (
+                    <a 
+                      key={id}
+                      href={social.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-gray-400 hover:text-white transition-colors"
+                      aria-label={social.name}
+                      title={social.name}
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                    </a>
+                  )
+                ))}
               </div>
             </div>
 
@@ -316,26 +390,53 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
             <div>
               <h3 className="text-lg font-semibold mb-4">{t('services')}</h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    {t('tire_installation')}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    {t('tire_repair')}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    {t('wheel_alignment')}
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-gray-300 hover:text-white transition-colors">
-                    {t('tire_replacement')}
-                  </a>
-                </li>
+                {services.length > 0 ? (
+                  services.map((service) => (
+                    <li key={service.id}>
+                      <Link
+                        href={`/tire-shops?service=${encodeURIComponent(service.name)}`}
+                        className="text-gray-300 hover:text-white transition-colors"
+                      >
+                        {service.name}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li>
+                      <Link
+                        href="/tire-shops?service=tire installation"
+                        className="text-gray-300 hover:text-white transition-colors"
+                      >
+                        {t('tire_installation')}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/tire-shops?service=tire repair"
+                        className="text-gray-300 hover:text-white transition-colors"
+                      >
+                        {t('tire_repair')}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/tire-shops?service=wheel alignment"
+                        className="text-gray-300 hover:text-white transition-colors"
+                      >
+                        {t('wheel_alignment')}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/tire-shops?service=tire replacement"
+                        className="text-gray-300 hover:text-white transition-colors"
+                      >
+                        {t('tire_replacement')}
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -343,18 +444,52 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
             <div>
               <h3 className="text-lg font-semibold mb-4">{t('contact_info')}</h3>
               <div className="space-y-3 text-sm">
-                <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-blue-400" />
-                  <span className="text-gray-300">Phnom Penh, Cambodia</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Phone className="w-4 h-4 text-blue-400" />
-                  <span className="text-gray-300">+855 12 345 678</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-blue-400" />
-                  <span className="text-gray-300">info@tireshopfinder.kh</span>
-                </div>
+                {businessData.contactAddress && (
+                  <div className="flex items-start space-x-2">
+                    <MapPin className="w-4 h-4 text-blue-400 mt-0.5" />
+                    <span className="text-gray-300">{businessData.contactAddress}</span>
+                  </div>
+                )}
+                {businessData.contactPhone && (
+                  <div className="flex items-center space-x-2">
+                    <Phone className="w-4 h-4 text-blue-400" />
+                    <a 
+                      href={`tel:${businessData.contactPhone}`}
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
+                      {businessData.contactPhone}
+                    </a>
+                  </div>
+                )}
+                {businessData.contactEmail && (
+                  <div className="flex items-center space-x-2">
+                    <Mail className="w-4 h-4 text-blue-400" />
+                    <a 
+                      href={`mailto:${businessData.contactEmail}`}
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
+                      {businessData.contactEmail}
+                    </a>
+                  </div>
+                )}
+                
+                {/* Fallback to default if no contact info */}
+                {!businessData.contactAddress && !businessData.contactPhone && !businessData.contactEmail && (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="w-4 h-4 text-blue-400" />
+                      <span className="text-gray-300">Phnom Penh, Cambodia</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Phone className="w-4 h-4 text-blue-400" />
+                      <span className="text-gray-300">+855 12 345 678</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Mail className="w-4 h-4 text-blue-400" />
+                      <span className="text-gray-300">info@tireshopfinder.kh</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -364,6 +499,9 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
     </div>
   );
 }

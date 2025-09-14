@@ -61,6 +61,7 @@ Route::get('/tire-shops/{business:slug}', [PublicController::class, 'businessDet
 Route::get('/api/public/districts/{province}', [PublicController::class, 'getDistricts']);
 Route::get('/api/public/communes/{district}', [PublicController::class, 'getCommunes']);
 Route::get('/api/public/villages/{commune}', [PublicController::class, 'getVillages']);
+Route::get('/api/public/services', [PublicController::class, 'getServices']);
 Route::post('/api/public/reverse-geocode', [PublicController::class, 'reverseGeocode']);
 Route::post('/api/public/expand-maps-url', [PublicController::class, 'expandMapsUrl']);
 

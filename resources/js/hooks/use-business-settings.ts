@@ -9,8 +9,19 @@ export interface BusinessSettings {
 export interface BusinessData {
     businessName: string;
     nameTranslations: { en?: string; km?: string } | null;
+    descriptionTranslations: { en?: string; km?: string } | null;
+    websiteDescriptionTranslations: { en?: string; km?: string } | null;
     systemLogo: string | null;
-    [key: string]: string | null | { en?: string; km?: string };
+    // Contact Information
+    contactAddress: string | null;
+    contactPhone: string | null;
+    contactEmail: string | null;
+    // Social Media
+    socialFacebook: string | null;
+    socialTelegram: string | null;
+    socialMessenger: string | null;
+    customSocialMedia: { [key: string]: { name: string; url: string } };
+    [key: string]: string | null | { en?: string; km?: string } | { [key: string]: { name: string; url: string } };
 }
 
 interface PageProps {
@@ -42,16 +53,39 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
 
     // Extract commonly used business data
     const businessData: BusinessData = useMemo(() => {
-        // Parse name translations
-        let nameTranslations: { en?: string; km?: string } | null = null;
-        if (mergedSettings?.name_translations) {
-            try {
-                nameTranslations = typeof mergedSettings.name_translations === 'string' 
-                    ? JSON.parse(mergedSettings.name_translations) 
-                    : mergedSettings.name_translations;
-            } catch (e) {
-                nameTranslations = null;
+        // Helper function to parse JSON translations
+        const parseTranslations = (fieldName: string) => {
+            if (mergedSettings?.[fieldName]) {
+                try {
+                    return typeof mergedSettings[fieldName] === 'string' 
+                        ? JSON.parse(mergedSettings[fieldName] as string) 
+                        : mergedSettings[fieldName];
+                } catch (e) {
+                    return null;
+                }
             }
+            return null;
+        };
+
+        // Parse translations
+        const nameTranslations = parseTranslations('name_translations');
+        const descriptionTranslations = parseTranslations('descriptions_translations');
+        const websiteDescriptionTranslations = parseTranslations('website_description_translations');
+
+        // Parse custom social media fields
+        const customSocialMedia: { [key: string]: { name: string; url: string } } = {};
+        if (mergedSettings) {
+            Object.keys(mergedSettings).forEach(key => {
+                if (key.startsWith('social_custom_') && !key.endsWith('_name') && mergedSettings[key]) {
+                    const customId = key.replace('social_custom_', '');
+                    const nameKey = `social_custom_${customId}_name`;
+                    
+                    customSocialMedia[customId] = {
+                        name: mergedSettings[nameKey] || customId,
+                        url: mergedSettings[key] || ''
+                    };
+                }
+            });
         }
 
         // Handle business name with fallback from different field names
@@ -67,12 +101,18 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
         return {
             businessName,
             nameTranslations,
+            descriptionTranslations,
+            websiteDescriptionTranslations,
             systemLogo: mergedSettings?.system_logo || null,
-            // Add other commonly used settings here
-            businessEmail: mergedSettings?.business_email || null,
-            businessPhone: mergedSettings?.business_phone || null,
-            businessAddress: mergedSettings?.business_address || null,
-            businessDescription: mergedSettings?.business_description || null,
+            // Contact Information
+            contactAddress: mergedSettings?.contact_address || null,
+            contactPhone: mergedSettings?.contact_phone || null,
+            contactEmail: mergedSettings?.contact_email || null,
+            // Social Media
+            socialFacebook: mergedSettings?.social_facebook || null,
+            socialTelegram: mergedSettings?.social_telegram || null,
+            socialMessenger: mergedSettings?.social_messenger || null,
+            customSocialMedia,
         };
     }, [mergedSettings]);
 
@@ -100,6 +140,29 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
         return businessData.nameTranslations[locale as 'en' | 'km'] || businessData.businessName;
     };
 
+    // Helper function to get website description by locale
+    const getWebsiteDescription = (locale?: string): string | null => {
+        if (!businessData.websiteDescriptionTranslations) {
+            return null;
+        }
+        
+        if (!locale) {
+            return businessData.websiteDescriptionTranslations.en || businessData.websiteDescriptionTranslations.km || null;
+        }
+        
+        return businessData.websiteDescriptionTranslations[locale as 'en' | 'km'] || null;
+    };
+
+    // Helper function to check if social media link exists
+    const hasSocialMedia = (platform: 'facebook' | 'telegram' | 'messenger'): boolean => {
+        const platformMap = {
+            facebook: businessData.socialFacebook,
+            telegram: businessData.socialTelegram,
+            messenger: businessData.socialMessenger
+        };
+        return !!(platformMap[platform] && platformMap[platform]?.trim());
+    };
+
     return {
         // Data
         businessData,
@@ -110,6 +173,8 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
         hasSetting,
         getAllSettings,
         getBusinessName,
+        getWebsiteDescription,
+        hasSocialMedia,
         
         // Commonly used individual values
         businessName: businessData.businessName,

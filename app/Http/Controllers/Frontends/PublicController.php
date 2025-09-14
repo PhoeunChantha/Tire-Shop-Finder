@@ -8,6 +8,7 @@ use App\Models\Province;
 use App\Models\District;
 use App\Models\Commune;
 use App\Models\Village;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -457,5 +458,28 @@ class PublicController extends Controller
         $maxLng = 108.0;
         
         return $lat >= $minLat && $lat <= $maxLat && $lng >= $minLng && $lng <= $maxLng;
+    }
+
+    public function getServices()
+    {
+        $services = Service::select(['id', 'name'])
+            ->where('status', true)
+            ->whereHas('business', function ($query) {
+                $query->where('status', true)->where('is_vierify', true);
+            })
+            ->distinct()
+            ->limit(10)
+            ->get()
+            ->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'slug' => \Str::slug($service->name)
+                ];
+            })
+            ->unique('name')
+            ->take(8);
+
+        return response()->json($services->values());
     }
 }
