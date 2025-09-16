@@ -30,7 +30,7 @@ class PublicController extends Controller
         if ($userLat && $userLng) {
             $query->whereNotNull('latitude')
                 ->whereNotNull('longitude')
-                ->selectRaw("*, (
+                ->selectRaw("businesses.*, (
                     6371 * acos(
                         cos(radians(?)) * 
                         cos(radians(CAST(latitude AS DECIMAL(10,8)))) * 
@@ -192,7 +192,7 @@ class PublicController extends Controller
             // Sample logic (replace with actual geocoding):
             $business = Business::whereNotNull('latitude')
                 ->whereNotNull('longitude')
-                ->selectRaw("*, (
+                ->selectRaw("businesses.*, (
                     6371 * acos(
                         cos(radians(?)) * 
                         cos(radians(CAST(latitude AS DECIMAL(10,8)))) * 

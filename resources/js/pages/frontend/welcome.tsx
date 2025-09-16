@@ -515,16 +515,16 @@ export default function Welcome() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-              <Link href="/register">
+              <a href="https://t.me/Pa_Chantha" target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-50 font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 w-full sm:w-auto">
                   <Users className="w-5 h-5 mr-2" />
                   {t('register_free')}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-              </Link>
+              </a>
               
               <Link href="/about">
-                <Button size="lg" variant="outline" className="border-2 border-white/50 text-white hover:bg-white/10 backdrop-blur-sm font-semibold px-8 py-4 text-lg rounded-xl transition-all duration-300 w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="border-2 bg-white/10 border-white/50  hover:bg-white/10 backdrop-blur-sm font-semibold px-8 py-4 text-lg rounded-xl transition-all duration-300 w-full sm:w-auto">
                   {t('learn_how_works')}
                 </Button>
               </Link>
