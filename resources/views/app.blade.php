@@ -36,6 +36,7 @@
             $metaTitle = $businessSettings['meta_title'] ?? config('app.name', 'Laravel');
             $metaDescription = $businessSettings['meta_description'] ?? null;
             $metaKeywords = $businessSettings['meta_keywords'] ?? null;
+            $seoImage = $businessSettings['seo_image'] ?? null;
             $googleAnalyticsId = $businessSettings['google_analytics_id'] ?? null;
             $facebookPixelId = $businessSettings['facebook_pixel_id'] ?? null;
             $googleSiteVerification = $businessSettings['google_site_verification'] ?? null;
@@ -64,6 +65,11 @@
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ request()->url() }}">
         <meta property="og:site_name" content="{{ config('app.name', 'Laravel') }}">
+        @if($seoImage)
+            <meta property="og:image" content="{{ asset('uploads/seo/' . $seoImage) }}">
+            <meta property="og:image:width" content="1200">
+            <meta property="og:image:height" content="630">
+        @endif
         
         {{-- Twitter Card Meta Tags --}}
         <meta name="twitter:card" content="summary_large_image">
@@ -71,14 +77,17 @@
         @if($metaDescription)
             <meta name="twitter:description" content="{{ $metaDescription }}">
         @endif
+        @if($seoImage)
+            <meta name="twitter:image" content="{{ asset('uploads/seo/' . $seoImage) }}">
+        @endif
 
         @if($systemFavIcon)
             <link rel="icon" href="{{ asset('uploads/business-settings/' . $systemFavIcon) }}" type="image/x-icon">
         @else
-            <link rel="icon" href="/favicon.ico" sizes="any">
-            <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+            {{-- <link rel="icon" href="/favicon.ico" sizes="any">
+            <link rel="icon" href="/favicon.svg" type="image/svg+xml"> --}}
         @endif
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        {{-- <link rel="apple-touch-icon" href="/apple-touch-icon.png"> --}}
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

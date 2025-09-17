@@ -24,13 +24,19 @@ export default function Index({ seoSettingsData }: SeoIndexProps) {
    */
   const initialFormData = useMemo((): Partial<SeoFormData> => {
     const typeData: Record<string, any> = {};
+    let seoImage: string | null = null;
 
     seoSettingsData.forEach(setting => {
-      typeData[setting.type] = setting.value;
+      if (setting.type === 'seo_image') {
+        seoImage = setting.value;
+      } else {
+        typeData[setting.type] = setting.value;
+      }
     });
 
     return {
       type: typeData,
+      seo_image: seoImage,
     };
   }, [seoSettingsData]);
 

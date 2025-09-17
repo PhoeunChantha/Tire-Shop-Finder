@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/ui/image-upload";
 import InputError from "@/components/input-error";
 
 import type { SeoFormProps } from "@/types/seo";
@@ -27,6 +28,19 @@ export default function SeoForm({
    */
   const handleInputChange = (field: string, value: string) => {
     setData(`type[${field}]`, value);
+  };
+
+  /**
+   * Handle image upload for SEO image
+   */
+  const handleImageChange = (file: File | null, url?: string) => {
+    if (file) {
+      setData('seo_image', file);
+    } else if (url) {
+      setData('seo_image', url);
+    } else {
+      setData('seo_image', null);
+    }
   };
 
   return (
@@ -94,6 +108,29 @@ export default function SeoForm({
             </p>
             <InputError message={errors?.meta_keywords} />
           </div>
+        </div>
+      </div>
+
+      {/* SEO Image Section */}
+      <div className="space-y-4">
+        <div className="border-b border-gray-200 pb-4">
+          <h3 className="text-lg font-medium text-gray-900">SEO Image</h3>
+          <p className="mt-1 text-sm text-gray-600">
+            Upload an image for social media sharing and search results.
+          </p>
+        </div>
+
+        <div className="grid gap-4">
+          <ImageUpload
+            label="SEO Social Media Image"
+            value={data.seo_image || null}
+            onChange={handleImageChange}
+            error={errors?.seo_image}
+            maxSize={5}
+            accept="image/*"
+            allowUrl={false}
+            placeholder="Upload an image for social media sharing (1200x630 recommended)"
+          />
         </div>
       </div>
 

@@ -244,14 +244,10 @@ const resources = {
       get_directions: 'Get Directions',
       call_now: 'Call Now',
       review: 'review',
-      reviews: 'reviews',
       visit_website: 'Visit Website',
-      write_review: 'Write a Review',
-      business_hours: 'Business Hours',
       contact_information: 'Contact Information',
       about_business: 'About This Business',
       services_offered: 'Services Offered',
-      customer_reviews: 'Customer Reviews',
       no_reviews_yet: 'No reviews yet. Be the first to review!',
       nearby_tire_shops: 'Nearby Tire Shops',
       
@@ -269,7 +265,6 @@ const resources = {
       our_impact: 'Our Impact',
       tire_shops_listed: 'Tire Shops Listed',
       customers_served: 'Customers Served',
-      provinces_covered: 'Provinces Covered',
       join_our_network: 'Join Our Network',
       
       // Contact Page
@@ -293,7 +288,6 @@ const resources = {
       faq_free_answer: 'Yes! Finding tire shops is free. Business listings are also free.',
       faq_coverage: 'Coverage area?',
       faq_coverage_answer: 'All 25 provinces of Cambodia, from Phnom Penh to rural areas.',
-      contact_info: 'Contact Information',
       
       // Contact Page
       lets_connect: 'Let\'s Connect',
@@ -316,7 +310,6 @@ const resources = {
       feedback: 'Feedback',
       tell_us_how_help: 'Tell us how we can help you...',
       sending_message: 'Sending Message...',
-      send_message: 'Send Message',
       success_message_sent: 'Thank you! Your message has been sent successfully. We\'ll get back to you within 24 hours.',
       more_ways_reach_us: 'More Ways to Reach Us',
       choose_preferred_method: 'Choose your preferred method of communication - we\'re here to help however works best for you.',
@@ -335,25 +328,18 @@ const resources = {
       grow_tire_shop: 'Grow your tire shop',
       free_listings: 'Free Listings',
       verification_24_48h: '24-48h verification',
-      frequently_asked_questions: 'Frequently Asked Questions',
       faq_quick_answers: 'Find quick answers to common questions about our tire shop directory and services.',
       still_have_questions: 'Still have questions?',
       support_team_help: 'Our support team is here to help you find the perfect tire shop or get your business listed on our platform.',
       send_a_message: 'Send a Message',
       call_us_now: 'Call Us Now',
       
-      // About Page
-      cambodia_leading_directory: 'Cambodia\'s Leading Tire Shop Directory',
-      about_description: 'Learn about Tire Shop Finder Cambodia - Your trusted platform for finding verified tire repair services across all 25 provinces. GPS-powered search for emergency tire assistance.',
       cambodia_most_trusted_directory: 'Cambodia\'s Most Trusted Tire Directory',
       about_our_mission: 'About Our Mission',
       we_revolutionize: 'We revolutionize how Cambodian drivers find tire help during emergencies.',
       no_more_panic: 'No more panic',
       just_instant_solutions: 'just instant solutions',
       when_you_need_them_most: 'when you need them most.',
-      find_tire_shops: 'Find Tire Shops',
-      our_story: 'Our Story',
-      verified_shops: 'Verified Shops',
       provinces: 'Provinces',
       support: 'Support',
       user_rating: 'User Rating',
@@ -379,7 +365,6 @@ const resources = {
       the_result: 'The Result:',
       no_more_panic_wandering: 'No more panic, no more wandering. Just peace of mind knowing help is always one click away.',
       see_our_impact: 'See Our Impact',
-      contact_us: 'Contact Us',
       our_growing_impact: 'Our Growing Impact',
       real_numbers_users: 'Real numbers from real users',
       growing_daily: 'Growing daily',
@@ -402,7 +387,6 @@ const resources = {
       ready_never_worry: 'Ready to Never Worry About Flat Tires Again?',
       join_thousands_drivers: 'Join thousands of drivers who trust us for emergency tire assistance',
       try_it_now: 'Try It Now - Find Shops',
-      lets_connect: 'Let\'s Connect',
       ready_to_get_started: 'Ready to Get Started?',
       whether_driver_business: 'Whether you\'re a driver seeking peace of mind or a business owner ready to serve more customers, we\'re here to help.',
       for_drivers: 'For Drivers',
@@ -417,8 +401,6 @@ const resources = {
       reach_more_customers: 'Reach more customers across Cambodia',
       get_verified_status: 'Get verified business status',
       emergency_referrals: '24/7 emergency referrals',
-      join_network: 'Join Network',
-      call_us: 'Call Us',
       ready_transform_emergencies: 'Ready to Transform Tire Emergencies?',
       join_thousands_discovered: 'Join the thousands who\'ve discovered peace of mind on Cambodia\'s roads',
       start_using_service: 'Start Using Our Service',
@@ -669,14 +651,10 @@ const resources = {
       get_directions: 'ទទួលបានទិសដៅ',
       call_now: 'ហៅឥឡូវនេះ',
       review: 'ការវាយតម្លៃ',
-      reviews: 'ការវាយតម្លៃ',
       visit_website: 'ទស្សនាគេហទំព័រ',
-      write_review: 'សរសេរការវាយតម្លៃ',
-      business_hours: 'ម៉ោងធ្វើការអាជីវកម្ម',
       contact_information: 'ព័ត៌មានទំនាក់ទំនង',
       about_business: 'អំពីអាជីវកម្មនេះ',
       services_offered: 'សេវាកម្មដែលផ្តល់',
-      customer_reviews: 'ការវាយតម្លៃអតិថិជន',
       no_reviews_yet: 'មិនទាន់មានការវាយតម្លៃនៅឡើយទេ។ ចូរធ្វើជាអ្នកដំបូងដែលវាយតម្លៃ!',
       nearby_tire_shops: 'ហាងកង់នៅជិត',
       
@@ -694,7 +672,6 @@ const resources = {
       our_impact: 'ឥទ្ធិពលរបស់យើង',
       tire_shops_listed: 'ហាងកង់បានចុះបញ្ជី',
       customers_served: 'អតិថិជនដែលបានបម្រើ',
-      provinces_covered: 'ខេត្តដែលគម្រប',
       join_our_network: 'ចូលរួមបណ្តាញរបស់យើង',
       
       // About Page
@@ -704,8 +681,6 @@ const resources = {
       no_more_panic: 'លែងភ័យស្លន់ស្លោ',
       just_instant_solutions: 'គ្រាន់តែមានដំណោះស្រាយភ្លាមៗ',
       when_you_need_them_most: 'នៅពេលអ្នកត្រូវការវាបំផុត។',
-      find_tire_shops: 'រកហាងកង់',
-      verified_shops: 'ហាងដែលបានផ្ទៀងផ្ទាត់',
       provinces: 'ខេត្ត',
       support: 'ជំនួយ',
       user_rating: 'ការវាយតម្លៃអ្នកប្រើប្រាស់',
@@ -859,7 +834,6 @@ i18n
     fallbackLng: 'en',
     debug: false,
     
-    // Detection options
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       lookupLocalStorage: 'i18nextLng',
@@ -867,17 +841,14 @@ i18n
     },
     
     interpolation: {
-      escapeValue: false, // react already safes from xss
+      escapeValue: false, 
     },
     
-    // Namespace
     defaultNS: 'common',
     ns: ['common'],
   });
 
-// Sync with Laravel locale on page load
 if (typeof window !== 'undefined') {
-  // Listen for page loads and sync with Laravel locale
   const syncLanguageWithLaravel = () => {
     const pageElement = document.getElementById('app');
     if (pageElement) {
@@ -890,7 +861,6 @@ if (typeof window !== 'undefined') {
             i18n.changeLanguage(laravelLocale);
           }
         } catch (e) {
-          // Ignore errors
         }
       }
     }

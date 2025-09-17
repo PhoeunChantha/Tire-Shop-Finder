@@ -19,6 +19,7 @@ export interface SeoFormData {
     google_site_verification?: string;
     robots_txt?: string;
   };
+  seo_image?: File | string | null;
 }
 
 export interface SeoErrors {
@@ -29,6 +30,7 @@ export interface SeoErrors {
   facebook_pixel_id?: string;
   google_site_verification?: string;
   robots_txt?: string;
+  seo_image?: string;
   [key: string]: string | undefined; // Allow any additional error keys
 }
 
