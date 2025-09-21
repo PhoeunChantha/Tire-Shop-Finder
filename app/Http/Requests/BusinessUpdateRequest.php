@@ -14,6 +14,7 @@ class BusinessUpdateRequest extends FormRequest
         return true;
     }
 
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,15 +26,15 @@ class BusinessUpdateRequest extends FormRequest
             'name' => 'required|string|max:255',
             'descriptions' => 'nullable|string',
             'name_translations' => 'nullable|array',
-            'name_translations.en' => 'required|string|max:255',
+            'name_translations.en' => 'nullable|string|max:255',
             'name_translations.km' => 'nullable|string|max:255',
             'descriptions_translations' => 'nullable|array',
             'descriptions_translations.en' => 'nullable|string',
             'descriptions_translations.km' => 'nullable|string',
-            'status' => 'required|boolean',
-            'is_vierify' => 'required|boolean',
-            'province_id' => 'required|exists:provinces,id',
-            'district_id' => 'required|exists:districts,id',
+            'status' => 'nullable|boolean',
+            'is_vierify' => 'nullable|boolean',
+            'province_id' => 'nullable|string|exists:provinces,id',
+            'district_id' => 'nullable|string|exists:districts,id',
             'commune_id' => 'nullable|exists:communes,id',
             'village_id' => 'nullable|exists:villages,id',
             'latitude' => 'nullable|string',
@@ -48,49 +49,12 @@ class BusinessUpdateRequest extends FormRequest
             'seo_description_translations' => 'nullable|array',
             'seo_description_translations.en' => 'nullable|string|max:500',
             'seo_description_translations.km' => 'nullable|string|max:500',
-            'seo_image' => 'nullable|string|max:2048',
+            'seo_image' => 'nullable|string',
             'seo_keywords' => 'nullable|array',
-            'seo_keywords.*' => 'string|max:100',
-            'image' => 'nullable',
+            'image' => 'nullable|string',
         ];
     }
 
-    /**
-     * Configure the validator instance.
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            $image = $this->input('image');
-            
-            if ($image !== null) {
-                if (is_file($image)) {
-                    // Validate file
-                    if (!$image->isValid()) {
-                        $validator->errors()->add('image', 'The uploaded file is not valid.');
-                        return;
-                    }
-                    
-                    $maxSize = 5120; // 5MB in KB
-                    if ($image->getSize() > $maxSize * 1024) {
-                        $validator->errors()->add('image', "The image must not exceed {$maxSize}KB.");
-                        return;
-                    }
-                    
-                    $allowedMimes = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
-                    $extension = strtolower($image->getClientOriginalExtension());
-                    if (!in_array($extension, $allowedMimes)) {
-                        $validator->errors()->add('image', 'The image must be a file of type: jpeg, jpg, png, gif, webp.');
-                    }
-                } elseif (is_string($image)) {
-                    // Validate URL
-                    if (!filter_var($image, FILTER_VALIDATE_URL)) {
-                        $validator->errors()->add('image', 'The image must be a valid URL.');
-                    }
-                }
-            }
-        });
-    }
 
     /**
      * Get custom attributes for validator errors.

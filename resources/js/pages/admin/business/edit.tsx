@@ -186,7 +186,7 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
 
                                             <TabsContent value="en" className="space-y-4">
                                                 <div className="space-y-2">
-                                                    <Label htmlFor="name_en">Business Name (English) *</Label>
+                                                    <Label htmlFor="name_en">Business Name (English) <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="name_en"
                                                         type="text"
@@ -301,7 +301,7 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                     <CardContent className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>Province *</Label>
+                                                <Label>Province <span className='text-red-500'>*</span></Label>
                                                 <Select value={data.province_id} onValueChange={handleProvinceChange}>
                                                     <SelectTrigger className={errors.province_id ? 'border-red-500' : ''}>
                                                         <SelectValue placeholder="Select Province" />
@@ -320,7 +320,7 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label>District *</Label>
+                                                <Label>District <span className='text-red-500'>*</span></Label>
                                                 <Select value={data.district_id} onValueChange={handleDistrictChange} disabled={!data.province_id}>
                                                     <SelectTrigger className={errors.district_id ? 'border-red-500' : ''}>
                                                         <SelectValue placeholder="Select District" />
@@ -590,7 +590,7 @@ export default function BusinessEdit({ auth, business, provinces }: BusinessEdit
                                 </Card>
 
                                 {/* Business Services */}
-                                <Card>
+                                <Card className='hidden'>
                                     <CardHeader>
                                         <div className="flex items-center justify-between">
                                             <CardTitle className="flex items-center gap-2">

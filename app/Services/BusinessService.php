@@ -13,17 +13,14 @@ class BusinessService
         $validated['status'] = $validated['status'] ?? true;
         $validated['is_vierify'] = $validated['is_vierify'] ?? true;
 
-        // Handle image upload - only process files, keep URLs as-is
         if (isset($validated['image']) && $validated['image'] instanceof UploadedFile) {
             $validated['image'] = ImageManager::uploadImage($validated['image'], 'businesses');
         } elseif (isset($validated['image']) && is_string($validated['image']) && empty($validated['image'])) {
-            // Remove empty strings
             unset($validated['image']);
         }
 
         $business = Business::create($validated);
 
-        // Save translations
         $this->saveTranslations($business, $validated);
 
         return $business;
@@ -31,15 +28,12 @@ class BusinessService
 
     public function updateBusiness(Business $business, array $validated): Business
     {
-        // Handle image upload/update - only process files, keep URLs as-is
         if (isset($validated['image']) && $validated['image'] instanceof UploadedFile) {
             $validated['image'] = ImageManager::updateImage($validated['image'], $business->image, 'businesses');
         } elseif (isset($validated['image']) && is_string($validated['image']) && empty($validated['image'])) {
-            // Remove empty strings to keep existing image
             unset($validated['image']);
         }
         
-        // Separate translation data from regular data
         $regularData = [];
         $translationData = [];
         
@@ -47,12 +41,10 @@ class BusinessService
             if (str_ends_with($key, '_translations')) {
                 $translationData[$key] = $value;
             } elseif (!in_array($key, ['name', 'descriptions', 'seo_title', 'seo_description'])) {
-                // Only include non-translatable fields in regular update
                 $regularData[$key] = $value;
             }
         }
         
-        // Handle translations for each field
         if (isset($validated['name_translations'])) {
             $regularData['name'] = $validated['name_translations'];
         } elseif (isset($validated['name'])) {
@@ -116,12 +108,10 @@ class BusinessService
 
         foreach ($translationFields as $translationField => $baseField) {
             if (!empty($validated[$translationField])) {
-                // With Spatie Translatable, we can set all translations at once
                 $business->setTranslations($baseField, $validated[$translationField]);
             }
         }
         
-        // Save the business to persist translations
         $business->save();
     }
 }

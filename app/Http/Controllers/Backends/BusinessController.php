@@ -36,12 +36,12 @@ class BusinessController extends Controller
         // Apply filters
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('descriptions', 'like', "%{$search}%")
-                  ->orWhereHas('owner', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('descriptions', 'like', "%{$search}%")
+                    ->orWhereHas('owner', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -69,8 +69,8 @@ class BusinessController extends Controller
     }
 
     public function create(): Response
-    {   
-         $this->authorize('create', Business::class);
+    {
+        $this->authorize('create', Business::class);
         return Inertia::render('admin/business/create', [
             'provinces' => Province::all(),
             'users' => User::select('id', 'name', 'email')->get(),
@@ -79,6 +79,7 @@ class BusinessController extends Controller
 
     public function store(BusinessStoreRequest $request): RedirectResponse
     {
+
         $this->authorize('create', Business::class);
 
         $validated = $request->validated();
@@ -108,7 +109,7 @@ class BusinessController extends Controller
     public function show(Business $business): Response
     {
         $business->load(['owner', 'province', 'district', 'commune', 'village', 'services']);
-        
+
         return Inertia::render('admin/business/show', [
             'business' => $business
         ]);
@@ -119,11 +120,11 @@ class BusinessController extends Controller
         $this->authorize('update', $business);
 
         $business->load(['owner', 'province', 'district', 'commune', 'village', 'services']);
-        
+
         // Get raw business data and add translation arrays for form editing
         $businessData = $business->toArray();
         $translations = $business->getTranslationsForForm();
-        
+
         return Inertia::render('admin/business/edit', [
             'business' => array_merge($businessData, $translations),
             'provinces' => Province::all(),
@@ -132,14 +133,20 @@ class BusinessController extends Controller
 
     public function update(BusinessUpdateRequest $request, Business $business): RedirectResponse
     {
-        $this->authorize('update', $business);
+        try {
+            $this->authorize('update', $business);
 
-        $validated = $request->validated();
+            $validated = $request->validated();
 
-        $this->businessService->updateBusiness($business, $validated);
+            $this->businessService->updateBusiness($business, $validated);
 
-        return to_route('businesses.index')
-            ->with('success', 'Business updated successfully!');
+            return to_route('businesses.index')
+                ->with('success', 'Business updated successfully!');
+        } catch (\Exception $e) {
+            return back()
+                ->with('error', 'Failed to update business. Please try again.')
+                ->withInput();
+        }
     }
 
     public function destroy(Business $business): RedirectResponse
@@ -147,7 +154,7 @@ class BusinessController extends Controller
         $this->authorize('delete', $business);
 
         $business->delete();
-        
+
         return to_route('businesses.index')
             ->with('success', 'Business deleted successfully!');
     }

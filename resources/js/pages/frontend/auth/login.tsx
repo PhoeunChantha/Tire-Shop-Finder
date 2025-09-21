@@ -85,12 +85,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                                 <SocialLoginButtons />
 
-                                {/* <div className="text-center text-sm text-muted-foreground">
+                                <div className="text-center text-sm text-muted-foreground">
                                     Don't have an account?{' '}
                                     <TextLink href={route('register')} tabIndex={6}>
                                         Sign up
                                     </TextLink>
-                                </div> */}
+                                </div>
                             </>
                         )}
                     </Form>

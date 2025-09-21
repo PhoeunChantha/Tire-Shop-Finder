@@ -123,8 +123,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $this->authorize('update', User::class);
         $user = User::with(['roles'])->findOrFail($id);
+        $this->authorize('update', $user);
         
         return Inertia::render('admin/user/edit', [
             'user'  => $user,
@@ -137,11 +137,11 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $this->authorize('update', User::class);
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
         $validated = $request->validated();
 
         try {
-            $user = User::findOrFail($id);
             $updateData = [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -179,9 +179,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->authorize('delete', User::class);
+        $user = User::findOrFail($id);
+        $this->authorize('delete', $user);
         try {
-            $user = User::findOrFail($id);
             $user->delete();
             return to_route('users.index')
                 ->with('success', 'User deleted successfully.');

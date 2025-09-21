@@ -269,13 +269,13 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
                       >
                         {t('login')}
                       </Link>
-                      {/* <Link
+                      <Link
                         href="/register"
                         className="block px-3 py-2 text-base font-medium text-blue-600 hover:text-blue-700"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {t('register')}
-                      </Link> */}
+                      </Link>
                     </div>
                   </div>
                 )}
