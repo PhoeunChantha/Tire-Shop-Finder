@@ -15,6 +15,7 @@ interface ImageUploadProps {
     error?: string;
     className?: string;
     allowUrl?: boolean;
+    uploadFolder?: string; // Upload folder for path resolution
 }
 
 export function ImageUpload({
@@ -28,6 +29,7 @@ export function ImageUpload({
     error,
     className = "",
     allowUrl = false,
+    uploadFolder = "banners",
 }: ImageUploadProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [dragActive, setDragActive] = useState(false);
@@ -93,8 +95,8 @@ export function ImageUpload({
             if (value.startsWith('uploads/')) {
                 return `/${value}`; // Add leading slash
             }
-            // Default to storage path if it's just a filename
-            return `/storage/banners/${value}`;
+            // Default to uploads path if it's just a filename
+            return `/uploads/${uploadFolder}/${value}`;
         }
         return null;
     };

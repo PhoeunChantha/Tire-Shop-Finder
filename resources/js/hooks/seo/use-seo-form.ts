@@ -29,6 +29,7 @@ export default function useSeoForm({
       robots_txt: "",
       ...initialData?.type,
     },
+    seo_image: initialData?.seo_image || null,
   }), [initialData]);
 
   // Initialize Inertia form with proper defaults
@@ -43,18 +44,25 @@ export default function useSeoForm({
 
   // Handle form submission
   const submit = () => {
-    const url = isEdit ? route('seo.update', { seo: 'settings' }) : route('seo.store');
-    const method = isEdit ? put : post;
+    console.log('Form data before submit:', data);
     
-    method(url, {
+    const submitOptions = {
       preserveScroll: true,
+      forceFormData: true, // Required for file uploads
       onSuccess: () => {
-        // Optional: Add success handling here
+        console.log('Form submitted successfully');
       },
-      onError: () => {
-        // Optional: Add error handling here
+      onError: (errors: any) => {
+        console.error('Form submission errors:', errors);
       },
-    });
+    };
+
+    // if (isEdit) {
+    //   put(route('seo.update', { seo: 'settings' }), submitOptions);
+    // } else {
+    //   post(route('seo.store'), submitOptions);
+    // }
+    post(route("seo.store"), submitOptions);
   };
 
   return {

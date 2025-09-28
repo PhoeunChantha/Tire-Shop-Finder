@@ -27,7 +27,10 @@ export default function SeoForm({
    * Handle input change for nested form fields
    */
   const handleInputChange = (field: string, value: string) => {
-    setData(`type[${field}]`, value);
+    setData('type', {
+      ...data.type,
+      [field]: value
+    });
   };
 
   /**
@@ -129,6 +132,7 @@ export default function SeoForm({
             maxSize={5}
             accept="image/*"
             allowUrl={false}
+            uploadFolder="seo"
             placeholder="Upload an image for social media sharing (1200x630 recommended)"
           />
         </div>
