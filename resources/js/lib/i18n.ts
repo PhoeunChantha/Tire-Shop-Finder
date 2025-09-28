@@ -332,10 +332,7 @@ const resources = {
       send_a_message: 'Send a Message',
       call_us_now: 'Call Us Now',
       
-<<<<<<< HEAD
-=======
       // About Page
->>>>>>> 1117482b (server)
       cambodia_most_trusted_directory: 'Cambodia\'s Most Trusted Tire Directory',
       about_our_mission: 'About Our Mission',
       we_revolutionize: 'We revolutionize how Cambodian drivers find tire help during emergencies.',
@@ -653,10 +650,7 @@ const resources = {
       call_now: 'ហៅឥឡូវនេះ',
       review: 'ការវាយតម្លៃ',
       visit_website: 'ទស្សនាគេហទំព័រ',
-<<<<<<< HEAD
-=======
       business_hours: 'ម៉ោងធ្វើការអាជីវកម្ម',
->>>>>>> 1117482b (server)
       contact_information: 'ព័ត៌មានទំនាក់ទំនង',
       about_business: 'អំពីអាជីវកម្មនេះ',
       services_offered: 'សេវាកម្មដែលផ្តល់',
