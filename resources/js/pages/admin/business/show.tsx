@@ -173,7 +173,6 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                     )}
                                 </CardContent>
                             </Card>
-
                             {/* Business Image */}
                             {business.image && (
                                 <Card>
@@ -195,7 +194,6 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                     </CardContent>
                                 </Card>
                             )}
-
                             {/* Business Services */}
                             <Card>
                                 <CardHeader>
@@ -268,7 +266,6 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                 </CardContent>
                             </Card>
                         </div>
-
                         {/* Sidebar */}
                         <div className="space-y-6">
                             {/* Owner Information */}
@@ -298,7 +295,6 @@ export default function BusinessShow({ auth, business }: BusinessShowProps) {
                                     </div>
                                 </CardContent>
                             </Card>
-
                             {/* Status & Dates */}
                             <Card>
                                 <CardHeader>
