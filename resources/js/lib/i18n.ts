@@ -116,7 +116,6 @@ const resources = {
       website_description: 'Find the best tire shops across Cambodia. Connect with trusted tire dealers and service providers near you.',
       quick_links: 'Quick Links',
       us: 'Us',
-      contact_info: 'Contact Info',
       tire_installation: 'Tire Installation',
       tire_repair: 'Tire Repair',
       wheel_alignment: 'Wheel Alignment',
@@ -144,7 +143,6 @@ const resources = {
       explore_all: 'Explore All Tire Shops',
       
       // Business Card
-      customer_reviews: 'customer reviews',
       view_details: 'View Details',
       more_services: 'more',
       
@@ -334,6 +332,10 @@ const resources = {
       send_a_message: 'Send a Message',
       call_us_now: 'Call Us Now',
       
+<<<<<<< HEAD
+=======
+      // About Page
+>>>>>>> 1117482b (server)
       cambodia_most_trusted_directory: 'Cambodia\'s Most Trusted Tire Directory',
       about_our_mission: 'About Our Mission',
       we_revolutionize: 'We revolutionize how Cambodian drivers find tire help during emergencies.',
@@ -435,7 +437,6 @@ const resources = {
       business_phone: 'លេខទូរស័ព្ទអាជីវកម្ម',
       business_email: 'អ៊ីមែលអាជីវកម្ម',
       business_website: 'គេហទំព័រអាជីវកម្ម',
-      business_hours: 'ម៉ោងធ្វើការ',
       verified: 'បានផ្ទៀងផ្ទាត់',
       pending_verification: 'កំពុងរង់ចាំការផ្ទៀងផ្ទាត់',
       rejected: 'បានបដិសេធ',
@@ -652,6 +653,10 @@ const resources = {
       call_now: 'ហៅឥឡូវនេះ',
       review: 'ការវាយតម្លៃ',
       visit_website: 'ទស្សនាគេហទំព័រ',
+<<<<<<< HEAD
+=======
+      business_hours: 'ម៉ោងធ្វើការអាជីវកម្ម',
+>>>>>>> 1117482b (server)
       contact_information: 'ព័ត៌មានទំនាក់ទំនង',
       about_business: 'អំពីអាជីវកម្មនេះ',
       services_offered: 'សេវាកម្មដែលផ្តល់',
@@ -742,7 +747,6 @@ const resources = {
       reach_more_customers: 'ទៅដល់អតិថិជនច្រើនទៀតនៅទូទាំងកម្ពុជា',
       get_verified_status: 'ទទួលបានស្ថានភាពអាជីវកម្មដែលបានផ្ទៀងផ្ទាត់',
       emergency_referrals: 'ការណែនាំបន្ទាន់២៤/៧',
-      join_network: 'ចូលរួមបណ្តាញ',
       ready_transform_emergencies: 'រៀបចំបំលែងការបន្ទាន់កង់?',
       join_thousands_discovered: 'ចូលរួមជាមួយអ្នករាប់ពាន់ដែលបានរកឃើញសុខចិត្តនៅលើផ្លូវកម្ពុជា',
       start_using_service: 'ចាប់ផ្តើមប្រើប្រាស់សេវាកម្មរបស់យើង',
@@ -768,7 +772,6 @@ const resources = {
       faq_free_answer: 'បាទ! ការរកហាងកង់គឺឥតគិតថ្លៃ។ បញ្ជីអាជីវកម្មក៏ឥតគិតថ្លៃដែរ។',
       faq_coverage: 'តំបន់គម្រប?',
       faq_coverage_answer: 'ខេត្តទាំង២៥នៃកម្ពុជា ពីភ្នំពេញរហូតដល់តំបន់ជនបទ។',
-      contact_info: 'ព័ត៌មានទំនាក់ទំនង',
       
       // Contact Page
       lets_connect: 'តម្កល់ទំនាក់ទំនង',
@@ -791,7 +794,6 @@ const resources = {
       feedback: 'មតិយោបល់',
       tell_us_how_help: 'ប្រាប់យើងពីរបៀបដែលយើងអាចជួយអ្នក...',
       sending_message: 'កំពុងផ្ញើសារ...',
-      send_message: 'ផ្ញើសារ',
       success_message_sent: 'អរគុណ! សាររបស់អ្នកត្រូវបានផ្ញើដោយជោគជ័យ។ យើងនឹងឆ្លើយតបអ្នកក្នុងរយៈពេល២៤ម៉ោង។',
       more_ways_reach_us: 'វិធីច្រើនទៀតដើម្បីទាក់ទងយើង',
       choose_preferred_method: 'ជ្រើសរើសវិធីទំនាក់ទំនងដែលអ្នកពេញចិត្ត - យើងនៅទីនេះដើម្បីជួយតាមរបៀបដែលល្អបំផុតសម្រាប់អ្នក។',
@@ -810,13 +812,11 @@ const resources = {
       grow_tire_shop: 'អភិវឌ្ឍហាងកង់របស់អ្នក',
       free_listings: 'បញ្ជីឥតគិតថ្លៃ',
       verification_24_48h: 'ការផ្ទៀងផ្ទាត់២៤-៤៨ម៉ោង',
-      frequently_asked_questions: 'សំណួរដែលសួរញឹកញាប់',
       faq_quick_answers: 'រកចម្លើយរហ័សសម្រាប់សំណួរធម្មតាអំពីថតុកសារហាងកង់ និងសេវាកម្មរបស់យើង។',
       still_have_questions: 'នៅតែមានសំណួរ?',
       support_team_help: 'ក្រុមជំនួយរបស់យើងនៅទីនេះដើម្បីជួយអ្នករកហាងកង់ល្អឥតខ្ចោះ ឬធ្វើឱ្យអាជីវកម្មរបស់អ្នកចុះបញ្ជីនៅលើវេទិការបស់យើង។',
       send_a_message: 'ផ្ញើសារ',
       call_us_now: 'ហៅយើងឥឡូវ',
-      contact_info: 'ព័ត៌មានទំនាក់ទំនង',
       
       // Language
       language: 'ភាសា',
