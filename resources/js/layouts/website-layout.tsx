@@ -305,16 +305,18 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
               <p className="text-gray-300 text-sm">
                 {websiteDescription || t('website_description')}
               </p>
-              <div className="flex space-x-4">
+              <div className="flex space-x-3">
                 {hasSocialMedia('facebook') && (
                   <a 
                     href={businessData.socialFacebook!} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="group relative overflow-hidden w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
                     aria-label="Facebook"
                   >
-                    <Facebook className="w-5 h-5" />
+                    <Facebook className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                    <Facebook className="absolute w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </a>
                 )}
                 {hasSocialMedia('telegram') && (
@@ -322,10 +324,12 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
                     href={businessData.socialTelegram!} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="group relative overflow-hidden w-10 h-10 bg-gray-800 hover:bg-blue-500 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
                     aria-label="Telegram"
                   >
-                    <Send className="w-5 h-5" />
+                    <Send className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                    <Send className="absolute w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </a>
                 )}
                 {hasSocialMedia('messenger') && (
@@ -333,10 +337,12 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
                     href={businessData.socialMessenger!} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="group relative overflow-hidden w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
                     aria-label="Messenger"
                   >
-                    <MessageCircle className="w-5 h-5" />
+                    <MessageCircle className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                    <MessageCircle className="absolute w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </a>
                 )}
                 
@@ -348,11 +354,13 @@ export default function WebsiteLayout({ children, title, businessSettings }: Web
                       href={social.url} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-gray-400 hover:text-white transition-colors"
+                      className="group relative overflow-hidden w-10 h-10 bg-gray-800 hover:bg-gray-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
                       aria-label={social.name}
                       title={social.name}
                     >
-                      <ExternalLink className="w-5 h-5" />
+                      <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                      <ExternalLink className="absolute w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </a>
                   )
                 ))}

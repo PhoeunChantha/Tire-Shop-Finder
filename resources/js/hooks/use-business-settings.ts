@@ -21,6 +21,11 @@ export interface BusinessData {
     socialTelegram: string | null;
     socialMessenger: string | null;
     customSocialMedia: { [key: string]: { name: string; url: string } };
+    // Website Statistics
+    statsTireShops: string | null;
+    statsHappyCustomers: string | null;
+    statsProvincesCovered: string | null;
+    statsAverageRating: string | null;
     [key: string]: string | null | { en?: string; km?: string } | { [key: string]: { name: string; url: string } };
 }
 
@@ -113,6 +118,11 @@ export function useBusinessSettings(fallbackSettings?: BusinessSettings) {
             socialTelegram: mergedSettings?.social_telegram || null,
             socialMessenger: mergedSettings?.social_messenger || null,
             customSocialMedia,
+            // Website Statistics
+            statsTireShops: mergedSettings?.stats_tire_shops || null,
+            statsHappyCustomers: mergedSettings?.stats_happy_customers || null,
+            statsProvincesCovered: mergedSettings?.stats_provinces_covered || null,
+            statsAverageRating: mergedSettings?.stats_average_rating || null,
         };
     }, [mergedSettings]);
 

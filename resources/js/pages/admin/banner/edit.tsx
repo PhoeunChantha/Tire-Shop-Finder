@@ -29,6 +29,7 @@ interface BannerEditProps {
 
 export default function BannerEdit({ auth, banner }: BannerEditProps) {
     const [activeLanguage, setActiveLanguage] = useState<'en' | 'km'>('en');
+    const [currentImageUrl] = useState(banner.image ? getImageUrl(banner.image, 'banners') : null);
     
     const initialData = {
         title_translations: banner.title_translations || {
@@ -39,7 +40,7 @@ export default function BannerEdit({ auth, banner }: BannerEditProps) {
             en: banner.descriptions || '',
             km: ''
         },
-        image: banner.image ? getImageUrl(banner.image, 'banners') : null,
+        image: currentImageUrl,
         is_active: banner.is_active ?? true,
         sort_order: banner.sort_order ?? 0,
     };

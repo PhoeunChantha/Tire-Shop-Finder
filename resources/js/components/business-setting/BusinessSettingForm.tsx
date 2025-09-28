@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import InputError from "@/components/input-error";
 import UploadImage from "@/components/ui/upload-image";
-import { Globe, MessageCircle, Send, Phone, Mail, MapPin, Plus, X } from "lucide-react";
+import { Globe, MessageCircle, Send, Phone, Mail, MapPin, Plus, X, Image, FileImage, BarChart3, Users, Star, CheckCircle } from "lucide-react";
 
 import type { BusinessSettingFormProps } from "@/types/business-setting";
 
@@ -146,9 +146,11 @@ export default function BusinessSettingForm({
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <Tabs defaultValue="business-info" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="business-info">Business Information</TabsTrigger>
+          <TabsTrigger value="page-banners">Page Banners</TabsTrigger>
           <TabsTrigger value="contact-social">Contact & Social</TabsTrigger>
+          <TabsTrigger value="statistics">Website Statistics</TabsTrigger>
           <TabsTrigger value="socialite">Social Login</TabsTrigger>
         </TabsList>
 
@@ -321,6 +323,95 @@ export default function BusinessSettingForm({
                 <p className="text-xs text-gray-500">
                   Recommended: 32x32px ICO or PNG
                 </p>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="page-banners" className="space-y-6">
+          {/* Page Banners Section */}
+          <div className="space-y-4">
+            <div className="border-b border-gray-200 pb-4">
+              <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <FileImage className="w-5 h-5" />
+                Page Banner Images
+              </h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Upload custom banner images for your About and Contact pages. These banners will be displayed as background images in the hero sections.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* About Page Banner */}
+              <div className="space-y-4 p-6 border border-gray-200 rounded-lg bg-gray-50/50">
+                <div className="flex items-center gap-2 mb-4">
+                  <Image className="w-5 h-5 text-blue-600" />
+                  <h4 className="text-base font-medium text-gray-900">About Page Banner</h4>
+                </div>
+                
+                <UploadImage
+                  id="about-banner"
+                  label="About Page Background Image"
+                  value={data.type?.about_banner_image}
+                  currentImage={data.current_about_banner_image}
+                  onChange={(file) => handleInputChange("about_banner_image", file)}
+                  error={errors?.about_banner_image}
+                  previewClassName="w-full h-40 object-cover rounded-md border"
+                  accept="image/*"
+                />
+                
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>• Recommended: 1920x600px or larger</p>
+                  <p>• Format: JPG, PNG, WebP</p>
+                  <p>• Max size: 2MB</p>
+                  <p>• This image will be used as the background for your About page header</p>
+                </div>
+              </div>
+
+              {/* Contact Page Banner */}
+              <div className="space-y-4 p-6 border border-gray-200 rounded-lg bg-gray-50/50">
+                <div className="flex items-center gap-2 mb-4">
+                  <Image className="w-5 h-5 text-green-600" />
+                  <h4 className="text-base font-medium text-gray-900">Contact Page Banner</h4>
+                </div>
+                
+                <UploadImage
+                  id="contact-banner"
+                  label="Contact Page Background Image"
+                  value={data.type?.contact_banner_image}
+                  currentImage={data.current_contact_banner_image}
+                  onChange={(file) => handleInputChange("contact_banner_image", file)}
+                  error={errors?.contact_banner_image}
+                  previewClassName="w-full h-40 object-cover rounded-md border"
+                  accept="image/*"
+                />
+                
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>• Recommended: 1920x600px or larger</p>
+                  <p>• Format: JPG, PNG, WebP</p>
+                  <p>• Max size: 2MB</p>
+                  <p>• This image will be used as the background for your Contact page header</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Preview Section */}
+            <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <Image className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">Banner Usage Information</h4>
+                  <div className="text-sm text-blue-800 space-y-2">
+                    <p>• <strong>About Page:</strong> The banner will be displayed as a background image on your business About page with an overlay for text readability.</p>
+                    <p>• <strong>Contact Page:</strong> The banner will be displayed as a background image on your business Contact page with an overlay for text readability.</p>
+                    <p>• <strong>Fallback:</strong> If no banner is uploaded, the pages will use a default gradient background.</p>
+                    <p>• <strong>Performance:</strong> Images are automatically optimized for web display.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -508,6 +599,134 @@ export default function BusinessSettingForm({
                   <Plus className="w-4 h-4" />
                   Add Social Media
                 </Button>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="statistics" className="space-y-6">
+          {/* Website Statistics Section */}
+          <div className="space-y-4">
+            <div className="border-b border-gray-200 pb-4">
+              <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Website Statistics
+              </h3>
+              <p className="mt-1 text-sm text-gray-600">
+                Configure the statistics displayed on your website homepage.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="stats_tire_shops" className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-blue-600" />
+                  Verified Tire Shops
+                </Label>
+                <Input
+                  id="stats_tire_shops"
+                  type="number"
+                  value={data.type?.stats_tire_shops || ""}
+                  onChange={(e) => handleInputChange("stats_tire_shops", e.target.value)}
+                  placeholder="1000"
+                  className="max-w-md"
+                />
+                <p className="text-xs text-gray-500">Number of verified tire shops on your platform</p>
+                <InputError message={errors?.stats_tire_shops} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stats_happy_customers" className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-green-600" />
+                  Happy Customers
+                </Label>
+                <Input
+                  id="stats_happy_customers"
+                  type="number"
+                  value={data.type?.stats_happy_customers || ""}
+                  onChange={(e) => handleInputChange("stats_happy_customers", e.target.value)}
+                  placeholder="50000"
+                  className="max-w-md"
+                />
+                <p className="text-xs text-gray-500">Total number of satisfied customers</p>
+                <InputError message={errors?.stats_happy_customers} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stats_provinces_covered" className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-purple-600" />
+                  Provinces Covered
+                </Label>
+                <Input
+                  id="stats_provinces_covered"
+                  type="number"
+                  value={data.type?.stats_provinces_covered || ""}
+                  onChange={(e) => handleInputChange("stats_provinces_covered", e.target.value)}
+                  placeholder="25"
+                  className="max-w-md"
+                />
+                <p className="text-xs text-gray-500">Number of provinces where services are available</p>
+                <InputError message={errors?.stats_provinces_covered} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stats_average_rating" className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-orange-600" />
+                  Average Rating
+                </Label>
+                <Input
+                  id="stats_average_rating"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  value={data.type?.stats_average_rating || ""}
+                  onChange={(e) => handleInputChange("stats_average_rating", e.target.value)}
+                  placeholder="4.8"
+                  className="max-w-md"
+                />
+                <p className="text-xs text-gray-500">Average customer rating (0.0 to 5.0)</p>
+                <InputError message={errors?.stats_average_rating} />
+              </div>
+            </div>
+
+            {/* Preview Section */}
+            <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <BarChart3 className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">Statistics Display Preview</h4>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                      <div className="text-2xl font-bold text-blue-600 mb-1">
+                        {data.type?.stats_tire_shops ? `${parseInt(data.type.stats_tire_shops).toLocaleString()}+` : '1000+'}
+                      </div>
+                      <div className="text-gray-600 text-xs">Verified Tire Shops</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                      <div className="text-2xl font-bold text-green-600 mb-1">
+                        {data.type?.stats_happy_customers ? `${Math.round(parseInt(data.type.stats_happy_customers)/1000)}K+` : '50K+'}
+                      </div>
+                      <div className="text-gray-600 text-xs">Happy Customers</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                      <div className="text-2xl font-bold text-purple-600 mb-1">
+                        {data.type?.stats_provinces_covered || '25'}
+                      </div>
+                      <div className="text-gray-600 text-xs">Provinces Covered</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                      <div className="text-2xl font-bold text-orange-600 mb-1">
+                        {data.type?.stats_average_rating ? `${parseFloat(data.type.stats_average_rating).toFixed(1)}★` : '4.8★'}
+                      </div>
+                      <div className="text-gray-600 text-xs">Average Rating</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

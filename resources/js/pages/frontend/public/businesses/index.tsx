@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SearchableSelect } from '@/components/ui/searchable-select';
+import { BannerCarousel } from '@/components/BannerCarousel';
 import { Business, Province, District, Commune, Village, PaginatedData } from '@/types';
 import { parseGoogleMapsUrl, formatCoordinates } from '@/lib/maps-utils';
 import { toast } from '@/lib/toast';
@@ -17,7 +18,6 @@ import {
     MapPin, 
     Clock, 
     Star, 
-    Wrench, 
     Filter,
     ChevronRight,
     Navigation,
@@ -32,10 +32,20 @@ import {
 } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageHelper';
 
+interface Banner {
+    id: number;
+    title: string;
+    descriptions: string;
+    image: string | null;
+    url: string | null;
+    sort_order: number;
+}
+
 interface BusinessIndexProps {
     businesses: PaginatedData<Business>;
     provinces: Province[];
     districts: District[];
+    banners: Banner[];
     filters: {
         search?: string;
         province_id?: string;
@@ -53,7 +63,8 @@ interface BusinessIndexProps {
 export default function PublicBusinessIndex({ 
     businesses, 
     provinces, 
-    districts: initialDistricts, 
+    districts: initialDistricts,
+    banners,
     filters,
     userLocation 
 }: BusinessIndexProps) {
@@ -535,37 +546,51 @@ export default function PublicBusinessIndex({
                 url={typeof window !== 'undefined' ? window.location.href : undefined}
             />
             
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iNyIgY3k9IjciIHI9IjEuNSIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+            {/* Hero Section - Clean & Professional */}
+            <div className="relative text-white overflow-hidden">
+                {/* Banner Background or Clean Gradient Background */}
+                {banners && banners.length > 0 ? (
+                    <div className="absolute inset-0">
+                        <BannerCarousel banners={banners} className="h-full" backgroundOnly={true} />
+                        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-800/60 to-slate-900/80" />
+                    </div>
+                ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+                )}
                 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                {/* Subtle Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0" style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E")`,
+                    }} />
+                </div>
+                
+                <div className="relative max-w-6xl mx-auto px-6 lg:px-8 py-20">
                     <div className="text-center">
-                        {/* Animated Badge */}
-                        <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-6 animate-pulse">
-                            <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                        {/* Professional Badge */}
+                        <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-sm font-medium mb-8">
+                            <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                             {t('cambodia_tire_directory')}
                         </div>
                         
-                        <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-indigo-100 bg-clip-text text-transparent leading-tight">
-                            {t('find_tire_shops_near_you')}
+                        <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                            <span className="text-white">{t('find_tire_shops_near_you')}</span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-blue-100/90 mb-12 max-w-3xl mx-auto leading-relaxed">
+                        <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
                             {t('discover_verified_professionals')}
                         </p>
                         
-                        {/* Enhanced Search Bar */}
-                        <div className="max-w-4xl mx-auto">
-                            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-2">
-                                <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                        {/* Professional Search Bar */}
+                        <div className="max-w-4xl mx-auto mb-8">
+                            <div className="bg-white p-3 rounded-2xl shadow-2xl">
+                                <div className="flex flex-col lg:flex-row gap-4">
                                     <div className="relative flex-1">
                                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                         <Input
                                             placeholder={t('search_placeholder_detailed')}
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
-                                            className="pl-12 pr-4 py-4 text-gray-900 bg-transparent border-0 focus:ring-0 text-lg placeholder:text-gray-500 font-medium"
+                                            className="pl-12 pr-4 py-4 text-gray-900 border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base h-14 rounded-xl transition-all"
                                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                                         />
                                         {searchTerm && (
@@ -577,11 +602,11 @@ export default function PublicBusinessIndex({
                                             </button>
                                         )}
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-3">
                                         <Button
                                             onClick={getCurrentLocation}
                                             disabled={gettingLocation}
-                                            className="px-6 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
+                                            className="px-6 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold h-14 transition-all duration-200 hover:scale-105"
                                         >
                                             {gettingLocation ? (
                                                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -593,7 +618,7 @@ export default function PublicBusinessIndex({
                                         <Button
                                             onClick={handleSearch}
                                             disabled={searchLoading}
-                                            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                                            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold h-14 transition-all duration-200 hover:scale-105"
                                         >
                                             {searchLoading ? (
                                                 <>
@@ -610,21 +635,21 @@ export default function PublicBusinessIndex({
                                     </div>
                                 </div>
                             </div>
-                            
-                            {/* Quick Stats */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
-                                <div className="text-center">
-                                    <div className="text-3xl font-bold text-white mb-2">{businesses.total}+</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('verified_shops')}</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-3xl font-bold text-white mb-2">24/7</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('emergency_service')}</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-3xl font-bold text-white mb-2">⭐ 4.8</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('average_rating')}</div>
-                                </div>
+                        </div>
+                        
+                        {/* Clean Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+                            <div className="text-center">
+                                <div className="text-3xl font-bold text-white mb-2">{businesses.total}+</div>
+                                <div className="text-white/60 text-sm font-medium">{t('verified_shops')}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-3xl font-bold text-white mb-2">24/7</div>
+                                <div className="text-white/60 text-sm font-medium">{t('emergency_service')}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-3xl font-bold text-white mb-2">⭐ 4.8</div>
+                                <div className="text-white/60 text-sm font-medium">{t('average_rating')}</div>
                             </div>
                         </div>
                     </div>
@@ -655,13 +680,13 @@ export default function PublicBusinessIndex({
                         </div>
                     </div>
 
-                    {/* Sidebar Filters */}
+                    {/* Sidebar Filters - Clean Design */}
                     <div className={`w-full lg:w-80 lg:shrink-0 transition-all duration-300 ease-in-out ${
                         showFilters 
                             ? 'block opacity-100 translate-y-0' 
                             : 'hidden lg:block lg:opacity-100 lg:translate-y-0'
                     }`}>
-                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 lg:sticky lg:top-6 backdrop-blur-sm">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:sticky lg:top-6">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-xl font-bold text-gray-900 flex items-center">
                                     <Filter className="w-5 h-5 mr-2 text-blue-600" />
@@ -677,22 +702,22 @@ export default function PublicBusinessIndex({
                                 )}
                             </div>
                             
-                            {/* Location Button */}
+                            {/* Location Services - Clean */}
                             <div className="mb-6">
-                                <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
                                     <div className="flex items-center gap-2 mb-3">
                                         <LocationIcon className="w-5 h-5 text-green-600" />
-                                        <span className="font-semibold text-green-900">{t('location_services')}</span>
+                                        <span className="font-semibold text-green-800">{t('location_services')}</span>
                                     </div>
                                     <Button 
                                         onClick={getCurrentLocation} 
                                         disabled={gettingLocation}
-                                        className={`w-full transition-all duration-300 transform hover:scale-105 ${
+                                        className={`w-full transition-all duration-200 ${
                                             userCoords 
-                                                ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' 
+                                                ? 'bg-green-600 hover:bg-green-700 text-white' 
                                                 : gettingLocation 
                                                 ? 'bg-blue-500 text-white' 
-                                                : 'bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white'
+                                                : 'bg-white border border-green-600 text-green-600 hover:bg-green-600 hover:text-white'
                                         }`}
                                     >
                                         {gettingLocation ? (
@@ -994,19 +1019,19 @@ export default function PublicBusinessIndex({
                     </div>
                 )}
                 
-                {/* Business Grid */}
+                {/* Business Grid - Clean Cards */}
                 {!searchLoading && businesses.data.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         {businesses.data.map((business, index) => (
-                            <Card key={`business-${business.id || index}`} className="group hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer overflow-hidden border-0 shadow-lg bg-white py-0">
+                            <Card key={`business-${business.id || index}`} className="py-0 group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden bg-white border border-gray-200">
                                 <Link href={`/tire-shops/${String(business.slug)}`} className="block">
-                                    {/* Business Image */}
-                                    <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                                    {/* Business Image - Clean */}
+                                    <div className="relative aspect-video bg-gray-100 overflow-hidden">
                                         {business.image ? (
                                             <img 
                                                 src={getImageUrl(business.image, 'businesses')} 
                                                 alt={String(business.name)}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                 onError={(e) => {
                                                     const img = e.target as HTMLImageElement;
                                                     img.style.display = 'none';
@@ -1033,10 +1058,10 @@ export default function PublicBusinessIndex({
                                         {/* Enhanced Overlays */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         
-                                        {/* Distance Badge */}
+                                        {/* Distance Badge - Clean */}
                                         {business.distance !== undefined && userCoords && (
                                             <div className="absolute top-4 left-4">
-                                                <Badge className="bg-green-500/90 hover:bg-green-600 text-white shadow-xl backdrop-blur-sm border-0 px-3 py-1.5 text-sm font-semibold">
+                                                <Badge className="bg-green-600 text-white shadow-lg px-3 py-1.5 text-sm font-semibold">
                                                     <Navigation className="w-3 h-3 mr-1" />
                                                     {(() => {
                                                         const distance = parseFloat(String(business.distance));
@@ -1077,54 +1102,48 @@ export default function PublicBusinessIndex({
                                         </div>
                                     </div>
                                     
-                                    <CardContent className="p-6 bg-white">
-                                        {/* Header Section */}
-                                        <div className="mb-5">
-                                            <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200 line-clamp-1">
-                                                {String(business.name)}
-                                            </h3>
-                                            
-                                            {/* Location & Hours */}
-                                            <div className="space-y-2">
-                                                <div className="flex items-center text-gray-600">
-                                                    <MapPin className="w-4 h-4 mr-2 text-red-500 flex-shrink-0" />
-                                                    <span className="text-sm font-medium line-clamp-1">{getDistanceText(business)}</span>
-                                                </div>
-                                                {business.formatted_hours && (
-                                                    <div className="flex items-center text-gray-600">
-                                                        <Clock className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
-                                                        <span className="text-sm font-medium">{String(business.formatted_hours)}</span>
-                                                    </div>
-                                                )}
+                                    <CardContent className="p-6">
+                                        {/* Header - Clean */}
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                                            {String(business.name)}
+                                        </h3>
+                                        
+                                        {/* Location & Hours */}
+                                        <div className="space-y-2 mb-4">
+                                            <div className="flex items-center text-gray-600">
+                                                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                                                <span className="text-sm">{getDistanceText(business)}</span>
                                             </div>
+                                            {business.formatted_hours && (
+                                                <div className="flex items-center text-gray-600">
+                                                    <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                                                    <span className="text-sm">{String(business.formatted_hours)}</span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Description */}
                                         {business.descriptions && (
-                                            <p className="text-gray-600 text-sm mb-2 line-clamp-2 leading-relaxed">
+                                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                                                 {String(business.descriptions)}
                                             </p>
                                         )}
 
-                                        {/* Services */}
+                                        {/* Services - Clean */}
                                         {business.services && business.services.length > 0 && (
-                                            <div className="mb-5">
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <Wrench className="w-4 h-4 text-orange-500" />
-                                                    <span className="text-sm font-semibold text-gray-700">{t('services_available')}</span>
-                                                </div>
+                                            <div className="mb-4">
                                                 <div className="flex flex-wrap gap-2">
                                                     {business.services.slice(0, 3).map((service) => (
                                                         <Badge 
                                                             key={service.id} 
                                                             variant="outline" 
-                                                            className="text-xs border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors font-medium px-2 py-1"
+                                                            className="text-xs border-blue-200 text-blue-700 bg-blue-50"
                                                         >
                                                             {service.name}
                                                         </Badge>
                                                     ))}
                                                     {business.services.length > 3 && (
-                                                        <Badge variant="outline" className="text-xs border-gray-300 text-gray-600 bg-gray-50 font-medium px-2 py-1">
+                                                        <Badge variant="outline" className="text-xs border-gray-300 text-gray-600 bg-gray-50">
                                                             +{business.services.length - 3} more
                                                         </Badge>
                                                     )}
@@ -1132,7 +1151,7 @@ export default function PublicBusinessIndex({
                                             </div>
                                         )}
 
-                                        {/* Rating & CTA */}
+                                        {/* Rating & CTA - Clean */}
                                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                                             <div className="flex items-center">
                                                 {business.reviews_count && business.reviews_count > 0 ? (
@@ -1140,7 +1159,7 @@ export default function PublicBusinessIndex({
                                                         <div className="flex items-center mr-2">
                                                             {renderStars(Math.round(business.reviews_avg_rate || 0))}
                                                         </div>
-                                                        <span className="text-gray-600 text-sm font-medium">
+                                                        <span className="text-gray-600 text-sm">
                                                             {business.reviews_avg_rate?.toFixed(1)} ({business.reviews_count})
                                                         </span>
                                                     </>
@@ -1156,9 +1175,9 @@ export default function PublicBusinessIndex({
                                                 )}
                                             </div>
                                             
-                                            <div className="flex items-center text-blue-600 group-hover:text-blue-800 transition-colors font-semibold">
+                                            <div className="flex items-center text-blue-600 group-hover:text-blue-700 transition-colors">
                                                 <span className="text-sm mr-1">{t('view_details')}</span>
-                                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                                                <ChevronRight className="w-4 h-4" />
                                             </div>
                                         </div>
                                     </CardContent>

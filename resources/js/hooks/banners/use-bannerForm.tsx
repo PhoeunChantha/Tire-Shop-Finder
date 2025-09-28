@@ -40,7 +40,8 @@ export default function useBannerForm(initialData: Partial<BannerData> = {}) {
     const updateBanner = (bannerId: number) => (e: React.FormEvent) => {
         e.preventDefault();
         const formData = { ...data };
-        if (data.image === null) {
+        // Remove image field completely when it's not a File object
+        if (!data.image || typeof data.image === 'string') {
             delete formData.image;
         }
         formData._method = 'PUT';

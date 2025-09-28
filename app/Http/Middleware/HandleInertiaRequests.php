@@ -71,6 +71,15 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        // Get business settings
+        $businessSettings = null;
+        try {
+            $businessSettings = \App\Models\BusinessSetting::pluck('value', 'type')->toArray();
+        } catch (\Exception $e) {
+            // Fail silently if database is not available (e.g., during migrations)
+            $businessSettings = [];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -85,6 +94,7 @@ class HandleInertiaRequests extends Middleware
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => app()->getLocale(),
             'availableLocales' => config('app.available_locales', ['en', 'km']),
+            'businessSettings' => $businessSettings,
         ];
     }
 }

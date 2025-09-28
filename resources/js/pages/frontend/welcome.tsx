@@ -23,6 +23,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageHelper';
+import useBusinessSettings from '@/hooks/use-business-settings';
 
 interface Business {
   id: number;
@@ -56,55 +57,49 @@ function BusinessCard({ business }: { business: Business }) {
   const defaultImage = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop";
   
   return (
-    <Card className="group overflow-hidden p-0 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col border-0 bg-white shadow-lg">
-      <div className="aspect-video overflow-hidden relative flex-shrink-0">
+    <Card className="py-0 group overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col bg-white border border-gray-200">
+      <div className="aspect-video overflow-hidden relative">
         <img 
           src={getImageUrl(business.image, 'businesses') || defaultImage} 
           alt={business.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         {business.average_rating > 0 && (
-          <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+          <div className="absolute top-4 right-4 bg-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-md">
             <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-            <span className="text-sm font-semibold text-gray-900">{business.average_rating}</span>
+            <span className="text-sm font-bold text-gray-900">{business.average_rating}</span>
           </div>
         )}
       </div>
       
-      <CardContent className="p-5 flex-1 flex flex-col">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
-            {business.name}
-          </h3>
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <ArrowRight className="w-5 h-5 text-blue-600" />
-          </div>
-        </div>
+      <CardContent className="p-6 flex-1 flex flex-col">
+        <h3 className="font-bold text-xl text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+          {business.name}
+        </h3>
         
         <div className="flex items-center gap-2 text-gray-600 mb-3">
-          <MapPin className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium">{business.location}</span>
+          <MapPin className="w-4 h-4 text-gray-400" />
+          <span className="text-sm">{business.location}</span>
         </div>
         
         <div className="flex items-center gap-2 text-gray-600 mb-4">
-          <Users className="w-4 h-4 text-green-500" />
-          <span className="text-sm font-medium">{business.review_count} {t('customer_reviews')}</span>
+          <Users className="w-4 h-4 text-gray-400" />
+          <span className="text-sm">{business.review_count} {t('customer_reviews')}</span>
         </div>
         
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-2 mb-6">
           {business.services.slice(0, 2).map((service, index) => (
             <span 
               key={index}
-              className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-xs font-medium rounded-full border border-blue-200"
+              className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-md"
             >
               {service}
             </span>
           ))}
           {business.services.length > 2 && (
-            <span className="px-3 py-1.5 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-              +{business.services.length - 2} {t('more_services')}
+            <span className="px-3 py-1 bg-gray-50 text-gray-600 text-xs font-medium rounded-md">
+              +{business.services.length - 2} more
             </span>
           )}
         </div>
@@ -112,15 +107,13 @@ function BusinessCard({ business }: { business: Business }) {
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
           {business.phone && (
             <div className="flex items-center gap-2 text-gray-700">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <Phone className="w-4 h-4 text-green-600" />
-              </div>
-              <span className="text-sm font-semibold">{business.phone}</span>
+              <Phone className="w-4 h-4 text-green-600" />
+              <span className="text-sm font-medium">{business.phone}</span>
             </div>
           )}
           <Link href={`/tire-shops/${business.slug || business.id}`}>
-            <Button size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200">
-              <span className="text-sm font-medium">{t('view_details')}</span>
+            <Button size="sm" className="bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors">
+              {t('view_details')}
               <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </Link>
@@ -236,58 +229,62 @@ function BusinessCarousel({ businesses }: { businesses: Business[] }) {
 export default function Welcome() {
   const { banners, featuredBusinesses } = usePage<PageProps>().props;
   const { t } = useTranslation();
+  const { businessData } = useBusinessSettings();
   
   return (
     <WebsiteLayout>
-      {/* Hero Section with Banner Background */}
-      <section className="relative text-white overflow-hidden min-h-[500px] sm:min-h-[550px] flex items-center">
-        {/* Banner Background */}
+      {/* Hero Section - Clean & Professional */}
+      <section className="relative text-white overflow-hidden min-h-[600px] flex items-center">
+        {/* Clean Gradient Background */}
         {banners && banners.length > 0 ? (
           <div className="absolute inset-0">
             <BannerCarousel banners={banners} className="h-full" backgroundOnly={true} />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-800/60 to-slate-900/80" />
           </div>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         )}
         
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-32 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        {/* Subtle Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
         </div>
         
         {/* Hero Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="text-center">
-            <div className="mb-6 mt-3">
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 text-sm font-medium mb-8">
-                <Sparkles className="w-4 h-4 text-yellow-400" />
-                <span>{t('premier_directory')}</span>
-              </div>
-            </div>
-            
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-8 text-shadow-lg leading-tight">
-              {t('find_best_tire_shops')} 
-              <span className="block bg-gradient-to-r from-yellow-400 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-                {t('tire_shops')}
-              </span>
-              <span className="text-3xl sm:text-4xl md:text-5xl block mt-2">{t('in_cambodia')}</span>
-            </h1>
-            
-            <p className="text-xl sm:text-2xl md:text-3xl mb-8 sm:mb-12 text-white/90 max-w-4xl mx-auto leading-relaxed px-4 font-light">
-              {t('connect_verified')}
-            </p>
-            
-            {/* Enhanced Search Bar */}
-            <div className="max-w-4xl mx-auto px-4 mb-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 bg-white/95 backdrop-blur-md p-3 sm:p-3 rounded-2xl shadow-2xl border border-white/20">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 w-full text-center">
+          {/* Professional Badge */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 text-sm font-medium mb-8">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span className="text-white/90">{t('premier_directory')}</span>
+          </div>
+          
+          {/* Clean Typography */}
+          <h1 className="text-5xl lg:text-6xl xl:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
+            <span className="text-white">{t('find_best_tire_shops')}</span>
+            <br />
+            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              {t('tire_shops')}
+            </span>
+            <br />
+            <span className="text-white/90 text-3xl lg:text-4xl xl:text-5xl font-semibold">{t('in_cambodia')}</span>
+          </h1>
+          
+          <p className="text-xl lg:text-2xl mb-12 text-white/80 max-w-3xl mx-auto font-light leading-relaxed">
+            {t('connect_verified')}
+          </p>
+          
+          {/* Professional Search Bar */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl">
+              <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input 
                       placeholder={t('search_placeholder')} 
-                      className="pl-12 border-0 bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 text-base h-14 rounded-xl"
+                      className="pl-12 border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base h-14 rounded-xl transition-all"
                     />
                   </div>
                 </div>
@@ -296,12 +293,12 @@ export default function Welcome() {
                     <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input 
                       placeholder={t('location_placeholder')} 
-                      className="pl-12 border-0 bg-gray-50/50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 text-base h-14 rounded-xl"
+                      className="pl-12 border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base h-14 rounded-xl transition-all"
                     />
                   </div>
                 </div>
                 <Link href="/tire-shops">
-                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 w-full sm:w-auto shadow-lg text-base h-14 px-8 rounded-xl font-semibold transition-all duration-300 hover:shadow-xl hover:scale-105">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full lg:w-auto shadow-lg text-base h-14 px-8 rounded-xl font-semibold transition-all duration-200">
                     <Search className="w-5 h-5 mr-2" />
                     {t('search_now')}
                   </Button>
@@ -312,51 +309,65 @@ export default function Welcome() {
         </div>
       </section>
 
-      {/* Trust Indicators Section */}
-      <section className="py-12 bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-blue-600">1000+</div>
-              <div className="text-gray-600 text-sm">{t('verified_tire_shops')}</div>
+      {/* Trust Indicators - Clean Stats */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
+              <div className="text-4xl font-bold text-blue-600 mb-2">
+                {businessData.statsTireShops ? `${parseInt(businessData.statsTireShops).toLocaleString()}+` : '1000+'}
+              </div>
+              <div className="text-gray-600 font-medium">{t('verified_tire_shops')}</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-green-600">50K+</div>
-              <div className="text-gray-600 text-sm">{t('happy_customers')}</div>
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
+              <div className="text-4xl font-bold text-green-600 mb-2">
+                {businessData.statsHappyCustomers ? 
+                  `${Math.round(parseInt(businessData.statsHappyCustomers)/1000)}K+` : 
+                  '50K+'
+                }
+              </div>
+              <div className="text-gray-600 font-medium">{t('happy_customers')}</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-purple-600">25</div>
-              <div className="text-gray-600 text-sm">{t('provinces_covered')}</div>
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
+              <div className="text-4xl font-bold text-purple-600 mb-2">
+                {businessData.statsProvincesCovered || '25'}
+              </div>
+              <div className="text-gray-600 font-medium">{t('provinces_covered')}</div>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-orange-600">4.8★</div>
-              <div className="text-gray-600 text-sm">{t('average_rating')}</div>
+            <div className="text-center p-6 bg-white rounded-xl shadow-sm">
+              <div className="text-4xl font-bold text-orange-600 mb-2">
+                {businessData.statsAverageRating ? 
+                  `${parseFloat(businessData.statsAverageRating).toFixed(1)}★` : 
+                  '4.8★'
+                }
+              </div>
+              <div className="text-gray-600 font-medium">{t('average_rating')}</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Businesses Carousel */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
+      {/* Featured Businesses - Clean Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-semibold mb-6">
               <Award className="w-4 h-4" />
               <span>{t('premium_partners')}</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               {t('featured_tire_shops')}
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('discover_trusted')}
             </p>
           </div>
           
           <BusinessCarousel businesses={featuredBusinesses} />
           
-          <div className="text-center mt-10 sm:mt-12">
+          <div className="text-center mt-12">
             <Link href="/tire-shops">
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <Button size="lg" className="bg-blue-600 cursor-pointer hover:bg-blue-700 px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-200">
                 <Search className="w-5 h-5 mr-2" />
                 {t('explore_all')}
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -366,157 +377,120 @@ export default function Welcome() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 sm:py-24 bg-white relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-50 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
+      {/* Features Section - Modern & Clean */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               {t('why_choose')}?
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('experience_future')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
-            <Card className="group text-center p-6 sm:p-8 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-white to-blue-50/50">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            <Card className="group text-center p-8 bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
               <CardContent className="space-y-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <MapPin className="w-10 h-10 text-white" />
+                <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto">
+                  <MapPin className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{t('smart_location_search')}</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
+                <h3 className="text-2xl font-bold text-gray-900">{t('smart_location_search')}</h3>
+                <p className="text-gray-600 leading-relaxed">
                   {t('smart_location_desc')}
                 </p>
-                <div className="inline-flex items-center text-blue-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>{t('learn_more')}</span>
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:ml-0 transition-all" />
-                </div>
               </CardContent>
             </Card>
 
-            <Card className="group text-center p-6 sm:p-8 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-white to-green-50/50">
+            <Card className="group text-center p-8 bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
               <CardContent className="space-y-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="w-10 h-10 text-white" />
+                <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto">
+                  <Shield className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">{t('verified_partners')}</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
+                <h3 className="text-2xl font-bold text-gray-900">{t('verified_partners')}</h3>
+                <p className="text-gray-600 leading-relaxed">
                   {t('verified_partners_desc')}
                 </p>
-                <div className="inline-flex items-center text-green-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>{t('learn_more')}</span>
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:ml-0 transition-all" />
-                </div>
               </CardContent>
             </Card>
 
-            <Card className="group text-center p-6 sm:p-8 border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-gradient-to-br from-white to-purple-50/50">
+            <Card className="group text-center p-8 bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
               <CardContent className="space-y-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Users className="w-10 h-10 text-white" />
+                <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mx-auto">
+                  <Users className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">{t('trusted_reviews')}</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
+                <h3 className="text-2xl font-bold text-gray-900">{t('trusted_reviews')}</h3>
+                <p className="text-gray-600 leading-relaxed">
                   {t('trusted_reviews_desc')}
                 </p>
-                <div className="inline-flex items-center text-purple-600 font-semibold group-hover:gap-3 transition-all">
-                  <span>{t('learn_more')}</span>
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:ml-0 transition-all" />
-                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Additional Features Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
-            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-              <Clock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+          {/* Additional Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+              <Clock className="w-10 h-10 text-blue-600 mx-auto mb-4" />
               <h4 className="font-bold text-gray-900 mb-2">{t('support_247')}</h4>
               <p className="text-sm text-gray-600">{t('support_247_desc')}</p>
             </div>
             
-            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
-              <TrendingUp className="w-12 h-12 text-green-600 mx-auto mb-4" />
+            <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+              <TrendingUp className="w-10 h-10 text-green-600 mx-auto mb-4" />
               <h4 className="font-bold text-gray-900 mb-2">{t('price_comparison')}</h4>
               <p className="text-sm text-gray-600">{t('price_comparison_desc')}</p>
             </div>
             
-            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-              <Award className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+            <div className="text-center p-6 bg-white rounded-xl border border-gray-200">
+              <Award className="w-10 h-10 text-purple-600 mx-auto mb-4" />
               <h4 className="font-bold text-gray-900 mb-2">{t('quality_guarantee')}</h4>
               <p className="text-sm text-gray-600">{t('quality_guarantee_desc')}</p>
             </div>
-            
-            {/* <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
-              <Sparkles className="w-12 h-12 text-orange-600 mx-auto mb-4" />
-              <h4 className="font-bold text-gray-900 mb-2">Easy Booking</h4>
-              <p className="text-sm text-gray-600">Book appointments with just a few clicks</p>
-            </div> */}
           </div>
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-blue-600 via-purple-700 to-blue-800 text-white relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
-        </div>
-        
-        {/* Animated Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+      {/* Call to Action - Professional & Clean */}
+      <section className="py-20 bg-slate-900 text-white">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-sm font-semibold mb-8 border border-white/20">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
+            <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm font-medium mb-8">
+              <Sparkles className="w-4 h-4 text-amber-400" />
               <span>{t('join_network')}</span>
             </div>
             
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 sm:mb-8 leading-tight">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
               {t('own_tire_shop')}?
             </h2>
             
-            <p className="text-xl sm:text-2xl mb-8 sm:mb-12 text-white/90 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl mb-12 text-white/80 max-w-2xl mx-auto">
               {t('join_directory')}
             </p>
             
             {/* Benefits Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                <TrendingUp className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <TrendingUp className="w-8 h-8 text-blue-400 mx-auto mb-3" />
                 <h3 className="font-bold text-lg mb-2">{t('increase_visibility')}</h3>
-                <p className="text-sm text-white/80">{t('increase_visibility_desc')}</p>
+                <p className="text-sm text-white/70">{t('increase_visibility_desc')}</p>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
                 <Users className="w-8 h-8 text-green-400 mx-auto mb-3" />
                 <h3 className="font-bold text-lg mb-2">{t('build_trust')}</h3>
-                <p className="text-sm text-white/80">{t('build_trust_desc')}</p>
+                <p className="text-sm text-white/70">{t('build_trust_desc')}</p>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                <Award className="w-8 h-8 text-blue-400 mx-auto mb-3" />
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <Award className="w-8 h-8 text-purple-400 mx-auto mb-3" />
                 <h3 className="font-bold text-lg mb-2">{t('premium_features')}</h3>
-                <p className="text-sm text-white/80">{t('premium_features_desc')}</p>
+                <p className="text-sm text-white/70">{t('premium_features_desc')}</p>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-8">
               <Link href="/register">
-                <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-50 font-bold px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 w-full sm:w-auto">
+                <Button size="lg" className="bg-white cursor-pointer text-slate-900 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl shadow-lg transition-all duration-200">
                   <Users className="w-5 h-5 mr-2" />
                   {t('register_free')}
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -524,13 +498,13 @@ export default function Welcome() {
               </Link>
               
               <Link href="/about">
-                <Button size="lg" variant="outline" className="border-2 bg-white/10 border-white/50  hover:bg-white/10 backdrop-blur-sm font-semibold px-8 py-4 text-lg rounded-xl transition-all duration-300 w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="border-white/30 text-black cursor-pointer hover:bg-white/10 px-8 py-4 rounded-xl transition-all duration-200">
                   {t('learn_how_works')}
                 </Button>
               </Link>
             </div>
             
-            <div className="mt-8 flex items-center justify-center gap-8 text-sm text-white/70">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/60">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-400" />
                 <span>{t('free_to_join')}</span>

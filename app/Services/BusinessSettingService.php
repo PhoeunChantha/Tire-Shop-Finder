@@ -7,7 +7,7 @@ use App\Helpers\ImageManager;
 
 class BusinessSettingService
 {
-    protected array $imageTypes = ['login_bg_image', 'system_logo', 'system_fav_icon'];
+    protected array $imageTypes = ['login_bg_image', 'system_logo', 'system_fav_icon', 'about_banner_image', 'contact_banner_image'];
 
     public function updateSettings(array $validated): void
     {

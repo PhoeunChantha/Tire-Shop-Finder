@@ -23,7 +23,11 @@ import {
     ArrowRight
 } from 'lucide-react';
 
-export default function About() {
+interface AboutPageProps {
+    aboutBanner?: string;
+}
+
+export default function About({ aboutBanner }: AboutPageProps) {
     const { t } = useTranslation();
     
     return (
@@ -37,47 +41,53 @@ export default function About() {
             />
             
             <div className="min-h-screen">
-                {/* Enhanced Hero Section */}
-                <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iNyIgY3k9IjciIHI9IjEuNSIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
-                    
-                    {/* Floating Elements */}
-                    <div className="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full animate-pulse"></div>
-                    <div className="absolute top-40 right-20 w-32 h-32 bg-white/5 rounded-full animate-pulse delay-1000"></div>
-                    <div className="absolute bottom-20 left-1/4 w-16 h-16 bg-white/5 rounded-full animate-pulse delay-500"></div>
+                {/* Clean Professional Hero Section */}
+                <div className="relative text-white overflow-hidden">
+                    {/* Background with custom banner or fallback */}
+                    {aboutBanner ? (
+                        <div className="absolute inset-0">
+                            <img 
+                                src={aboutBanner} 
+                                alt="About page banner" 
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-slate-900/70" />
+                        </div>
+                    ) : (
+                        <div className="absolute inset-0 bg-slate-900" />
+                    )}
                     
                     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
                         <div className="text-center">
-                            {/* Animated Badge */}
-                            <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-sm font-medium mb-8 animate-pulse">
-                                <Award className="w-4 h-4 mr-2 text-yellow-400" />
+                            {/* Professional Badge */}
+                            <div className="inline-flex items-center px-6 py-3 bg-white/10 border border-white/20 rounded-full text-sm font-medium mb-8">
+                                <Award className="w-4 h-4 mr-2 text-blue-400" />
                                 {t('cambodia_most_trusted_directory')}
                             </div>
                             
-                            <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
-                                <span className="bg-gradient-to-r from-white via-blue-50 to-indigo-100 bg-clip-text text-transparent">
+                            <h1 className="text-5xl md:text-6xl font-bold mb-8 leading-tight">
+                                <span className="text-white">
                                     {t('about_us')}
                                 </span>
                                 <br />
-                                <span className="text-white">
+                                <span className="text-blue-400">
                                     {t('our_mission')}
                                 </span>
                             </h1>
                             
-                            <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed mb-12">
+                            <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed mb-12">
                                 {t('we_revolutionize')} 
-                                <span className="text-yellow-300 font-semibold">{t('no_more_panic')}</span>, 
-                                <span className="text-green-300 font-semibold"> {t('just_instant_solutions')}</span> {t('when_you_need_them_most')}
+                                <span className="text-blue-400 font-semibold">{t('no_more_panic')}</span>, 
+                                <span className="text-blue-300 font-semibold"> {t('just_instant_solutions')}</span> {t('when_you_need_them_most')}
                             </p>
                             
                             {/* Action Buttons */}
                             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                                <Button className="px-8 py-4 bg-white text-blue-700 hover:bg-blue-50 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg">
+                                <Button className="px-8 py-4 bg-white text-slate-900 hover:bg-gray-100 rounded-xl font-semibold transition-colors shadow-lg">
                                     <Search className="w-5 h-5 mr-2" />
                                     {t('find_tire_shops')}
                                 </Button>
-                                <Button variant="outline" className="px-8 py-4 border-2 border-white/30 text-white hover:bg-white/10 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105">
+                                <Button variant="outline" className="px-8 py-4 border-2 border-white/30 text-white hover:bg-white/10 rounded-xl font-semibold transition-colors">
                                     <Heart className="w-5 h-5 mr-2" />
                                     {t('our_story')}
                                 </Button>
@@ -86,20 +96,20 @@ export default function About() {
                             {/* Hero Stats */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
                                 <div className="text-center">
-                                    <div className="text-4xl font-bold text-yellow-300 mb-2">500+</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('verified_shops')}</div>
+                                    <div className="text-4xl font-bold text-blue-400 mb-2">500+</div>
+                                    <div className="text-white/80 text-sm font-medium">{t('verified_shops')}</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-4xl font-bold text-green-300 mb-2">25</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('provinces')}</div>
+                                    <div className="text-4xl font-bold text-blue-300 mb-2">25</div>
+                                    <div className="text-white/80 text-sm font-medium">{t('provinces')}</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-4xl font-bold text-orange-300 mb-2">24/7</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('support')}</div>
+                                    <div className="text-4xl font-bold text-blue-200 mb-2">24/7</div>
+                                    <div className="text-white/80 text-sm font-medium">{t('support')}</div>
                                 </div>
                                 <div className="text-center">
-                                    <div className="text-4xl font-bold text-purple-300 mb-2">⭐ 4.9</div>
-                                    <div className="text-blue-200 text-sm font-medium">{t('user_rating')}</div>
+                                    <div className="text-4xl font-bold text-blue-100 mb-2">⭐ 4.9</div>
+                                    <div className="text-white/80 text-sm font-medium">{t('user_rating')}</div>
                                 </div>
                             </div>
                         </div>
@@ -125,62 +135,50 @@ export default function About() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                <Card className="group text-center bg-white border-0 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 cursor-pointer overflow-hidden">
+                                <Card className="group text-center bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-300">
                                     <CardContent className="pt-8 pb-6 px-6">
-                                        <div className="relative mb-6">
-                                            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                <MapPin className="w-10 h-10 text-white" />
-                                            </div>
-                                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                                <CheckCircle className="w-3 h-3 text-white" />
+                                        <div className="mb-6">
+                                            <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto">
+                                                <MapPin className="w-8 h-8 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">{t('gps_powered_search')}</h3>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3">{t('gps_powered_search')}</h3>
                                         <p className="text-gray-600 leading-relaxed">{t('instantly_locate_shops')}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="group text-center bg-white border-0 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 cursor-pointer overflow-hidden">
+                                <Card className="group text-center bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-300">
                                     <CardContent className="pt-8 pb-6 px-6">
-                                        <div className="relative mb-6">
-                                            <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                <Shield className="w-10 h-10 text-white" />
-                                            </div>
-                                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                                <Star className="w-3 h-3 text-white" />
+                                        <div className="mb-6">
+                                            <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto">
+                                                <Shield className="w-8 h-8 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">{t('hundred_percent_verified')}</h3>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3">{t('hundred_percent_verified')}</h3>
                                         <p className="text-gray-600 leading-relaxed">{t('every_shop_verified')}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="group text-center bg-white border-0 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 cursor-pointer overflow-hidden">
+                                <Card className="group text-center bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-300">
                                     <CardContent className="pt-8 pb-6 px-6">
-                                        <div className="relative mb-6">
-                                            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                <Wrench className="w-10 h-10 text-white" />
-                                            </div>
-                                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                                <Clock className="w-3 h-3 text-white" />
+                                        <div className="mb-6">
+                                            <div className="w-16 h-16 bg-orange-600 rounded-xl flex items-center justify-center mx-auto">
+                                                <Wrench className="w-8 h-8 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">{t('complete_services')}</h3>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3">{t('complete_services')}</h3>
                                         <p className="text-gray-600 leading-relaxed">{t('emergency_repairs_replacements')}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="group text-center bg-white border-0 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-300 cursor-pointer overflow-hidden">
+                                <Card className="group text-center bg-white border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-300">
                                     <CardContent className="pt-8 pb-6 px-6">
-                                        <div className="relative mb-6">
-                                            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                <Users className="w-10 h-10 text-white" />
-                                            </div>
-                                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                                                <Heart className="w-3 h-3 text-white" />
+                                        <div className="mb-6">
+                                            <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mx-auto">
+                                                <Users className="w-8 h-8 text-white" />
                                             </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">{t('driver_community')}</h3>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3">{t('driver_community')}</h3>
                                         <p className="text-gray-600 leading-relaxed">{t('built_by_real_drivers')}</p>
                                     </CardContent>
                                 </Card>

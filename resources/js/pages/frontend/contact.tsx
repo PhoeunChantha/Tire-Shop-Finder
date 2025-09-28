@@ -57,7 +57,11 @@ function AccordionItem({ question, answer, isOpen, onToggle }: {
     );
 }
 
-export default function Contact() {
+interface ContactPageProps {
+    contactBanner?: string;
+}
+
+export default function Contact({ contactBanner }: ContactPageProps) {
     const { t } = useTranslation();
     const [openItem, setOpenItem] = useState<number | null>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -125,18 +129,32 @@ export default function Contact() {
                 url={typeof window !== 'undefined' ? window.location.href : undefined}
             />
             
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
-                {/* Hero Section */}
-                <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div className="min-h-screen bg-gray-50">
+                {/* Clean Hero Section */}
+                <div className="relative text-white">
+                    {/* Background with custom banner or fallback */}
+                    {contactBanner ? (
+                        <div className="absolute inset-0">
+                            <img 
+                                src={contactBanner} 
+                                alt="Contact page banner" 
+                                 className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-slate-900/70" />
+                        </div>
+                    ) : (
+                        <div className="absolute inset-0 bg-slate-900" />
+                    )}
+                    
+                    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
                         <div className="text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-6">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl mb-6">
                                 <Headphones className="w-8 h-8 text-white" />
                             </div>
-                            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
+                            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6">
                                 {t('get_in_touch')}
                             </h1>
-                            <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                            <p className="text-xl sm:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
                                 {t('contact_description')}
                             </p>
                         </div>
@@ -159,23 +177,17 @@ export default function Contact() {
 
                     {/* Contact Form */}
                     <div className="mb-16 sm:mb-20">
-                        <Card className="shadow-xl overflow-hidden border-0 bg-white/70 backdrop-blur-sm">
+                        <Card className="shadow-lg overflow-hidden border border-gray-200 bg-white">
                             <div className="grid grid-cols-1 lg:grid-cols-2">
                                 {/* Illustration Section */}
-                                <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 p-8 lg:p-12">
-                                    {/* Background Pattern */}
-                                    <div className="absolute inset-0 opacity-10">
-                                        <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
-                                        <div className="absolute bottom-20 right-8 w-24 h-24 bg-white rounded-full"></div>
-                                        <div className="absolute top-1/2 right-20 w-16 h-16 bg-white rounded-full"></div>
-                                    </div>
+                                <div className="relative bg-slate-900 p-8 lg:p-12">
                                     
-                                    <div className="relative z-10 text-center text-white space-y-6">
-                                        <div className="w-20 h-20 mx-auto mb-8 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                                            <Send className="w-10 h-10 text-white" />
+                                    <div className="text-center text-white space-y-6">
+                                        <div className="w-16 h-16 mx-auto mb-8 bg-blue-600 rounded-xl flex items-center justify-center">
+                                            <Send className="w-8 h-8 text-white" />
                                         </div>
                                         <h3 className="text-3xl font-bold">{t('lets_connect')}</h3>
-                                        <p className="text-blue-100 text-lg max-w-sm leading-relaxed">
+                                        <p className="text-white/80 text-lg max-w-sm leading-relaxed">
                                             {t('have_questions_tire_shops')}
                                         </p>
                                         
@@ -183,11 +195,11 @@ export default function Contact() {
                                         <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-white/20">
                                             <div className="text-center">
                                                 <div className="text-2xl font-bold text-white">24h</div>
-                                                <div className="text-blue-100 text-sm">{t('response_time')}</div>
+                                                <div className="text-white/70 text-sm">{t('response_time')}</div>
                                             </div>
                                             <div className="text-center">
                                                 <div className="text-2xl font-bold text-white">100%</div>
-                                                <div className="text-blue-100 text-sm">{t('support_coverage')}</div>
+                                                <div className="text-white/70 text-sm">{t('support_coverage')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -315,7 +327,7 @@ export default function Contact() {
                                         <Button 
                                             type="submit" 
                                             disabled={processing}
-                                            className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:transform-none"
+                                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50"
                                         >
                                             {processing ? (
                                                 <div className="flex items-center gap-2">
@@ -348,9 +360,9 @@ export default function Contact() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {/* Phone */}
-                            <Card className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-200">
                                 <CardContent className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-16 h-16 mx-auto mb-4 bg-blue-600 rounded-xl flex items-center justify-center">
                                         <Phone className="w-8 h-8 text-white" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">{t('call_us')}</h3>
@@ -365,9 +377,9 @@ export default function Contact() {
                             </Card>
 
                             {/* Email */}
-                            <Card className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-200">
                                 <CardContent className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-16 h-16 mx-auto mb-4 bg-green-600 rounded-xl flex items-center justify-center">
                                         <Mail className="w-8 h-8 text-white" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">{t('email_us')}</h3>
@@ -382,9 +394,9 @@ export default function Contact() {
                             </Card>
 
                             {/* Location */}
-                            <Card className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-200">
                                 <CardContent className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-16 h-16 mx-auto mb-4 bg-purple-600 rounded-xl flex items-center justify-center">
                                         <MapPin className="w-8 h-8 text-white" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">{t('visit_us')}</h3>
@@ -402,9 +414,9 @@ export default function Contact() {
                             </Card>
 
                             {/* Business Listings */}
-                            <Card className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+                            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-200">
                                 <CardContent className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-16 h-16 mx-auto mb-4 bg-orange-600 rounded-xl flex items-center justify-center">
                                         <Building className="w-8 h-8 text-white" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">{t('list_business')}</h3>
@@ -435,7 +447,7 @@ export default function Contact() {
                         </div>
 
                         <div className="max-w-4xl mx-auto">
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-xl border-0">
+                            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
                                 <div className="space-y-3">
                                     {faqData.map((faq, index) => (
                                         <AccordionItem
@@ -452,20 +464,20 @@ export default function Contact() {
 
                         {/* CTA Banner */}
                         <div className="mt-16 text-center">
-                            <Card className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 border-0 overflow-hidden">
+                            <Card className="bg-slate-900 border border-gray-200 overflow-hidden">
                                 <CardContent className="p-8 sm:p-12 text-white">
                                     <div className="max-w-3xl mx-auto">
-                                        <Users className="w-12 h-12 mx-auto mb-6 text-white/80" />
+                                        <Users className="w-12 h-12 mx-auto mb-6 text-blue-400" />
                                         <h3 className="text-2xl sm:text-3xl font-bold mb-4">
                                             {t('still_have_questions')}
                                         </h3>
-                                        <p className="text-lg text-blue-100 mb-8 leading-relaxed">
+                                        <p className="text-lg text-white/80 mb-8 leading-relaxed">
                                             {t('support_team_help')}
                                         </p>
                                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                             <Button 
                                                 onClick={() => document.getElementById('name')?.focus()}
-                                                className="bg-white text-blue-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-xl"
+                                                className="bg-white text-slate-900 hover:bg-gray-100 font-semibold px-8 py-3 rounded-xl"
                                             >
                                                 {t('send_a_message')}
                                             </Button>

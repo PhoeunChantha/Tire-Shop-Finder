@@ -37,6 +37,9 @@ export interface BusinessSettingFormData {
     login_bg_image?: File | null;
     system_logo?: File | null;
     system_fav_icon?: File | null;
+    // Page Banners
+    about_banner_image?: File | null;
+    contact_banner_image?: File | null;
     google_login_status?: string;
     google_client_id?: string;
     google_client_secret?: string;
@@ -51,6 +54,8 @@ export interface BusinessSettingFormData {
   current_login_bg_image?: string | null;
   current_system_logo?: string | null;
   current_system_fav_icon?: string | null;
+  current_about_banner_image?: string | null;
+  current_contact_banner_image?: string | null;
 }
 
 export interface BusinessSettingErrors {
@@ -72,6 +77,8 @@ export interface BusinessSettingErrors {
   login_bg_image?: string;
   system_logo?: string;
   system_fav_icon?: string;
+  about_banner_image?: string;
+  contact_banner_image?: string;
   google_client_id?: string;
   google_client_secret?: string;
   google_redirect_uri?: string;

@@ -82,7 +82,7 @@ export function BannerCarousel({
                 <img
                   src={getImageUrl(banner.image, 'banners')}
                   alt={banner.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-fill"
                   onError={(e) => {
                     console.error('Failed to load banner image:', banner.image);
                     (e.target as HTMLImageElement).src = getImageUrl(null, 'banners');

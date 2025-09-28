@@ -9,6 +9,7 @@ use App\Models\District;
 use App\Models\Commune;
 use App\Models\Village;
 use App\Models\Service;
+use App\Models\Banner;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -83,6 +84,21 @@ class PublicController extends Controller
 
         $businesses = $query->paginate(12);
         
+        // Get active banners for carousel
+        $banners = Banner::active()
+            ->ordered()
+            ->get()
+            ->map(function ($banner) {
+                return [
+                    'id' => $banner->id,
+                    'title' => $banner->title,
+                    'descriptions' => $banner->descriptions,
+                    'image' => $banner->image,
+                    'url' => $banner->url,
+                    'sort_order' => $banner->sort_order,
+                ];
+            });
+        
         // Get filter data
         $provinces = Province::all();
         $districts = collect();
@@ -92,6 +108,7 @@ class PublicController extends Controller
 
         return Inertia::render('frontend/public/businesses/index', [
             'businesses' => $businesses,
+            'banners' => $banners,
             'provinces' => $provinces,
             'districts' => $districts,
             'filters' => $request->only(['search', 'province_id', 'district_id', 'commune_id', 'village_id', 'service']),
@@ -113,7 +130,8 @@ class PublicController extends Controller
             'province', 
             'district', 
             'commune', 
-            'village', 
+            'village',
+            'owner:id,name,email,phone,profile,first_name,last_name',
             'services' => function ($query) {
                 $query->where('status', true);
             },

@@ -120,7 +120,6 @@ class BannerController extends Controller
 
         $banner->load(['creator']);
         
-        // Get raw banner data and add translation arrays for form editing
         $bannerData = $banner->toArray();
         $translations = $banner->getTranslationsForForm();
         
@@ -131,53 +130,56 @@ class BannerController extends Controller
 
     public function update(Request $request, Banner $banner): RedirectResponse
     {
+
         $this->authorize('update', $banner);
 
-        $validated = $request->validate([
-            'title_translations.en' => 'required|string|max:255',
-            'title_translations.km' => 'nullable|string|max:255',
-            'descriptions_translations.en' => 'nullable|string',
-            'descriptions_translations.km' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-            'url' => 'nullable|url',
-            'is_active' => 'boolean',
-            'sort_order' => 'integer|min:0',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title_translations.en' => 'required|string|max:255',
+                'title_translations.km' => 'nullable|string|max:255',
+                'descriptions_translations.en' => 'nullable|string',
+                'descriptions_translations.km' => 'nullable|string',
+                // 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'url' => 'nullable|url',
+                'is_active' => 'boolean',   
+                'sort_order' => 'integer|min:0',
+            ]);
 
-        // Handle image upload
-        $imagePath = $banner->image;
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($banner->image) {
-                ImageManager::deleteImage($banner->image);
+            $imagePath = $banner->image;
+            if ($request->hasFile('image')) {
+                if ($banner->image) {
+                    ImageManager::deleteImage($banner->image);
+                }
+                $imagePath = ImageManager::uploadImage($request->file('image'), 'banners');
             }
-            $imagePath = ImageManager::uploadImage($request->file('image'), 'banners');
+
+            // Prepare translations data
+            $titleTranslations = [
+                'en' => $validated['title_translations']['en'],
+                'km' => $validated['title_translations']['km'] ?? '',
+            ];
+
+            $descriptionsTranslations = [
+                'en' => $validated['descriptions_translations']['en'] ?? '',
+                'km' => $validated['descriptions_translations']['km'] ?? '',
+            ];
+
+            $banner->update([
+                'title' => json_encode($titleTranslations),
+                'descriptions' => json_encode($descriptionsTranslations),
+                'image' => $imagePath,
+                'url' => $validated['url'] ?? null,
+                'is_active' => $validated['is_active'] ?? true,
+                'sort_order' => $validated['sort_order'] ?? 0,
+            ]);
+
+            return to_route('banners.index')
+                ->with('success', 'Banner updated successfully!');
+        } catch (\Throwable $th) {
+            return back()
+                ->with('error', 'Something went wrong' . $th->getMessage());
         }
-
-        // Prepare translations data
-        $titleTranslations = [
-            'en' => $validated['title_translations']['en'],
-            'km' => $validated['title_translations']['km'] ?? '',
-        ];
-
-        $descriptionsTranslations = [
-            'en' => $validated['descriptions_translations']['en'] ?? '',
-            'km' => $validated['descriptions_translations']['km'] ?? '',
-        ];
-
-        $banner->update([
-            'title' => json_encode($titleTranslations),
-            'descriptions' => json_encode($descriptionsTranslations),
-            'image' => $imagePath,
-            'url' => $validated['url'] ?? null,
-            'is_active' => $validated['is_active'] ?? true,
-            'sort_order' => $validated['sort_order'] ?? 0,
-        ]);
-
-        return to_route('banners.index')
-            ->with('success', 'Banner updated successfully!');
     }
-
     public function destroy(Banner $banner): RedirectResponse
     {
         $this->authorize('delete', $banner);

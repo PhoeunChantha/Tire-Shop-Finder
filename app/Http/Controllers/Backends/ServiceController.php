@@ -66,14 +66,14 @@ class ServiceController extends Controller
 
             // Handle translations for name
             if (isset($serviceData['name_translations'])) {
-                $createData['name'] = $serviceData['name_translations'];
+                $createData['name'] = json_encode($serviceData['name_translations']);
             } else {
                 $createData['name'] = $serviceData['name'];
             }
 
             // Handle translations for descriptions
             if (isset($serviceData['descriptions_translations'])) {
-                $createData['descriptions'] = $serviceData['descriptions_translations'];
+                $createData['descriptions'] = json_encode($serviceData['descriptions_translations']);
             } else {
                 $createData['descriptions'] = $serviceData['descriptions'] ?? '';
             }

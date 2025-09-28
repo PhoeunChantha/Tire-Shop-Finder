@@ -20,7 +20,8 @@ import {
     DollarSign,
     CheckCircle,
     Navigation,
-    ExternalLink
+    ExternalLink,
+    User
 } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageHelper';
 
@@ -137,8 +138,16 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
 
     const handleCallBusiness = () => {
-        // In a real app, this would be the business phone number
-        toast.info('Phone number would be displayed here');
+        const phoneNumber = business.phone || business.owner?.phone;
+        
+        if (phoneNumber) {
+            // For mobile devices, use tel: protocol to open phone dialer
+            if (typeof window !== 'undefined') {
+                window.location.href = `tel:${phoneNumber}`;
+            }
+        } else {
+            window.toast?.info('No phone number available for this business');
+        }
     };
 
     const handleWriteReview = () => {
@@ -160,10 +169,10 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                 url={typeof window !== 'undefined' ? window.location.href : undefined}
             />
 
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
-                {/* Enhanced Header */}
-                <div className="bg-white shadow-lg border-b border-gray-100">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="min-h-screen bg-gray-50">
+                {/* Clean Header */}
+                <div className="bg-white shadow-sm border-b border-gray-200">
+                    <div className="max-w-6xl mx-auto px-6 lg:px-8 py-8">
                         <div className="flex items-center gap-4 mb-6">
                             <Link href="/tire-shops">
                                 <Button variant="outline" size="sm" className="hover:bg-gray-50 transition-colors duration-200">
@@ -175,26 +184,24 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
                         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                             <div className="flex-1 space-y-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                    <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                                    <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
                                         {String(business.name)}
                                     </h1>
-                                    <div className="flex items-center gap-2">
-                                        <Badge className="bg-emerald-100 text-emerald-800 px-3 py-1.5 text-sm font-medium">
-                                            <CheckCircle className="w-4 h-4 mr-1.5" />
-                                            {t('verified')}
-                                        </Badge>
-                                    </div>
+                                    <Badge className="bg-green-100 text-green-800 px-3 py-1.5 font-medium w-fit">
+                                        <CheckCircle className="w-4 h-4 mr-1.5" />
+                                        {t('verified')}
+                                    </Badge>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-6 text-gray-600">
-                                    <div className="flex items-center bg-gray-50 px-4 py-2 rounded-lg">
-                                        <MapPin className="w-5 h-5 mr-2 text-blue-600" />
+                                <div className="flex flex-col md:flex-row md:items-center gap-4 text-gray-600 mt-4">
+                                    <div className="flex items-center bg-gray-100 px-4 py-2 rounded-lg">
+                                        <MapPin className="w-5 h-5 mr-2 text-gray-500" />
                                         <span className="font-medium">{getLocationString()}</span>
                                     </div>
                                     {business.formatted_hours && (
-                                        <div className="flex items-center bg-gray-50 px-4 py-2 rounded-lg">
-                                            <Clock className="w-5 h-5 mr-2 text-green-600" />
+                                        <div className="flex items-center bg-gray-100 px-4 py-2 rounded-lg">
+                                            <Clock className="w-5 h-5 mr-2 text-gray-500" />
                                             <span className="font-medium">{String(business.formatted_hours)}</span>
                                         </div>
                                     )}
@@ -215,22 +222,23 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                 )}
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-3 lg:flex-col lg:w-64">
+                            {/* Desktop buttons */}
+                            <div className="hidden lg:flex flex-col gap-3 lg:w-64">
                                 <Button
                                     onClick={handleCallBusiness}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 py-3 px-6"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white transition-colors py-3 px-6"
                                     size="lg"
                                 >
-                                    <Phone className="w-5 h-5 mr-3" />
+                                    <Phone className="w-5 h-5 mr-2" />
                                     {t('call_now')}
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={handleGetDirections}
-                                    className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 shadow-md hover:shadow-lg transition-all duration-200 py-3 px-6"
+                                    className="border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors py-3 px-6"
                                     size="lg"
                                 >
-                                    <Navigation className="w-5 h-5 mr-3" />
+                                    <Navigation className="w-5 h-5 mr-2" />
                                     {t('get_directions')}
                                 </Button>
                             </div>
@@ -239,14 +247,14 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                 </div>
 
                 {/* Main Content */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Main Details */}
                         <div className="lg:col-span-2 space-y-6">
-                            {/* Business Image */}
+                            {/* Business Image - Clean */}
                             {business.image && (
-                                <Card className="py-0 shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-                                    <div className="relative h-64 md:h-80 lg:h-96">
+                                <Card className="py-0 overflow-hidden shadow-sm border border-gray-200">
+                                    <div className="relative aspect-video">
                                         <img
                                             src={getImageUrl(business.image, 'businesses')}
                                             alt={`${business.name} - Business Photo`}
@@ -256,87 +264,69 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                                 e.currentTarget.parentElement?.classList.add('hidden');
                                             }}
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                                        <div className="absolute bottom-4 left-4 right-4">
-                                            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3">
-                                                <h3 className="font-semibold text-gray-900 text-lg">
-                                                    {String(business.name)}
-                                                </h3>
-                                                <p className="text-gray-600 text-sm">
-                                                    Professional tire services in {business.district?.name}
-                                                </p>
-                                            </div>
-                                        </div>
                                     </div>
                                 </Card>
                             )}
 
-                            {/* About */}
+                            {/* About - Clean */}
                             {business.descriptions && (
-                                <Card className="py-0 shadow-md hover:shadow-lg transition-shadow duration-300">
-                                    <CardHeader className="p-2 bg-gradient-to-r from-slate-50 to-gray-50 border-b border-gray-100">
-                                        <CardTitle className="text-xl font-semibold text-gray-800">
+                                <Card className="shadow-sm border border-gray-200">
+                                    <CardHeader>
+                                        <CardTitle className="text-xl font-bold text-gray-900">
                                             About {String(business.name)}
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6">
-                                        <p className="text-gray-700 leading-relaxed text-base">
+                                    <CardContent>
+                                        <p className="text-gray-700 leading-relaxed">
                                             {String(business.descriptions)}
                                         </p>
                                     </CardContent>
                                 </Card>
                             )}
 
-                            {/* Services & Pricing */}
+                            {/* Services & Pricing - Clean */}
                             {business.services && business.services.length > 0 && (
-                                <Card className="py-0 shadow-md hover:shadow-lg transition-shadow duration-300">
-                                    <CardHeader className="p-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                                <Card className="shadow-sm border border-gray-200">
+                                    <CardHeader>
                                         <CardTitle className="flex items-center gap-3">
-                                            <div className="p-2 bg-blue-100 rounded-lg">
-                                                <Wrench className="w-5 h-5 text-blue-600" />
-                                            </div>
-                                            <span className="text-xl font-semibold text-gray-800">Services & Pricing</span>
+                                            <Wrench className="w-5 h-5 text-blue-600" />
+                                            <span className="text-xl font-bold text-gray-900">Services & Pricing</span>
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6">
-                                        <div className="space-y-4">
-                                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                                                {business.services.map((service) => (
-                                                    <div
-                                                        key={service.id}
-                                                        className="group flex items-center justify-between p-5 bg-white border border-gray-200 rounded-xl hover:border-blue-200 hover:shadow-md transition-all duration-200"
-                                                    >
-                                                        <div className="flex-1">
-                                                            <h4 className="font-semibold text-gray-900 text-lg mb-1">
-                                                                {service.name}
-                                                            </h4>
-                                                            {service.descriptions && (
-                                                                <p className="text-sm text-gray-600 leading-relaxed">
-                                                                    {service.descriptions}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                        <div className="ml-6 text-right">
-                                                            <div className="flex items-center text-xl font-bold text-emerald-600">
-                                                                <DollarSign className="w-5 h-5" />
-                                                                <span>{service.price}</span>
-                                                            </div>
+                                    <CardContent>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {business.services.map((service) => (
+                                                <div
+                                                    key={service.id}
+                                                    className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+                                                >
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="font-semibold text-gray-900">
+                                                            {service.name}
+                                                        </h4>
+                                                        <div className="flex items-center text-lg font-bold text-green-600">
+                                                            <DollarSign className="w-4 h-4" />
+                                                            <span>{service.price}</span>
                                                         </div>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                    {service.descriptions && (
+                                                        <p className="text-sm text-gray-600">
+                                                            {service.descriptions}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </CardContent>
                                 </Card>
-
                             )}
 
-                            {/* Reviews Section */}
-                            <Card>
+                            {/* Reviews Section - Clean */}
+                            <Card className="shadow-sm border border-gray-200">
                                 <CardHeader className="flex flex-row items-center justify-between">
                                     <CardTitle className="flex items-center gap-2">
-                                        <Star className="w-5 h-5" />
-                                        Customer Reviews
+                                        <Star className="w-5 h-5 text-blue-600" />
+                                        <span className="text-xl font-bold text-gray-900">Customer Reviews</span>
                                         {business.reviews && business.reviews.length > 0 && (
                                             <span className="text-sm font-normal text-gray-500">
                                                 ({business.reviews.length} review{business.reviews.length !== 1 ? 's' : ''})
@@ -347,6 +337,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                         variant="outline"
                                         size="sm"
                                         onClick={handleWriteReview}
+                                        className="border-gray-300"
                                     >
                                         Write a Review
                                     </Button>
@@ -393,68 +384,43 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
 
                         {/* Sidebar */}
                         <div className="space-y-6">
-                            {/* Enhanced Location Card */}
+                            {/* Location Card - Clean */}
                             {business.latitude && business.longitude && (
-                                <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 pb-3">
-                                        <CardTitle className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-2 bg-blue-100 rounded-lg">
-                                                    <MapPin className="w-4 h-4 text-blue-600" />
-                                                </div>
-                                                <span className="text-gray-800">Location & Directions</span>
-                                            </div>
+                                <Card className="shadow-sm border border-gray-200">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <MapPin className="w-5 h-5 text-blue-600" />
+                                            <span className="text-xl font-bold text-gray-900">Location & Directions</span>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="p-0">
-                                        {/* Interactive Map Preview */}
+                                        {/* Map Preview - Clean */}
                                         <div
-                                            className="relative w-full h-56 bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 cursor-pointer group overflow-hidden"
+                                            className="relative  w-full h-48 bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
                                             onClick={() => {
                                                 const url = `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`;
                                                 window.open(url, '_blank');
                                             }}
                                         >
-                                            {/* Background Pattern */}
-                                            <div className="absolute inset-0 opacity-20">
-                                                <div className="absolute inset-0" style={{
-                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='53' cy='7' r='1'/%3E%3Ccircle cx='7' cy='53' r='1'/%3E%3Ccircle cx='53' cy='53' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                                                    backgroundSize: '30px 30px'
-                                                }} />
-                                            </div>
-
-                                            {/* Content */}
-                                            <div className="relative h-full flex flex-col items-center justify-center text-center p-6">
-                                                <div className="mb-4">
-                                                    <div className="p-4 bg-white rounded-full shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
-                                                        <MapPin className="w-8 h-8 text-blue-600" />
-                                                    </div>
+                                            <div className="h-full flex flex-col items-center justify-center text-center p-6">
+                                                <div className="p-3 bg-blue-600 rounded-full mb-3">
+                                                    <MapPin className="w-6 h-6 text-white" />
                                                 </div>
-
-                                                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                                                    View Interactive Map
+                                                <h3 className="font-semibold text-gray-900 mb-2">
+                                                    View on Google Maps
                                                 </h3>
-
-                                                <div className="space-y-1">
-                                                    <p className="text-sm font-medium text-gray-600">
-                                                        📍 {parseFloat(business.latitude).toFixed(4)}°, {parseFloat(business.longitude).toFixed(4)}°
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        Click to open in Google Maps
-                                                    </p>
-                                                </div>
-
-                                                {/* Hover Effect */}
-                                                <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/5 transition-colors duration-300" />
+                                                <p className="text-sm text-gray-600">
+                                                    {parseFloat(business.latitude).toFixed(4)}°, {parseFloat(business.longitude).toFixed(4)}°
+                                                </p>
                                             </div>
                                         </div>
 
-                                        {/* Action Buttons */}
-                                        <div className="p-4 bg-gray-50/50">
-                                            <div className="grid grid-cols-2 gap-3">
+                                        {/* Action Buttons - Clean */}
+                                        <div className="p-4">
+                                            <div className="grid grid-cols-2 gap-3 mb-4">
                                                 <Button
                                                     onClick={handleGetDirections}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-200"
+                                                    className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white"
                                                     size="sm"
                                                 >
                                                     <Navigation className="w-4 h-4 mr-2" />
@@ -466,7 +432,7 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                                         const url = `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`;
                                                         window.open(url, '_blank');
                                                     }}
-                                                    className="border-blue-200 text-blue-700 hover:bg-blue-50 shadow-sm hover:shadow-md transition-all duration-200"
+                                                    className="border-gray-300 cursor-pointer hover:bg-gray-50"
                                                     size="sm"
                                                 >
                                                     <ExternalLink className="w-4 h-4 mr-2" />
@@ -475,11 +441,11 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                             </div>
 
                                             {/* Address Display */}
-                                            <div className="mt-4 p-3 bg-white rounded-lg border border-gray-200">
+                                            <div className="p-3 bg-gray-50 rounded-lg">
                                                 <div className="flex items-start gap-2">
-                                                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                                    <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
                                                     <div className="text-sm">
-                                                        <p className="font-medium text-gray-800 leading-relaxed">
+                                                        <p className="font-medium text-gray-900">
                                                             {getLocationString()}
                                                         </p>
                                                         <p className="text-xs text-gray-500 mt-1">
@@ -493,18 +459,46 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                 </Card>
                             )}
 
-                            {/* Contact Info */}
-                            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
-                                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
-                                    <CardTitle className="flex items-center gap-3">
-                                        <div className="p-2 bg-green-100 rounded-lg">
-                                            <Phone className="w-5 h-5 text-green-600" />
-                                        </div>
-                                        <span className="text-xl font-semibold text-gray-800">Contact Information</span>
+                            {/* Contact Info - Clean */}
+                            <Card className="shadow-sm border border-gray-200">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Phone className="w-5 h-5 text-green-600" />
+                                        <span className="text-xl font-bold text-gray-900">Contact Information</span>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-6">
                                     <div className="space-y-4">
+                                        {/* Owner Profile */}
+                                        {business.owner && (
+                                            <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+                                                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    {business.owner.profile ? (
+                                                        <img 
+                                                            src={getImageUrl(business.owner.profile, 'users')} 
+                                                            alt={business.owner.name}
+                                                            className="w-10 h-10 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <User className="w-5 h-5 text-white" />
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900 mb-1">Business Owner</h4>
+                                                    <p className="text-gray-700 font-medium">
+                                                        {business.owner.first_name && business.owner.last_name 
+                                                            ? `${business.owner.first_name} ${business.owner.last_name}`
+                                                            : business.owner.name}
+                                                    </p>
+                                                    {business.owner.phone && (
+                                                        <p className="text-sm text-gray-600 mt-1">
+                                                            📞 {business.owner.phone}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
                                         <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
                                             <MapPin className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
                                             <div>
@@ -526,52 +520,63 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                                 </div>
                                             </div>
                                         )}
+
+                                        {/* Business Phone */}
+                                        {business.phone && (
+                                            <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+                                                <Phone className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900 mb-1">Business Phone</h4>
+                                                    <p className="text-gray-700 leading-relaxed">
+                                                        {business.phone}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="pt-4 border-t border-gray-200 space-y-3">
                                         <Button
                                             onClick={handleCallBusiness}
-                                            className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200 py-3"
+                                            className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
                                             size="lg"
                                         >
                                             <Phone className="w-5 h-5 mr-2" />
                                             Call Business
                                         </Button>
-                                        <Button
+                                        {/* <Button
                                             variant="outline"
                                             onClick={handleGetDirections}
-                                            className="w-full border-2 border-green-200 text-green-700 hover:bg-green-50 shadow-md hover:shadow-lg transition-all duration-200 py-3"
+                                            className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3"
                                             size="lg"
                                         >
                                             <Navigation className="w-5 h-5 mr-2" />
                                             Get Directions
-                                        </Button>
+                                        </Button> */}
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            {/* Quick Stats */}
-                            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
-                                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
-                                    <CardTitle className="flex items-center gap-3">
-                                        <div className="p-2 bg-purple-100 rounded-lg">
-                                            <Star className="w-5 h-5 text-purple-600" />
-                                        </div>
-                                        <span className="text-xl font-semibold text-gray-800">Business Stats</span>
+                            {/* Business Stats - Clean */}
+                            <Card className="shadow-sm border border-gray-200">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Star className="w-5 h-5 text-purple-600" />
+                                        <span className="text-xl font-bold text-gray-900">Business Stats</span>
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-6 space-y-5">
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
+                                <CardContent className="space-y-4">
+                                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <Wrench className="w-5 h-5 text-blue-600" />
                                             <span className="font-medium text-gray-700">Services Offered</span>
                                         </div>
-                                        <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                        <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
                                             {business.services?.length || 0}
-                                        </div>
+                                        </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-orange-100 rounded-lg">
+                                    <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
                                         <div className="flex items-center gap-2">
                                             <Star className="w-5 h-5 text-yellow-600" />
                                             <span className="font-medium text-gray-700">Customer Rating</span>
@@ -579,10 +584,9 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                         <div className="flex items-center gap-2">
                                             {business.reviews_count && business.reviews_count > 0 ? (
                                                 <>
-                                                    <div className="flex items-center bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                                        <Star className="w-4 h-4 mr-1 fill-current" />
-                                                        {(business.reviews_avg_rate || 0).toFixed(1)}
-                                                    </div>
+                                                    <span className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                                        ⭐ {(business.reviews_avg_rate || 0).toFixed(1)}
+                                                    </span>
                                                     <span className="text-sm text-gray-600">({business.reviews_count})</span>
                                                 </>
                                             ) : (
@@ -593,14 +597,14 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-green-100 rounded-lg">
+                                    <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                                         <div className="flex items-center gap-2">
-                                            <CheckCircle className="w-5 h-5 text-emerald-600" />
+                                            <CheckCircle className="w-5 h-5 text-green-600" />
                                             <span className="font-medium text-gray-700">Verification Status</span>
                                         </div>
-                                        <Badge className="bg-emerald-600 text-white px-4 py-2 text-sm font-semibold">
-                                            ✓ Verified Business
-                                        </Badge>
+                                        <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                            ✓ Verified
+                                        </span>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -653,6 +657,26 @@ export default function PublicBusinessShow({ business, nearbyBusinesses }: Busin
                             </div>
                         </div>
                     )}
+                </div>
+            </div>
+
+            {/* Mobile floating action buttons */}
+            <div className="lg:hidden fixed bottom-20 right-4 z-50">
+                <div className="flex flex-col gap-2">
+                    <Button
+                        onClick={handleCallBusiness}
+                        className="w-15 h-15 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 border-4 border-white"
+                        size="lg"
+                    >
+                        <Phone className="w-6 h-6" />
+                    </Button>
+                    <Button
+                        onClick={handleGetDirections}
+                        className="w-15 h-15 rounded-full bg-white hover:bg-gray-50 text-gray-700 shadow-lg hover:shadow-xl transition-all duration-200 border-4 border-gray-200"
+                        size="lg"
+                    >
+                        <Navigation className="w-6 h-6" />
+                    </Button>
                 </div>
             </div>
 

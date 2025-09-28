@@ -49,6 +49,9 @@ class BusinessSettingStoreRequest extends FormRequest
             'type.login_bg_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
             'type.system_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB
             'type.system_fav_icon' => 'nullable|file|mimes:jpeg,png,jpg,gif,ico|max:2048', // 2MB for favicon
+            // Page Banner Images
+            'type.about_banner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB
+            'type.contact_banner_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB
             // Social Login Settings
             'type.google_login_status' => 'nullable|string|in:enabled,disabled',
             'type.google_client_id' => 'nullable|string|max:255',
@@ -58,6 +61,11 @@ class BusinessSettingStoreRequest extends FormRequest
             'type.facebook_client_id' => 'nullable|string|max:255',
             'type.facebook_client_secret' => 'nullable|string|max:255',
             'type.facebook_redirect_uri' => 'nullable|url|max:255',
+            // Website Statistics
+            'type.stats_tire_shops' => 'nullable|numeric|min:0',
+            'type.stats_happy_customers' => 'nullable|numeric|min:0',
+            'type.stats_provinces_covered' => 'nullable|numeric|min:0',
+            'type.stats_average_rating' => 'nullable|numeric|min:0|max:5',
         ];
 
         // Add dynamic validation for custom social media fields

@@ -22,6 +22,8 @@ export default function useBusinessSettingForm({
     current_login_bg_image: null,
     current_system_logo: null,
     current_system_fav_icon: null,
+    current_about_banner_image: null,
+    current_contact_banner_image: null,
     ...initialData,
   });
 

@@ -57,11 +57,31 @@ class HomeController extends Controller
 
     public function about()
     {
-        return Inertia::render('frontend/about');
+        // Get business setting for about banner
+        $aboutBanner = \App\Models\BusinessSetting::where('type', 'about_banner_image')->first();
+        $bannerUrl = null;
+        
+        if ($aboutBanner && $aboutBanner->value) {
+            $bannerUrl = asset('uploads/business-settings/' . $aboutBanner->value);
+        }
+        
+        return Inertia::render('frontend/about', [
+            'aboutBanner' => $bannerUrl
+        ]);
     }
 
     public function contact()
     {
-        return Inertia::render('frontend/contact');
+        // Get business setting for contact banner
+        $contactBanner = \App\Models\BusinessSetting::where('type', 'contact_banner_image')->first();
+        $bannerUrl = null;
+        
+        if ($contactBanner && $contactBanner->value) {
+            $bannerUrl = asset('uploads/business-settings/' . $contactBanner->value);
+        }
+        
+        return Inertia::render('frontend/contact', [
+            'contactBanner' => $bannerUrl
+        ]);
     }
 }

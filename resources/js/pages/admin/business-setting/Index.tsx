@@ -13,7 +13,7 @@ import type {
 } from "@/types/business-setting";
 
 // Constants for image setting types
-const IMAGE_SETTING_TYPES = ['login_bg_image', 'system_logo', 'system_fav_icon'] as const;
+const IMAGE_SETTING_TYPES = ['login_bg_image', 'system_logo', 'system_fav_icon', 'about_banner_image', 'contact_banner_image'] as const;
 
 /**
  * Business Settings Index Page
